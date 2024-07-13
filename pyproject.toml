@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "scikit-q"
+name = "skq"
 version = "0.1.0"
-description = ""
-authors = ["Carlo Lepelaars <info@carlolepelaars.nl>"]
+description = "Convenient Quantum Components"
+authors = ["Carlo Lepelaars"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -12,9 +12,6 @@ scikit-learn = "^1.5.1"
 [tool.poetry.group.dev.dependencies]
 mkdocs = "^1.6.0"
 pytest = "^8.2.2"
-
-[tool.poetry.packages]
-skq = { from = "skq" }
 
 [build-system]
 requires = ["poetry-core"]
