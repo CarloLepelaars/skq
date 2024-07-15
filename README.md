@@ -4,11 +4,13 @@ Convenient Quantum Components in Scikit-Learn Style. Constructed according to sc
 
 ## Features
 
-- `encoders` -> Encode data into quantum states
-- `gates` -> Quantum gate implementation in NumPy
-- `graph` -> Quantum graph algorithms
-- `cluster` -> Quantum clustering algorithms
-- `svm` -> Quantum kernel methods 
+- `gates` -> Quantum gate implementations.
+- `qubit_transformers` -> Quantum transformations on statevectors.
+- `encoders` -> Encode classical data into valid quantum states.
+- `pipeline` -> QuantumPipeline for convenient visualization and analysis.
+- `graph` -> Quantum graph algorithms.
+- `cluster` -> Quantum clustering algorithms.
+- `svm` -> Quantum kernel methods.
 
 
 ## Install
