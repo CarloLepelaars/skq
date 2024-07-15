@@ -1,4 +1,6 @@
+import cirq
 import numpy as np
+from qiskit.circuit.library import UnitaryGate
 
 # I, X, Y, Z Pauli matrices
 SINGLE_QUBIT_PAULI_MATRICES = [
@@ -100,6 +102,15 @@ class Gate(np.ndarray):
             return False
         # Check if the gate is in the list of single qubit Clifford gates
         return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
+    
+    def to_qiskit_gate(self, name=None):
+        """ Convert the gate to a Qiskit UnitaryGate object. """
+        return UnitaryGate(self, label=name)
+    
+    def to_cirq_gate(self, *qubits, name=None):
+        if name is None:
+            name = self.__class__.__name__
+        return cirq.MatrixGate(self).on(*qubits).with_tags(name)
     
 class CustomGate(Gate):
     """ Bespoke gate. Must be unitary to function as a quantum gate. """

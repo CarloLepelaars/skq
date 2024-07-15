@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from skq.gates import Gate
+from skq.utils import _check_quantum_state_array
 
 
 class BaseQubitTransformer(BaseEstimator, TransformerMixin):
@@ -10,35 +11,13 @@ class BaseQubitTransformer(BaseEstimator, TransformerMixin):
         self.gate = gate
 
     def fit(self, X, y=None):
-        self._check_array(X)
+        _check_quantum_state_array(X)
         return self
     
     def transform(self, X) -> np.ndarray:
-        self._check_array(X)
+        _check_quantum_state_array(X)
         # Dot product of gate and input state vectors
         return np.array([self.gate @ x for x in X])
-    
-    def _check_array(self, X):
-        """ Ensure that input are normalized state vectors of the right size."""
-        # Check if input is a 2D array.
-        if len(X.shape) != 2:
-            raise ValueError("Input must be a 2D array")
-        
-        # Check if all inputs are complex
-        if not np.iscomplexobj(X):
-            raise ValueError("Input must be a complex array.")
-
-        # Check if input is normalized.
-        normalized = np.allclose(np.linalg.norm(X, axis=-1), 1)
-        if not normalized:
-            not_normalized = X[np.linalg.norm(X, axis=-1) != 1]
-            raise ValueError(f"Input state vectors must be normalized. Got non-normalized vectors: '{not_normalized}'")
-        
-        # Check if array is has correct number of elements using the gate.
-        elements_needed = 2 ** self.gate.num_qubits()
-        if X.shape[1] != elements_needed:
-            raise ValueError(f"Input must be a 2D array with {elements_needed} elements in each row")
-        return True
 
 class SingleQubitTransformer(BaseQubitTransformer):
     """
