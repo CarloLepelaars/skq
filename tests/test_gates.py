@@ -11,12 +11,29 @@ def test_base_gate():
     np.testing.assert_array_equal(gate.eigenvalues(), [1, 1])
     np.testing.assert_array_equal(gate.eigenvectors(), [[1, 0], [0, 1]])
 
-def test_standard_single_qubit_gates():
-    for gate in [IdentityGate, PauliXGate, PauliYGate, PauliZGate, HadamardGate, TGate, SGate]:
+def test_single_qubit_pauli_gates():
+    """ Single qubit Pauli gates"""
+    for GateClass in [XGate, YGate, ZGate]:
+        gate = GateClass()
+        assert gate.is_unitary(), f"{GateClass.__name__} should be unitary"
+        assert gate.is_single_qubit_pauli(), f"{GateClass.__name__} should be a single-qubit Pauli gate"
+        assert gate.is_single_qubit_clifford(), f"{GateClass.__name__} should be a single-qubit Clifford gate"
+
+def test_single_qubit_clifford_gates():
+    """ Single qubit Clifford gates"""
+    for gate in [IdentityGate, XGate, YGate, ZGate, HadamardGate, SGate]:
         gate = gate()
         assert gate.is_unitary()
         assert gate.num_qubits() == 1
         assert not gate.is_multi_qubit()
+        assert gate.is_single_qubit_clifford()
+
+def test_t_gate():
+    t_gate = TGate()
+    assert t_gate.is_unitary()
+    assert t_gate.num_qubits() == 1
+    assert not t_gate.is_multi_qubit()
+    assert hasattr(t_gate, "phi")
 
 def test_rotation_gates():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]
@@ -28,7 +45,6 @@ def test_rotation_gates():
             assert not gate.is_multi_qubit(), f"{GateClass.__name__} should not be a multi-qubit gate"
             assert gate.frobenius_norm() == pytest.approx(np.sqrt(2)), f"{GateClass.__name__} Frobenius norm should be sqrt(2)"
             assert hasattr(gate, "theta")
-
 
 def test_rotation_eigenvalues():
     theta = np.pi / 2
@@ -53,7 +69,7 @@ def test_generalized_rotation_gate():
                 assert np.allclose(gate @ eigenvectors[:, 1], eigenvalues[1] * eigenvectors[:, 1]), "Eigenvector calculation is incorrect"
 
 def test_standard_multi_qubit_gates():
-    for gate in [CXGate, CYGate, CZGate, SWAPGate, ToffoliGate, FredkinGate]:
+    for gate in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, ToffoliGate, FredkinGate]:
         gate = gate()
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2
@@ -105,7 +121,7 @@ def test_custom_gate_composition():
 
 def test_hermitian_gates():
     hermitian_gates = [
-        PauliXGate(), PauliYGate(), PauliZGate(), 
+        XGate(), YGate(), ZGate(), 
         HadamardGate(), CXGate(), CZGate(), 
         SWAPGate(), ToffoliGate(), FredkinGate()
     ]
