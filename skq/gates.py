@@ -21,12 +21,28 @@ class Gate(np.ndarray):
         arr = np.asarray(input_array, dtype=complex)
         obj = arr.view(cls)
         assert obj.is_unitary(), "Gate must be unitary"
+        assert obj.is_2d(), "Gate must be a 2D matrix"
+        assert obj.is_at_least_2x2(), "Gate must be at least a 2x2 matrix"
+        assert obj.is_power_of_two_shape(), "Gate shape must be a power of 2"
         return obj
 
     def is_unitary(self) -> bool:
         """ Check if the gate is unitary: U*U^dagger = I """
         identity = np.eye(self.shape[0])
         return np.allclose(self @ self.conjugate_transpose(), identity)
+    
+    def is_2d(self) -> bool:
+        return len(self.shape) == 2, "Gate must be a 2D matrix"
+    
+    def is_at_least_2x2(self) -> bool:
+        rows, cols = self.shape
+        return rows >= 2 and cols >= 2, "Gate must be at least a 2x2 matrix"
+    
+    def is_power_of_two_shape(self) -> bool:
+        rows, cols = self.shape
+        rows_valid = (rows > 0) and (rows & (rows - 1)) == 0, f"Number of rows for gate must be a power of 2. Got '{rows}'"
+        cols_valid = (cols > 0) and (cols & (cols - 1)) == 0, f"Number of columns for gate must be a power of 2. Got '{cols}'"
+        return rows_valid and cols_valid
 
     def is_hermitian(self) -> bool:
         """ Check if the gate is Hermitian: U = U^dagger """
@@ -189,8 +205,8 @@ class CHGate(Gate):
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
                                      [0, 1, 0, 0], 
-                                     [0, 0, 1 / np.sqrt(2), 1 / np.sqrt(2)], 
-                                     [0, 0, 1 / np.sqrt(2), -1 / np.sqrt(2)]])
+                                     [0, 0, 1/np.sqrt(2), 1/np.sqrt(2)], 
+                                     [0, 0, 1/np.sqrt(2), -1/np.sqrt(2)]])
     
 class CPhaseGate(Gate):
     """ General controlled phase shift gate. 
