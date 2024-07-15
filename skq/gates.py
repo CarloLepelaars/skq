@@ -15,11 +15,12 @@ SINGLE_QUBIT_CLIFFORD_MATRICES = SINGLE_QUBIT_PAULI_MATRICES + [
 ]
 
 
-class BaseGate(np.ndarray):
+class Gate(np.ndarray):
     """ Base class for quantum gates with NumPy. """
     def __new__(cls, input_array):
         arr = np.asarray(input_array, dtype=complex)
         obj = arr.view(cls)
+        assert obj.is_unitary(), "Gate must be unitary"
         return obj
 
     def is_unitary(self) -> bool:
@@ -84,14 +85,14 @@ class BaseGate(np.ndarray):
         # Check if the gate is in the list of single qubit Clifford gates
         return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
     
-class CustomGate(BaseGate):
+class CustomGate(Gate):
     """ Bespoke gate. Must be unitary to function as a quantum gate. """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         assert obj.is_unitary(), "Custom gate must be unitary"
         return obj
     
-class IdentityGate(BaseGate):
+class IdentityGate(Gate):
     """ 
     Identity gate: 
     [[1, 0]
@@ -100,19 +101,19 @@ class IdentityGate(BaseGate):
     def __new__(cls):
         return super().__new__(cls, np.eye(2))
     
-class XGate(BaseGate):
+class XGate(Gate):
     """ Pauli X (NOT) Gate. """
     def __new__(cls):
         return super().__new__(cls, [[0, 1], 
                                      [1, 0]])
     
-class YGate(BaseGate):
+class YGate(Gate):
     """ Pauli Y gate. """
     def __new__(cls):
         return super().__new__(cls, [[0, -1j], 
                                      [1j, 0]])
     
-class ZGate(BaseGate):
+class ZGate(Gate):
     """ Pauli Z gate. 
     Special case of a phase shift gate with phi = pi.
     """
@@ -120,7 +121,7 @@ class ZGate(BaseGate):
         return super().__new__(cls, [[1, 0], 
                                      [0, -1]])
     
-class HadamardGate(BaseGate):
+class HGate(Gate):
     """ 
     Hadamard gate. Used to create superposition. 
     |0> -> (|0> + |1>) / sqrt(2)
@@ -128,9 +129,9 @@ class HadamardGate(BaseGate):
     """
     def __new__(cls):
         return super().__new__(cls, [[1, 1], 
-                                     [1, -1]]) / np.sqrt(2)
+                                     [1, -1]] / np.sqrt(2))
     
-class PhaseGate(BaseGate):
+class PhaseGate(Gate):
     """ General phase shift gate. 
     Special cases of phase gates:
     - S gate: phi = pi / 2
@@ -155,7 +156,7 @@ class SGate(PhaseGate):
         phi = np.pi / 2
         return super().__new__(cls, phi=phi)
 
-class CXGate(BaseGate):
+class CXGate(Gate):
     """ 
     Controlled-X (CNOT) gate. 
     Used to entangle two qubits.
@@ -167,7 +168,7 @@ class CXGate(BaseGate):
                                      [0, 0, 0, 1], 
                                      [0, 0, 1, 0]])
 
-class CYGate(BaseGate):
+class CYGate(Gate):
     """ Controlled-Y gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -175,7 +176,7 @@ class CYGate(BaseGate):
                                      [0, 0, 0, -1j], 
                                      [0, 0, 1j, 0]])
     
-class CZGate(BaseGate):
+class CZGate(Gate):
     """ Controlled-Z gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -183,7 +184,7 @@ class CZGate(BaseGate):
                                      [0, 0, 1, 0], 
                                      [0, 0, 0, -1]])
     
-class CHGate(BaseGate):
+class CHGate(Gate):
     """ Controlled-Hadamard gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -191,7 +192,7 @@ class CHGate(BaseGate):
                                      [0, 0, 1 / np.sqrt(2), 1 / np.sqrt(2)], 
                                      [0, 0, 1 / np.sqrt(2), -1 / np.sqrt(2)]])
     
-class CPhaseGate(BaseGate):
+class CPhaseGate(Gate):
     """ General controlled phase shift gate. 
     Special cases of CPhase gates:
     """
@@ -215,7 +216,7 @@ class CTGate(CPhaseGate):
         phi = np.pi / 4
         return super().__new__(cls, phi=phi)
     
-class SWAPGate(BaseGate):
+class SWAPGate(Gate):
     """ Swap gate. Swaps the states of two qubits. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -223,7 +224,7 @@ class SWAPGate(BaseGate):
                                      [0, 1, 0, 0], 
                                      [0, 0, 0, 1]])
     
-class ToffoliGate(BaseGate):
+class ToffoliGate(Gate):
     """ Toffoli gate. A 3-qubit controlled-controlled-X (CCX) gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0, 0, 0, 0, 0], 
@@ -235,7 +236,7 @@ class ToffoliGate(BaseGate):
                                      [0, 0, 0, 0, 0, 0, 0, 1], 
                                      [0, 0, 0, 0, 0, 0, 1, 0]])
     
-class FredkinGate(BaseGate):
+class FredkinGate(Gate):
     """ Fredkin gate. A controlled-SWAP gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0, 0, 0, 0, 0], 
@@ -247,7 +248,7 @@ class FredkinGate(BaseGate):
                                      [0, 0, 0, 0, 0, 1, 0, 0], 
                                      [0, 0, 0, 0, 0, 0, 0, 1]])
     
-class RotXGate(BaseGate):
+class RotXGate(Gate):
     """ Generalized X rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -1j * np.sin(theta / 2)], 
@@ -255,7 +256,7 @@ class RotXGate(BaseGate):
         obj.theta = theta
         return obj
     
-class RotYGate(BaseGate):
+class RotYGate(Gate):
     """ Generalized Y rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -np.sin(theta / 2)], 
@@ -263,7 +264,7 @@ class RotYGate(BaseGate):
         obj.theta = theta
         return obj
     
-class RotZGate(BaseGate):
+class RotZGate(Gate):
     """ Generalized Z rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.exp(-1j * theta / 2), 0], 
@@ -271,7 +272,7 @@ class RotZGate(BaseGate):
         obj.theta = theta
         return obj
 
-class GeneralizedRotationGate(BaseGate):
+class GeneralizedRotationGate(Gate):
     """ Rotation around 3-axes using one single qubit gate. Also known as a U3 Gate. """
     def __new__(cls, theta_x, theta_y, theta_z):
         # Rotation matrices

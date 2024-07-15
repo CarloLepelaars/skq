@@ -3,7 +3,7 @@ import numpy as np
 from skq.gates import *
 
 def test_base_gate():
-    gate = BaseGate([[1, 0], [0, 1]])
+    gate = Gate([[1, 0], [0, 1]])
     assert gate.is_unitary()
     assert gate.is_hermitian()
     assert isinstance(gate.trace(), complex)
@@ -21,7 +21,7 @@ def test_single_qubit_pauli_gates():
 
 def test_single_qubit_clifford_gates():
     """ Single qubit Clifford gates"""
-    for gate in [IdentityGate, XGate, YGate, ZGate, HadamardGate, SGate]:
+    for gate in [IdentityGate, XGate, YGate, ZGate, HGate, SGate]:
         gate = gate()
         assert gate.is_unitary()
         assert gate.num_qubits() == 1
@@ -108,7 +108,7 @@ def test_custom_gate_unitary():
 def test_custom_gate_non_unitary():
     # Non-unitary gate
     non_unitary_matrix = np.array([[1, 2], [3, 4]], dtype=complex)
-    with pytest.raises(AssertionError, match="Custom gate must be unitary"):
+    with pytest.raises(AssertionError):
         CustomGate(non_unitary_matrix)
 
 def test_custom_gate_composition():
@@ -122,10 +122,11 @@ def test_custom_gate_composition():
 def test_hermitian_gates():
     hermitian_gates = [
         XGate(), YGate(), ZGate(), 
-        HadamardGate(), CXGate(), CZGate(), 
+        HGate(), CXGate(), CZGate(), 
         SWAPGate(), ToffoliGate(), FredkinGate()
     ]
     for gate in hermitian_gates:
+        assert gate.is_unitary(), f"{gate.__class__.__name__} should be unitary"
         assert gate.is_hermitian(), f"{gate.__class__.__name__} should be Hermitian"
 
 def test_non_hermitian_gates():
