@@ -1,7 +1,8 @@
 import cirq
+import importlib
 import numpy as np
 import scipy as sp
-from qiskit.circuit.library import UnitaryGate
+from qiskit.circuit.library import UnitaryGate as QiskitUnitaryGate
 
 # I, X, Y, Z Pauli matrices
 SINGLE_QUBIT_PAULI_MATRICES = [
@@ -16,6 +17,8 @@ SINGLE_QUBIT_CLIFFORD_MATRICES = SINGLE_QUBIT_PAULI_MATRICES + [
     np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2),  # H
     np.array([[1, 0], [0, 1j]], dtype=complex)  # S
 ]
+
+QISKIT_GATE_LIBRARY_IMPORT_PATH = "qiskit.circuit.library"
 
 
 class Gate(np.ndarray):
@@ -110,20 +113,26 @@ class Gate(np.ndarray):
         """
         return np.allclose(self, other, atol=1e-8)
 
-    def to_qiskit_gate(self, name=None) -> UnitaryGate:
-        """ Convert the gate to a Qiskit UnitaryGate object. """
-        return UnitaryGate(self, label=name)
+    def to_qiskit_gate(self) -> QiskitUnitaryGate:
+        """ Convert the gate to a Qiskit Gate object. """
+        gate_name = self.__class__.__name__
+        try:
+            qiskit_gate_class = getattr(importlib.import_module(QISKIT_GATE_LIBRARY_IMPORT_PATH), gate_name)
+            return qiskit_gate_class()
+        except AttributeError:
+            print(f"Could not initialize Qiskit gate for {gate_name}. Initializing QiskitUnitaryGate.")
+            return QiskitUnitaryGate(self, label=gate_name)
     
-    def to_cirq_gate(self, *qubits, name=None) -> cirq.MatrixGate:
-        if name is None:
-            name = self.__class__.__name__
+    def to_cirq_gate(self, *qubits) -> cirq.MatrixGate:
+        name = self.__class__.__name__
         return cirq.MatrixGate(self).on(*qubits).with_tags(name)
     
     def sqrt(self) -> 'CustomGate':
         """ Compute the square root of the gate. """
         sqrt_matrix = sp.linalg.sqrtm(self)
         return CustomGate(sqrt_matrix)
-    
+
+
 class CustomGate(Gate):
     """ Bespoke gate. Must be unitary to function as a quantum gate. """
     def __new__(cls, input_array):
@@ -131,7 +140,8 @@ class CustomGate(Gate):
         assert obj.is_unitary(), "Custom gate must be unitary"
         return obj
     
-class IdentityGate(Gate):
+
+class IGate(Gate):
     """ 
     Identity gate: 
     [[1, 0]
@@ -140,12 +150,14 @@ class IdentityGate(Gate):
     def __new__(cls):
         return super().__new__(cls, np.eye(2))
     
+
 class XGate(Gate):
     """ Pauli X (NOT) Gate. """
     def __new__(cls):
         return super().__new__(cls, [[0, 1], 
                                      [1, 0]])
     
+
 class YGate(Gate):
     """ Pauli Y gate. """
     def __new__(cls):
@@ -287,7 +299,7 @@ class FredkinGate(Gate):
                                      [0, 0, 0, 0, 0, 1, 0, 0], 
                                      [0, 0, 0, 0, 0, 0, 0, 1]])
     
-class RotXGate(Gate):
+class RXGate(Gate):
     """ Generalized X rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -1j * np.sin(theta / 2)], 
@@ -295,7 +307,7 @@ class RotXGate(Gate):
         obj.theta = theta
         return obj
     
-class RotYGate(Gate):
+class RYGate(Gate):
     """ Generalized Y rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -np.sin(theta / 2)], 
@@ -303,7 +315,7 @@ class RotYGate(Gate):
         obj.theta = theta
         return obj
     
-class RotZGate(Gate):
+class RZGate(Gate):
     """ Generalized Z rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.exp(-1j * theta / 2), 0], 
@@ -315,9 +327,9 @@ class GeneralizedRotationGate(Gate):
     """ Rotation around 3-axes using one single qubit gate. Also known as a U3 Gate. """
     def __new__(cls, theta_x, theta_y, theta_z):
         # Rotation matrices
-        Rx = RotXGate(theta_x)
-        Ry = RotYGate(theta_y)
-        Rz = RotZGate(theta_z)
+        Rx = RXGate(theta_x)
+        Ry = RYGate(theta_y)
+        Rz = RZGate(theta_z)
         combined_matrix = Rz @ Ry @ Rx
         
         obj = super().__new__(cls, combined_matrix)

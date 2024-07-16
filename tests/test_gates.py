@@ -20,7 +20,7 @@ def test_single_qubit_pauli_gates():
 
 def test_single_qubit_clifford_gates():
     """ Single qubit Clifford gates"""
-    for gate in [IdentityGate, XGate, YGate, ZGate, HGate, SGate]:
+    for gate in [IGate, XGate, YGate, ZGate, HGate, SGate]:
         gate = gate()
         assert gate.is_unitary()
         assert gate.num_qubits() == 1
@@ -37,7 +37,7 @@ def test_t_gate():
 def test_rotation_gates():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]
     for theta in thetas:
-        for GateClass in [RotXGate, RotYGate, RotZGate]:
+        for GateClass in [RXGate, RYGate, RZGate]:
             gate = GateClass(theta)
             assert gate.is_unitary(), f"{GateClass.__name__} with theta={theta} should be unitary"
             assert gate.num_qubits() == 1, f"{GateClass.__name__} should operate on 1 qubit"
@@ -47,7 +47,7 @@ def test_rotation_gates():
 
 def test_rotation_eigenvalues():
     theta = np.pi / 2
-    for GateClass in [RotXGate, RotYGate, RotZGate]:
+    for GateClass in [RXGate, RYGate, RZGate]:
         gate = GateClass(theta)
         eigenvalues = gate.eigenvalues()
         expected_eigenvalues = np.exp([1j * theta / 2, -1j * theta / 2])
@@ -86,14 +86,14 @@ def test_cphase_gate():
 
 def test_gate_commutation():
     theta = np.pi / 2
-    rx = RotXGate(theta)
-    rz = RotZGate(theta)
+    rx = RXGate(theta)
+    rz = RZGate(theta)
     assert not np.allclose(rx @ rz, rz @ rx), "Rx and Rz should not commute"
 
 def test_inverse_gate():
     theta = np.pi / 2
-    rx = RotXGate(theta)
-    rx_inv = RotXGate(-theta)
+    rx = RXGate(theta)
+    rx_inv = RXGate(-theta)
     identity = rx @ rx_inv
     assert np.allclose(identity, np.eye(identity.shape[0])), "Rx and its inverse should result in the identity matrix"
 
@@ -130,7 +130,7 @@ def test_hermitian_gates():
 def test_non_hermitian_gates():
     non_hermitian_gates = [
         TGate(), SGate(), CPhaseGate(np.pi / 4), 
-        RotXGate(np.pi / 2), RotYGate(np.pi / 2), RotZGate(np.pi / 2), 
+        RXGate(np.pi / 2), RYGate(np.pi / 2), RZGate(np.pi / 2), 
         GeneralizedRotationGate(np.pi / 2, np.pi / 2, np.pi / 2)
     ]
     for gate in non_hermitian_gates:
