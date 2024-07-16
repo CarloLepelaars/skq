@@ -145,3 +145,24 @@ def test_sqrt():
     np.testing.assert_array_almost_equal(sqrt_x @ sqrt_x, gate)
     expected_matrix = np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
     np.testing.assert_array_almost_equal(sqrt_x, expected_matrix)
+
+def test_kron():
+    hgate = HGate()
+    igate = IGate()
+    h_i = hgate.kron(igate)
+    np.testing.assert_array_almost_equal(h_i, 1 / np.sqrt(2) * np.array([[1, 0, 1, 0], 
+                                                                         [0, 1, 0, 1], 
+                                                                         [1, 0, -1, 0], 
+                                                                         [0, 1, 0, -1]])
+                                         )
+    np.testing.assert_array_almost_equal(h_i, np.kron(hgate, igate))
+    assert h_i.is_unitary()
+    assert h_i.num_qubits() == 2
+    assert h_i.is_multi_qubit()
+    assert isinstance(h_i, CustomGate)
+
+    # Test |00> state
+    state = np.array([1, 0, 0, 0])
+    transformed_state = h_i @ state
+    expected_state = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2), 0])
+    np.testing.assert_array_almost_equal(transformed_state, expected_state)

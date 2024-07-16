@@ -131,6 +131,11 @@ class Gate(np.ndarray):
         """ Compute the square root of the gate. """
         sqrt_matrix = sp.linalg.sqrtm(self)
         return CustomGate(sqrt_matrix)
+    
+    def kron(self, other) -> 'CustomGate':
+        """ Compute the Kronecker product of two gates. """
+        kron_matrix = np.kron(self, other)
+        return CustomGate(kron_matrix)
 
 
 class CustomGate(Gate):
