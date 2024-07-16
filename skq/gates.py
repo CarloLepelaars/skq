@@ -2,7 +2,8 @@ import cirq
 import importlib
 import numpy as np
 import scipy as sp
-from qiskit.circuit.library import UnitaryGate as QiskitUnitaryGate
+import qiskit
+import qiskit.circuit.library as qiskit_lib
 
 # I, X, Y, Z Pauli matrices
 SINGLE_QUBIT_PAULI_MATRICES = [
@@ -113,7 +114,7 @@ class Gate(np.ndarray):
         """
         return np.allclose(self, other, atol=1e-8)
 
-    def to_qiskit_gate(self) -> QiskitUnitaryGate:
+    def to_qiskit(self) -> qiskit_lib.UnitaryGate:
         """ Convert the gate to a Qiskit Gate object. """
         gate_name = self.__class__.__name__
         try:
@@ -121,9 +122,16 @@ class Gate(np.ndarray):
             return qiskit_gate_class()
         except AttributeError:
             print(f"Could not initialize Qiskit gate for {gate_name}. Initializing QiskitUnitaryGate.")
-            return QiskitUnitaryGate(self, label=gate_name)
+            return qiskit_lib.UnitaryGate(self, label=gate_name)
+        
+    @staticmethod 
+    def from_qiskit(qiskit_gate: qiskit.circuit.gate.Gate) -> 'CustomGate':
+        """ Convert a Qiskit Gate object to a custom gate. """
+        assert isinstance(qiskit_gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
+        qiskit_matrix = np.array(qiskit_gate)
+        return CustomGate(qiskit_matrix)
     
-    def to_cirq_gate(self, *qubits) -> cirq.MatrixGate:
+    def to_cirq(self, *qubits) -> cirq.MatrixGate:
         name = self.__class__.__name__
         return cirq.MatrixGate(self).on(*qubits).with_tags(name)
     

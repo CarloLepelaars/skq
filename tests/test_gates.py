@@ -1,4 +1,5 @@
 import pytest
+import qiskit
 import numpy as np
 from skq.gates import *
 
@@ -166,3 +167,19 @@ def test_kron():
     transformed_state = h_i @ state
     expected_state = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2), 0])
     np.testing.assert_array_almost_equal(transformed_state, expected_state)
+
+def test_to_qiskit():
+    gate = XGate()
+    qiskit_gate = gate.to_qiskit()
+    assert isinstance(qiskit_gate, qiskit.circuit.gate.Gate)
+
+def test_from_qiskit():
+    qiskit_gate = qiskit.circuit.library.XGate()
+    gate = Gate.from_qiskit(qiskit_gate=qiskit_gate)
+    assert isinstance(gate, Gate)
+    np.testing.assert_array_equal(gate, qiskit_gate.to_matrix())
+    assert gate.is_unitary()
+    assert gate.num_qubits() == 1
+    assert gate.is_single_qubit_pauli()
+    assert gate.is_single_qubit_clifford()    
+    
