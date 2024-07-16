@@ -7,7 +7,6 @@ def test_base_gate():
     assert gate.is_unitary()
     assert gate.is_hermitian()
     assert isinstance(gate.trace(), complex)
-    assert isinstance(gate.determinant(), complex)
     np.testing.assert_array_equal(gate.eigenvalues(), [1, 1])
     np.testing.assert_array_equal(gate.eigenvectors(), [[1, 0], [0, 1]])
 
@@ -103,7 +102,6 @@ def test_custom_gate_unitary():
     s_matrix = np.array([[1, 0], [0, 1j]], dtype=complex)
     s_gate = CustomGate(s_matrix)
     assert s_gate.is_unitary(), "S-gate should be unitary"
-    assert s_gate.determinant() == pytest.approx(1j), "S-gate determinant should be 1j"
 
 def test_custom_gate_non_unitary():
     # Non-unitary gate
@@ -137,3 +135,13 @@ def test_non_hermitian_gates():
     ]
     for gate in non_hermitian_gates:
         assert not gate.is_hermitian(), f"{gate.__class__.__name__} should not be Hermitian"
+
+def test_sqrt():
+    gate = XGate()
+    # Construct Sqrt(X) gate
+    sqrt_x = gate.sqrt()
+    assert sqrt_x.is_unitary()
+    assert isinstance(sqrt_x, Gate)
+    np.testing.assert_array_almost_equal(sqrt_x @ sqrt_x, gate)
+    expected_matrix = np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
+    np.testing.assert_array_almost_equal(sqrt_x, expected_matrix)

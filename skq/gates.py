@@ -1,5 +1,6 @@
 import cirq
 import numpy as np
+import scipy as sp
 from qiskit.circuit.library import UnitaryGate
 
 # I, X, Y, Z Pauli matrices
@@ -49,6 +50,10 @@ class Gate(np.ndarray):
     def is_hermitian(self) -> bool:
         """ Check if the gate is Hermitian: U = U^dagger """
         return np.allclose(self, self.conjugate_transpose())
+    
+    def is_identity(self) -> bool:
+        """ Check if the gate is the identity matrix. """
+        return np.allclose(self, np.eye(self.shape[0]))
 
     def eigenvalues(self) -> np.ndarray:
         """ Return the eigenvalues of the gate """
@@ -62,10 +67,6 @@ class Gate(np.ndarray):
     def matrix_trace(self) -> complex:
         """ Compute the trace of the gate. The trace is the sum of the diagonal elements. """
         return np.trace(self)
-
-    def determinant(self) -> complex:
-        """ Compute the determinant of the gate. """
-        return np.linalg.det(self)
 
     def conjugate_transpose(self) -> np.ndarray:
         """
@@ -103,14 +104,25 @@ class Gate(np.ndarray):
         # Check if the gate is in the list of single qubit Clifford gates
         return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
     
-    def to_qiskit_gate(self, name=None):
+    def is_equal(self, other) -> bool:
+        """ Check if the gate is effectively equal to another gate. 
+        NOTE: Do not overwrite __eq__ method to avoid issues with NumPy array comparison. 
+        """
+        return np.allclose(self, other, atol=1e-8)
+
+    def to_qiskit_gate(self, name=None) -> UnitaryGate:
         """ Convert the gate to a Qiskit UnitaryGate object. """
         return UnitaryGate(self, label=name)
     
-    def to_cirq_gate(self, *qubits, name=None):
+    def to_cirq_gate(self, *qubits, name=None) -> cirq.MatrixGate:
         if name is None:
             name = self.__class__.__name__
         return cirq.MatrixGate(self).on(*qubits).with_tags(name)
+    
+    def sqrt(self) -> 'CustomGate':
+        """ Compute the square root of the gate. """
+        sqrt_matrix = sp.linalg.sqrtm(self)
+        return CustomGate(sqrt_matrix)
     
 class CustomGate(Gate):
     """ Bespoke gate. Must be unitary to function as a quantum gate. """
