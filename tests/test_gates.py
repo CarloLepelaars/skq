@@ -3,6 +3,7 @@ import qiskit
 import numpy as np
 from skq.gates import *
 
+
 def test_base_gate():
     gate = Gate([[1, 0], [0, 1]])
     assert gate.is_unitary()
@@ -21,8 +22,8 @@ def test_single_qubit_pauli_gates():
 
 def test_single_qubit_clifford_gates():
     """ Single qubit Clifford gates"""
-    for gate in [IGate, XGate, YGate, ZGate, HGate, SGate]:
-        gate = gate()
+    for GateClass in [IGate, XGate, YGate, ZGate, HGate, SGate]:
+        gate = GateClass()
         assert gate.is_unitary()
         assert gate.num_qubits() == 1
         assert not gate.is_multi_qubit()
@@ -33,7 +34,7 @@ def test_t_gate():
     assert t_gate.is_unitary()
     assert t_gate.num_qubits() == 1
     assert not t_gate.is_multi_qubit()
-    assert hasattr(t_gate, "phi")
+    assert hasattr(t_gate, "theta")
 
 def test_rotation_gates():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]
@@ -54,23 +55,23 @@ def test_rotation_eigenvalues():
         expected_eigenvalues = np.exp([1j * theta / 2, -1j * theta / 2])
         assert np.allclose(np.sort(np.abs(eigenvalues)), np.sort(np.abs(expected_eigenvalues))), f"{GateClass.__name__} eigenvalues should match expected values"
 
-def test_generalized_rotation_gate():
+def test_u3gate():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]
     for theta_x in thetas:
         for theta_y in thetas:
             for theta_z in thetas:
-                gate = GeneralizedRotationGate(theta_x, theta_y, theta_z)
-                assert gate.is_unitary(), f"GeneralizedRotationGate with thetas=({theta_x}, {theta_y}, {theta_z}) should be unitary"
-                assert gate.num_qubits() == 1, f"GeneralizedRotationGate should operate on 1 qubit"
-                assert not gate.is_multi_qubit(), f"GeneralizedRotationGate should not be a multi-qubit gate"
-                assert gate.frobenius_norm() == pytest.approx(np.sqrt(2)), "GeneralizedRotationGate Frobenius norm should be sqrt(2)"
+                gate = U3Gate(theta_x, theta_y, theta_z)
+                assert gate.is_unitary(), f"U3Gate with thetas=({theta_x}, {theta_y}, {theta_z}) should be unitary"
+                assert gate.num_qubits() == 1, f"U3Gate should operate on 1 qubit"
+                assert not gate.is_multi_qubit(), f"U3Gate should not be a multi-qubit gate"
+                assert gate.frobenius_norm() == pytest.approx(np.sqrt(2)), "U3Gate Frobenius norm should be sqrt(2)"
                 eigenvalues, eigenvectors = np.linalg.eig(gate)
                 assert np.allclose(gate @ eigenvectors[:, 0], eigenvalues[0] * eigenvectors[:, 0]), "Eigenvector calculation is incorrect"
                 assert np.allclose(gate @ eigenvectors[:, 1], eigenvalues[1] * eigenvectors[:, 1]), "Eigenvector calculation is incorrect"
 
 def test_standard_multi_qubit_gates():
-    for gate in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, ToffoliGate, FredkinGate]:
-        gate = gate()
+    for GateClass in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate]:
+        gate = GateClass()
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2
         assert gate.is_multi_qubit()
@@ -122,7 +123,7 @@ def test_hermitian_gates():
     hermitian_gates = [
         XGate(), YGate(), ZGate(), 
         HGate(), CXGate(), CZGate(), 
-        SWAPGate(), ToffoliGate(), FredkinGate()
+        SWAPGate(), CCXGate(), CSwapGate()
     ]
     for gate in hermitian_gates:
         assert gate.is_unitary(), f"{gate.__class__.__name__} should be unitary"
@@ -132,7 +133,7 @@ def test_non_hermitian_gates():
     non_hermitian_gates = [
         TGate(), SGate(), CPhaseGate(np.pi / 4), 
         RXGate(np.pi / 2), RYGate(np.pi / 2), RZGate(np.pi / 2), 
-        GeneralizedRotationGate(np.pi / 2, np.pi / 2, np.pi / 2)
+        U3Gate(np.pi / 2, np.pi / 2, np.pi / 2)
     ]
     for gate in non_hermitian_gates:
         assert not gate.is_hermitian(), f"{gate.__class__.__name__} should not be Hermitian"

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from skq.gates import HGate, TGate, CXGate, CHGate, ToffoliGate, FredkinGate
+from skq.gates import HGate, TGate, CXGate, CHGate, CCXGate, CSwapGate
 from skq.qubit_transformers import SingleQubitTransformer, MultiQubitTransformer
 
 
@@ -117,7 +117,7 @@ def test_multi_qubit_transformer():
 
 def test_multi_qubit_transformer_toffoli_fredkin():
     # Test Toffoli Gate
-    gate = ToffoliGate()
+    gate = CCXGate()
     transformer = MultiQubitTransformer(gate)
 
     # Three qubit state |000⟩ which should not change after applying Toffoli gate
@@ -142,7 +142,7 @@ def test_multi_qubit_transformer_toffoli_fredkin():
     np.testing.assert_almost_equal(transformed_arr, expected_output)
 
     # Test Fredkin Gate
-    gate = FredkinGate()
+    gate = CSwapGate()
     transformer = MultiQubitTransformer(gate)
 
     # Three qubit state |000⟩ which should not change after applying Fredkin gate
