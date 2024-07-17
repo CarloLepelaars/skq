@@ -40,3 +40,4 @@ class MeasurementTransformer(BaseEstimator, TransformerMixin):
             [list(np.binary_repr(index, width=num_qubits)) for index in sampled_indices], dtype=int
         )        
         return measurements
+    
