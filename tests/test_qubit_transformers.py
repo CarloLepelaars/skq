@@ -8,7 +8,7 @@ from skq.qubit_transformers import SingleQubitTransformer, MultiQubitTransformer
 def test_single_qubit_transformer():
     # Hadamard gate
     gate = HGate()
-    transformer = SingleQubitTransformer(gate)
+    transformer = SingleQubitTransformer(gate, qubits=0)
     # Single input
     single_test_arr = np.array([[1, 0]], dtype=complex)
     transformed_arr = transformer.fit_transform(single_test_arr)
@@ -27,7 +27,7 @@ def test_single_qubit_transformer():
 
     # Phase gate (T Gate)
     gate = TGate()
-    transformer = SingleQubitTransformer(gate)
+    transformer = SingleQubitTransformer(gate, qubits=0)
 
     # Single input
     single_test_arr = np.array([[1, 0]], dtype=complex)
@@ -45,11 +45,9 @@ def test_single_qubit_transformer():
     assert transformed_arr.shape == expected_output.shape
     np.testing.assert_almost_equal(transformed_arr, expected_output)
 
-
-
 def test_single_qubit_transformer_invalid_input():
     gate = HGate()
-    transformer = SingleQubitTransformer(gate)
+    transformer = SingleQubitTransformer(gate, qubits=0)
 
     # Invalid 1D shape input
     test_arr = np.array([1, 0], dtype=complex)
@@ -74,7 +72,7 @@ def test_single_qubit_transformer_invalid_input():
 def test_multi_qubit_transformer():
     # Test Controlled NOT
     gate = CXGate()
-    transformer = MultiQubitTransformer(gate)
+    transformer = MultiQubitTransformer(gate, qubits=[0, 1])
 
     # Two qubit state |01⟩ which should not change after applying CX gate
     single_test_arr = np.array([[0, 1, 0, 0]], dtype=complex)
@@ -92,7 +90,7 @@ def test_multi_qubit_transformer():
 
     # Test Controlled Hadamard
     gate = CHGate()
-    transformer = MultiQubitTransformer(gate)
+    transformer = MultiQubitTransformer(gate, qubits=[0, 1])
 
     # Two qubit state |01⟩ which should not change after applying CH gate
     single_test_arr = np.array([[0, 1, 0, 0]], dtype=complex)
@@ -118,7 +116,7 @@ def test_multi_qubit_transformer():
 def test_multi_qubit_transformer_toffoli_fredkin():
     # Test Toffoli Gate
     gate = CCXGate()
-    transformer = MultiQubitTransformer(gate)
+    transformer = MultiQubitTransformer(gate, qubits=[0, 1, 2])
 
     # Three qubit state |000⟩ which should not change after applying Toffoli gate
     single_test_arr = np.array([[1, 0, 0, 0, 0, 0, 0, 0]], dtype=complex)
@@ -143,7 +141,7 @@ def test_multi_qubit_transformer_toffoli_fredkin():
 
     # Test Fredkin Gate
     gate = CSwapGate()
-    transformer = MultiQubitTransformer(gate)
+    transformer = MultiQubitTransformer(gate, qubits=[0, 1, 2])
 
     # Three qubit state |000⟩ which should not change after applying Fredkin gate
     single_test_arr = np.array([[1, 0, 0, 0, 0, 0, 0, 0]], dtype=complex)
@@ -161,7 +159,7 @@ def test_multi_qubit_transformer_toffoli_fredkin():
 
 def test_multi_qubit_transformer_invalid_input():
     gate = CXGate()
-    transformer = MultiQubitTransformer(gate)
+    transformer = MultiQubitTransformer(gate, qubits=[0, 1])
 
     # Invalid 1D shape input
     test_arr = np.array([1, 0], dtype=complex)
@@ -182,3 +180,7 @@ def test_multi_qubit_transformer_invalid_input():
     test_arr = np.array([[1, 0, 1, 0], [0, 1, 0, 1]], dtype=complex)
     with pytest.raises(ValueError):
         transformer.fit_transform(test_arr)
+
+    # Invalid number of qubits
+    with pytest.raises(AssertionError):
+        transformer = MultiQubitTransformer(gate, qubits=[0])

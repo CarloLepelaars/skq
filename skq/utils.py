@@ -14,4 +14,9 @@ def _check_quantum_state_array(X):
     if not normalized:
         not_normalized = X[np.linalg.norm(X, axis=-1) != 1]
         raise ValueError(f"Input state vectors must be normalized. Got non-normalized vectors: '{not_normalized}'")
+    
+    # Check if input is a valid state vector
+    _, n_states = X.shape
+    num_qubits = int(np.log2(n_states))
+    assert n_states == 2**num_qubits, f"Expected state vector length {2**num_qubits}, got {n_states}."
     return True
