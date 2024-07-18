@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from skq.gates import Gate
+from skq.gates.single_qubit_gates import Gate
 from skq.utils import _check_quantum_state_array
 
 
