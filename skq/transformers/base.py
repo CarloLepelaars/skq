@@ -15,7 +15,7 @@ class BaseQubitTransformer(BaseEstimator, TransformerMixin):
         assert isinstance(gate, Gate), f"Gate must be a valid instance of Gate. Got '{type(gate)}'. For custom gates, inherit from the 'skq.gates.Gate' class or use 'skq.gates.CustomGate'."
         self.gate = gate
         assert isinstance(qubits, list), f"Qubits must be a list of integers. Got '{type(qubits)}'."
-        assert all(isinstance(q, int) for q in qubits), f"Qubits must be a list of integers. Got '{qubits}'."
+        assert all(isinstance(q, int) and q >= 0 for q in qubits), f"Qubits must be a list of non-negative integers. Got '{qubits}'."
         self.qubits = qubits
 
     def fit(self, X, y=None):
