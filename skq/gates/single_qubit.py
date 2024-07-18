@@ -1,7 +1,7 @@
 import qiskit
 import numpy as np
 
-from skq.gates.base_gates import Gate
+from skq.gates.base import Gate
 
 
 class IGate(Gate):

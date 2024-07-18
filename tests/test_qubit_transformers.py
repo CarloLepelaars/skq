@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 
 from skq.gates import HGate, TGate, CXGate, CHGate, CCXGate, CSwapGate
-from skq.qubit_transformers import SingleQubitTransformer, MultiQubitTransformer
+from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 
 
 def test_single_qubit_transformer():
