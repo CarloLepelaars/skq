@@ -11,9 +11,11 @@ class BaseQubitTransformer(BaseEstimator, TransformerMixin):
     :param gate: A valid skq quantum Gate object
     :param qubits: List of qubit indices to apply the gate to.
     """
-    def __init__(self, gate: Gate, *, qubits: int | list[int]):
+    def __init__(self, gate: Gate, *, qubits: list[int]):
         assert isinstance(gate, Gate), f"Gate must be a valid instance of Gate. Got '{type(gate)}'. For custom gates, inherit from the 'skq.gates.Gate' class or use 'skq.gates.CustomGate'."
         self.gate = gate
+        assert isinstance(qubits, list), f"Qubits must be a list of integers. Got '{type(qubits)}'."
+        assert all(isinstance(q, int) for q in qubits), f"Qubits must be a list of integers. Got '{qubits}'."
         self.qubits = qubits
 
     def fit(self, X, y=None):

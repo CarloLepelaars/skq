@@ -6,7 +6,7 @@ from skq.transformers import HTransformer, TTransformer, CXTransformer, CHTransf
 
 def test_single_qubit_transformer():
     # Hadamard gate
-    transformer = HTransformer(qubits=0)
+    transformer = HTransformer(qubits=[0])
     # Single input
     single_test_arr = np.array([[1, 0]], dtype=complex)
     transformed_arr = transformer.fit_transform(single_test_arr)
@@ -24,7 +24,7 @@ def test_single_qubit_transformer():
     np.testing.assert_almost_equal(transformed_arr, expected_output)
 
     # Phase gate (T Gate)
-    transformer = TTransformer(qubits=0)
+    transformer = TTransformer(qubits=[0])
 
     # Single input
     single_test_arr = np.array([[1, 0]], dtype=complex)
@@ -43,7 +43,7 @@ def test_single_qubit_transformer():
     np.testing.assert_almost_equal(transformed_arr, expected_output)
 
 def test_single_qubit_transformer_invalid_input():
-    transformer = HTransformer(qubits=0)
+    transformer = HTransformer(qubits=[0])
 
     # Invalid 1D shape input
     test_arr = np.array([1, 0], dtype=complex)
