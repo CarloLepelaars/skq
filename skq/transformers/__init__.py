@@ -1,2 +1,2 @@
-from skq.transformers.single_qubit import SingleQubitTransformer
-from skq.transformers.multi_qubit import MultiQubitTransformer
+from skq.transformers.single_qubit import *
+from skq.transformers.multi_qubit import *
