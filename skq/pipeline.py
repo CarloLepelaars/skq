@@ -1,7 +1,9 @@
 import numpy as np
-from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
+from sklearn.pipeline import _name_estimators, FeatureUnion
+
 from skq.gates import Gate, IGate
-from sklearn.pipeline import _name_estimators, Pipeline, FeatureUnion
+from skq.utils import _check_quantum_state_array
+from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 
 
 class QuantumFeatureUnion(FeatureUnion):
@@ -9,8 +11,21 @@ class QuantumFeatureUnion(FeatureUnion):
         self.n_qubits = n_qubits
         super().__init__(transformer_list, **kwargs)
 
+    def fit(self, X, y=None):
+        _check_quantum_state_array(X)
+        self._validate_transformers()
+        return self
+
     def transform(self, X) -> np.array:
+        _check_quantum_state_array(X)
+        self._validate_transformers()
         combined_gate = np.eye(2**self.n_qubits, dtype=complex)
+        for _, transformer in self.transformer_list:
+            full_gate = self._construct_full_gate(transformer)
+            combined_gate = np.dot(combined_gate, full_gate)
+        return np.array([combined_gate @ x for x in X])
+    
+    def _validate_transformers(self):
         used_qubits = set()
         for _, transformer in self.transformer_list:
             if not hasattr(transformer, 'qubits'):
@@ -21,9 +36,6 @@ class QuantumFeatureUnion(FeatureUnion):
                     raise ValueError(f"Qubit {qubit} is used by multiple transformers.")
                 used_qubits.add(qubit)
 
-            full_gate = self._construct_full_gate(transformer)
-            combined_gate = np.dot(combined_gate, full_gate)
-        return np.array([combined_gate @ x for x in X])
 
     def _construct_full_gate(self, transformer):
         if isinstance(transformer, SingleQubitTransformer):

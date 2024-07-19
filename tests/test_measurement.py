@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from skq.measurement import MeasurementTransformer
+from skq.transformers.measurement import MeasurementTransformer
 
 def test_measurement_transformer_single_measurement():
     # Create a MeasurementTransformer instance with 1 measurement
