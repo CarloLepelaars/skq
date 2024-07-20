@@ -173,8 +173,14 @@ class Gate(np.ndarray):
         kron_matrix = np.kron(self, other)
         return CustomGate(kron_matrix)
     
+    def kernel_density(self, other):
+        """ Calculate the quantum kernel using density matrices. """
+        assert isinstance(other, Gate), "Other object must be an instance of Gate."
+        assert self.num_qubits() == other.num_qubits(), "Gates must have the same number of qubits for the kernel density."
+        return np.trace(self @ other)
+
     def hilbert_schmidt_inner_product(self, other):
-        """Calculate the Hilbert-Schmidt inner product with another gate."""
+        """ Calculate the Hilbert-Schmidt inner product with another gate. """
         assert isinstance(other, Gate), "Other object must be an instance of Gate."
         assert self.num_qubits() == other.num_qubits(), "Gates must have the same number of qubits for the Hilbert-Schmidt inner product."
         return np.trace(self.conjugate_transpose() @ other)

@@ -187,6 +187,27 @@ def test_kron():
     expected_state = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2), 0])
     np.testing.assert_array_almost_equal(transformed_state, expected_state)
 
+def test_kernel_density():
+    X = XGate()
+    Z = ZGate() 
+
+    # Orthogonal gates should have a zero kernel density
+    xz_kernel_density = X.kernel_density(Z)
+    assert isinstance(xz_kernel_density, complex)
+    assert xz_kernel_density == 0j
+
+    # I with I should have kernel density of 2
+    I = IGate() 
+    ii_kernel_density = I.kernel_density(I)
+    assert isinstance(ii_kernel_density, complex)
+    assert ii_kernel_density == 2+0j
+
+    # T with Z should have a kernel density of 0.2929-0.7071j
+    T = TGate()
+    tz_kernel_density = T.kernel_density(Z)
+    assert isinstance(tz_kernel_density, complex)
+    assert np.isclose(tz_kernel_density, 0.2928932188134524-0.7071067811865475j)
+
 def test_hilbert_schmidt_inner_product():
     # Orthogonal gates should have a zero inner product
     X = XGate()
