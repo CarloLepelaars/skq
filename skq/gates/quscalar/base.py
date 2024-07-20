@@ -34,10 +34,12 @@ class QuScalarGate(BaseGate):
         return QuScalarGate(inverse_phase)
     
     def combine(self, other: "QuScalarGate") -> "QuScalarGate":
+        assert isinstance(other, QuScalarGate), "Can only combine with another QuScalarGate."
         combined_phase = self.phase + other.phase
         return QuScalarGate(combined_phase)
 
     def multiply(self, other: "QuScalarGate") -> "QuScalarGate":
+        assert isinstance(other, QuScalarGate), "Can only multiply with another QuScalarGate."
         multiplied_phase = np.angle(self.scalar * other.scalar)
         return QuScalarGate(multiplied_phase)
     
