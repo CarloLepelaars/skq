@@ -10,13 +10,45 @@ SINGLE_QUBIT_PAULI_MATRICES = [
     np.array([[0, -1j], [1j, 0]], dtype=complex),  # Y
     np.array([[1, 0], [0, -1]], dtype=complex)  # Z
 ]
+# Any two-qubit Pauli matrix can be expressed as a Kronecker product of two single-qubit Pauli matrices
+TWO_QUBIT_PAULI_MATRICES = [
+    np.kron(pauli1, pauli2) for pauli1 in SINGLE_QUBIT_PAULI_MATRICES for pauli2 in SINGLE_QUBIT_PAULI_MATRICES
+]
 
 # X, Y, Z, H and S gates are Clifford gates
 SINGLE_QUBIT_CLIFFORD_MATRICES = SINGLE_QUBIT_PAULI_MATRICES + [
     np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2),  # H
     np.array([[1, 0], [0, 1j]], dtype=complex)  # S
 ]
-
+# Two qubit Clifford gates can be expressed as a Kronecker product of two single-qubit Clifford gates + CNOT and SWAP
+TWO_QUBIT_CLIFFORD_MATRICES = [
+    np.kron(clifford1, clifford2) for clifford1 in SINGLE_QUBIT_CLIFFORD_MATRICES for clifford2 in SINGLE_QUBIT_CLIFFORD_MATRICES
+] + [
+    np.array([[1, 0, 0, 0], 
+              [0, 1, 0, 0], 
+              [0, 0, 0, 1], 
+              [0, 0, 1, 0]], dtype=complex),  # CX (CNOT)
+    np.array([[1, 0, 0, 0],
+              [0, 1, 0, 0],
+              [0, 0, 0, -1j],
+              [0, 0, 1j, 0]], dtype=complex),  # CY
+    np.array([[1, 0, 0, 0],
+              [0, 1, 0, 0],
+              [0, 0, 1, 0],
+              [0, 0, 0, -1]], dtype=complex),  # CZ
+    np.array([[1, 0, 0, 0],
+              [0, 0, 1, 0],
+              [0, 1, 0, 0],
+              [0, 0, 0, 1]], dtype=complex),  # SWAP
+    np.array([[1, 0, 0, 0],
+              [0, 1, 0, 0],
+              [0, 0, 1/np.sqrt(2), 1/np.sqrt(2)],
+              [0, 0, 1/np.sqrt(2), -1/np.sqrt(2)]], dtype=complex), # CH
+    np.array([[1, 0, 0, 0],
+              [0, 1, 0, 0],
+              [0, 0, 1, 0],
+              [0, 0, 0, 1j]], dtype=complex), # CS
+]
 
 class Gate(np.ndarray):
     """ Base class for quantum gates with NumPy. """
@@ -88,21 +120,27 @@ class Gate(np.ndarray):
         """ Check if the gate involves multiple qubits. """
         return self.num_qubits() > 1
     
-    def is_single_qubit_pauli(self) -> bool:
-        """ Check if the gate is a single-qubit Pauli gate. """
-        # Multi qubit gates are not single qubit Pauli gates
-        if self.is_multi_qubit():
-            return False
-        # Check if the gate is in the list of single qubit Pauli gates
-        return any(np.allclose(self, pauli) for pauli in SINGLE_QUBIT_PAULI_MATRICES)
-    
-    def is_single_qubit_clifford(self) -> bool:
-        """ Check if the gate is a single-qubit Clifford gate. """
-        # Multi qubit gates are not single qubit Clifford gates
-        if self.is_multi_qubit():
-            return False
-        # Check if the gate is in the list of single qubit Clifford gates
-        return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
+    def is_pauli(self) -> bool:
+        """ Check if the gate is a Pauli gate. """
+        # I, X, Y, Z Pauli matrices
+        if self.num_qubits() == 1:
+            return any(np.allclose(self, pauli) for pauli in SINGLE_QUBIT_PAULI_MATRICES)
+        # Combinations of single-qubit Pauli matrices
+        elif self.num_qubits() == 2:
+            return any(np.allclose(self, pauli) for pauli in TWO_QUBIT_PAULI_MATRICES)
+        else:
+            return NotImplementedError("Pauli check not supported for gates with more than 2 qubits")
+        
+    def is_clifford(self) -> bool:
+        """ Check if the gate is a Clifford gate. """
+        # X, Y, Z, H and S
+        if self.num_qubits() == 1:
+            return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
+        # Combinations of single-qubit Clifford gates + CNOT and SWAP
+        elif self.num_qubits() == 2:
+            return any(np.allclose(self, clifford) for clifford in TWO_QUBIT_CLIFFORD_MATRICES)
+        else:
+            return NotImplementedError("Clifford check not supported for gates with more than 2 qubits")
     
     def is_equal(self, other) -> bool:
         """ Check if the gate is effectively equal to another gate. 

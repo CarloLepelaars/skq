@@ -17,8 +17,8 @@ def test_single_qubit_pauli_gates():
     for GateClass in [XGate, YGate, ZGate]:
         gate = GateClass()
         assert gate.is_unitary(), f"{GateClass.__name__} should be unitary"
-        assert gate.is_single_qubit_pauli(), f"{GateClass.__name__} should be a single-qubit Pauli gate"
-        assert gate.is_single_qubit_clifford(), f"{GateClass.__name__} should be a single-qubit Clifford gate"
+        assert gate.is_pauli(), f"{GateClass.__name__} should be a single-qubit Pauli gate"
+        assert gate.is_clifford(), f"{GateClass.__name__} should be a single-qubit Clifford gate"
 
 def test_single_qubit_clifford_gates():
     """ Single qubit Clifford gates"""
@@ -27,13 +27,15 @@ def test_single_qubit_clifford_gates():
         assert gate.is_unitary()
         assert gate.num_qubits() == 1
         assert not gate.is_multi_qubit()
-        assert gate.is_single_qubit_clifford()
+        assert gate.is_clifford()
 
 def test_t_gate():
     t_gate = TGate()
     assert t_gate.is_unitary()
     assert t_gate.num_qubits() == 1
     assert not t_gate.is_multi_qubit()
+    assert not t_gate.is_pauli()
+    assert not t_gate.is_clifford()
     assert hasattr(t_gate, "theta")
 
 def test_rotation_gates():
@@ -75,6 +77,19 @@ def test_standard_multi_qubit_gates():
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2
         assert gate.is_multi_qubit()
+        if gate.num_qubits() == 2 and not isinstance(gate, CTGate):
+            assert gate.is_clifford(), f"{GateClass.__name__} should be a two-qubit Clifford gate"
+
+def test_multi_pauli_gates():
+    XX, YY, ZZ, II = XGate().kron(XGate()), YGate().kron(YGate()), ZGate().kron(ZGate()), IGate().kron(IGate())
+    IX, IY, IZ = IGate().kron(XGate()), IGate().kron(YGate()), IGate().kron(ZGate())
+    XI, XY, XZ = XGate().kron(IGate()), XGate().kron(YGate()), XGate().kron(ZGate())
+    YX, YI, YZ = YGate().kron(XGate()), YGate().kron(IGate()), YGate().kron(ZGate())
+    ZX, ZY, ZI = ZGate().kron(XGate()), ZGate().kron(YGate()), ZGate().kron(IGate())
+    for gate in [XX, YY, ZZ, II, IX, IY, IZ, XI, XY, XZ, YX, YI, YZ, ZX, ZY, ZI]:
+        assert gate.is_unitary(), f"{gate.__class__.__name__} should be unitary"
+        assert gate.is_pauli(), f"{gate.__class__.__name__} should be a multi-qubit Pauli gate"
+        assert gate.is_clifford(), f"{gate.__class__.__name__} should be a multi-qubit Clifford gate"
 
 def test_cphase_gate():
     theta = np.pi / 2
@@ -104,6 +119,7 @@ def test_custom_gate_unitary():
     s_matrix = np.array([[1, 0], [0, 1j]], dtype=complex)
     s_gate = CustomGate(s_matrix)
     assert s_gate.is_unitary(), "S-gate should be unitary"
+    assert s_gate.is_clifford(), "S-gate should be a single-qubit Clifford gate"
 
 def test_custom_gate_non_unitary():
     # Non-unitary gate
@@ -143,6 +159,8 @@ def test_sqrt():
     # Construct Sqrt(X) gate
     sqrt_x = gate.sqrt()
     assert sqrt_x.is_unitary()
+    assert not sqrt_x.is_pauli()
+    assert not sqrt_x.is_clifford()
     assert isinstance(sqrt_x, Gate)
     np.testing.assert_array_almost_equal(sqrt_x @ sqrt_x, gate)
     expected_matrix = np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
@@ -181,6 +199,6 @@ def test_from_qiskit():
     np.testing.assert_array_equal(gate, qiskit_gate.to_matrix())
     assert gate.is_unitary()
     assert gate.num_qubits() == 1
-    assert gate.is_single_qubit_pauli()
-    assert gate.is_single_qubit_clifford()    
+    assert gate.is_pauli()
+    assert gate.is_clifford()    
     
