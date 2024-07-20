@@ -91,7 +91,7 @@ class Gate(np.ndarray):
     def is_single_qubit_pauli(self) -> bool:
         """ Check if the gate is a single-qubit Pauli gate. """
         # Multi qubit gates are not single qubit Pauli gates
-        if self.num_qubits() != 1:
+        if self.is_multi_qubit():
             return False
         # Check if the gate is in the list of single qubit Pauli gates
         return any(np.allclose(self, pauli) for pauli in SINGLE_QUBIT_PAULI_MATRICES)
@@ -99,7 +99,7 @@ class Gate(np.ndarray):
     def is_single_qubit_clifford(self) -> bool:
         """ Check if the gate is a single-qubit Clifford gate. """
         # Multi qubit gates are not single qubit Clifford gates
-        if self.num_qubits() != 1:
+        if self.is_multi_qubit():
             return False
         # Check if the gate is in the list of single qubit Clifford gates
         return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
