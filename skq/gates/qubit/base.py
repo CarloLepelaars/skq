@@ -124,7 +124,7 @@ class QubitGate(BaseGate):
         return CustomQubitGate(kron_matrix)
 
 class CustomQubitGate(QubitGate):
-    """ Bespoke gate. Must be unitary to function as a quantum gate. """
+    """ Bespoke Qubit gate. """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         return obj

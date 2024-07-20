@@ -1,4 +1,6 @@
+import qiskit
 import numpy as np
+
 
 class BaseGate(np.ndarray):
     """ 
@@ -86,3 +88,19 @@ class BaseGate(np.ndarray):
         assert self.num_levels() == other.num_levels(), "Gates must have the same number of rows for the Hilbert-Schmidt inner product."
         return np.trace(self.conjugate_transpose() @ other)
     
+    def to_qiskit(self):
+        """ Convert gate to a Qiskit Gate object. """
+        raise NotImplementedError(f"Conversion to Qiskit Gate is not implemented for {self.__class__.__name__}.")
+    
+    def from_qiskit(self, qiskit_gate: qiskit.circuit.gate.Gate):
+        """ 
+        Convert a Qiskit Gate to scikit-q CustomGate. 
+        :param qiskit_gate: Qiskit Gate object
+        """
+        return NotImplementedError(f"Conversion from Qiskit Gate is not implemented for {self.__class__.__name__}.")
+    
+class CustomGate(BaseGate):
+    """ Bespoke unitary gate of any computational basis. """
+    def __new__(cls, input_array):
+        obj = super().__new__(cls, input_array)
+        return obj
