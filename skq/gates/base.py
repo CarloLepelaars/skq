@@ -144,7 +144,7 @@ class Gate(np.ndarray):
     
     def is_equal(self, other) -> bool:
         """ Check if the gate is effectively equal to another gate. 
-        NOTE: Do not overwrite __eq__ method to avoid issues with NumPy array comparison. 
+        NOTE: Do not overwrite __eq__ method to avoid issues with native NumPy array comparison. 
         """
         return np.allclose(self, other, atol=1e-8)
 
@@ -168,19 +168,29 @@ class Gate(np.ndarray):
         sqrt_matrix = sp.linalg.sqrtm(self)
         return CustomGate(sqrt_matrix)
     
-    def kron(self, other) -> 'CustomGate':
+    def kron(self, other: 'Gate') -> 'CustomGate':
         """ Compute the Kronecker product of two gates. """
         kron_matrix = np.kron(self, other)
         return CustomGate(kron_matrix)
     
-    def kernel_density(self, other):
-        """ Calculate the quantum kernel using density matrices. """
+    def kernel_density(self, other: 'Gate') -> complex:
+        """ 
+        Calculate the quantum kernel using density matrices.
+        The kernel is defined as Tr(U * V).
+        :param other: Gate object to compute the kernel with.
+        :return kernel: Complex number representing the kernel density.
+        """
         assert isinstance(other, Gate), "Other object must be an instance of Gate."
         assert self.num_qubits() == other.num_qubits(), "Gates must have the same number of qubits for the kernel density."
         return np.trace(self @ other)
 
-    def hilbert_schmidt_inner_product(self, other):
-        """ Calculate the Hilbert-Schmidt inner product with another gate. """
+    def hilbert_schmidt_inner_product(self, other: 'Gate') -> complex:
+        """ 
+        Calculate the Hilbert-Schmidt inner product with another gate. 
+        The inner product is Tr(U^dagger * V).
+        :param other: Gate object to compute the inner product with.
+        :return inner_product: Complex number representing the inner product.
+        """
         assert isinstance(other, Gate), "Other object must be an instance of Gate."
         assert self.num_qubits() == other.num_qubits(), "Gates must have the same number of qubits for the Hilbert-Schmidt inner product."
         return np.trace(self.conjugate_transpose() @ other)
