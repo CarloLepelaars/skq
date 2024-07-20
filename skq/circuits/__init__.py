@@ -1,1 +1,2 @@
-from skq.circuits.bell_states import BellStates
+from skq.circuits.grover import *
+from skq.circuits.entangled_states import *
