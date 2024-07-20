@@ -72,7 +72,8 @@ def test_u3gate():
                 assert np.allclose(gate @ eigenvectors[:, 1], eigenvalues[1] * eigenvectors[:, 1]), "Eigenvector calculation is incorrect"
 
 def test_standard_multi_qubit_gates():
-    for GateClass in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate]:
+    for GateClass in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate,
+                      ToffoliGate, FredkinGate]:
         gate = GateClass()
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2

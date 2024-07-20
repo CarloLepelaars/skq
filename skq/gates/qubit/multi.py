@@ -4,6 +4,7 @@ import numpy as np
 from skq.gates.qubit.base import QubitGate
 
 
+
 class CXGate(QubitGate):
     """ 
     Controlled-X (CNOT) gate. 
@@ -123,3 +124,6 @@ class CSwapGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.CSwapGate:
         return qiskit.circuit.library.CSwapGate()
     
+# Aliases for gates
+ToffoliGate = CCXGate
+FredkinGate = CSwapGate
