@@ -4,7 +4,7 @@ import numpy as np
 
 class BaseGate(np.ndarray):
     """ 
-    Base class for quantum gates using NumPy. 
+    Base class for quantum gates of any computational basis using NumPy. 
     The main requirement is that the gate must be a 2D unitary matrix (U*U^dagger = I).
     :param input_array: Input array to create the gate. Will be converted to a NumPy array.
     """
