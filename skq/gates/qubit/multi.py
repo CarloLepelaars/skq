@@ -1,10 +1,10 @@
 import qiskit
 import numpy as np
 
-from skq.gates.base import Gate
+from skq.gates.qubit.base import QubitGate
 
 
-class CXGate(Gate):
+class CXGate(QubitGate):
     """ 
     Controlled-X (CNOT) gate. 
     Used to entangle two qubits.
@@ -19,7 +19,7 @@ class CXGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.CXGate:
         return qiskit.circuit.library.CXGate()
 
-class CYGate(Gate):
+class CYGate(QubitGate):
     """ Controlled-Y gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -30,7 +30,7 @@ class CYGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.CYGate:
         return qiskit.circuit.library.CYGate()
     
-class CZGate(Gate):
+class CZGate(QubitGate):
     """ Controlled-Z gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -41,7 +41,7 @@ class CZGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.CZGate:
         return qiskit.circuit.library.CZGate()
     
-class CHGate(Gate):
+class CHGate(QubitGate):
     """ Controlled-Hadamard gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -52,7 +52,7 @@ class CHGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.CHGate:
         return qiskit.circuit.library.CHGate()
     
-class CPhaseGate(Gate):
+class CPhaseGate(QubitGate):
     """ General controlled phase shift gate. 
     Special cases of CPhase gates:
     """
@@ -82,7 +82,7 @@ class CTGate(CPhaseGate):
         theta = np.pi / 4
         return super().__new__(cls, theta=theta)
     
-class SWAPGate(Gate):
+class SWAPGate(QubitGate):
     """ Swap gate. Swaps the states of two qubits. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0], 
@@ -93,7 +93,7 @@ class SWAPGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.SwapGate:
         return qiskit.circuit.library.SwapGate()
     
-class CCXGate(Gate):
+class CCXGate(QubitGate):
     """ A 3-qubit controlled-controlled-X (CCX) gate. Also known as the Toffoli gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0, 0, 0, 0, 0], 
@@ -108,7 +108,7 @@ class CCXGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.CCXGate:
         return qiskit.circuit.library.CCXGate()
     
-class CSwapGate(Gate):
+class CSwapGate(QubitGate):
     """ A controlled-SWAP gate. Also known as the Fredkin gate. """
     def __new__(cls):
         return super().__new__(cls, [[1, 0, 0, 0, 0, 0, 0, 0], 

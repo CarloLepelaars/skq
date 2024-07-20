@@ -1,5 +1,5 @@
-from skq.gates.base import Gate
-from skq.gates.single_qubit import *
+from skq.gates.qubit.base import QubitGate
+from skq.gates.qubit.single import *
 from skq.transformers.base import BaseQubitTransformer
 
 
@@ -9,7 +9,7 @@ class SingleQubitTransformer(BaseQubitTransformer):
     :param gate: A valid skq quantum Gate object
     :param qubit: The qubit index to apply the gate to.
     """
-    def __init__(self, gate: Gate, *, qubits: list[int]):
+    def __init__(self, gate: QubitGate, *, qubits: list[int]):
         assert gate.shape == (2, 2), "Single Qubit Gate must be a 2x2 matrix"
         assert isinstance(qubits, list) and len(qubits) == 1, "For SingleQubitTransformer, `qubits` must be a list with a single integer. For example [0] for qubit 0."
         super().__init__(gate=gate, qubits=qubits)

@@ -1,11 +1,11 @@
 import pytest
 import qiskit
 import numpy as np
-from skq.gates import *
+from skq.gates.qubit import *
 
 
 def test_base_gate():
-    gate = Gate([[1, 0], [0, 1]])
+    gate = QubitGate([[1, 0], [0, 1]])
     assert gate.is_unitary()
     assert gate.is_hermitian()
     assert isinstance(gate.trace(), complex)
@@ -117,7 +117,7 @@ def test_inverse_gate():
 def test_custom_gate_unitary():
     # S-gate
     s_matrix = np.array([[1, 0], [0, 1j]], dtype=complex)
-    s_gate = CustomGate(s_matrix)
+    s_gate = CustomQubitGate(s_matrix)
     assert s_gate.is_unitary(), "S-gate should be unitary"
     assert s_gate.is_clifford(), "S-gate should be a single-qubit Clifford gate"
 
@@ -125,14 +125,14 @@ def test_custom_gate_non_unitary():
     # Non-unitary gate
     non_unitary_matrix = np.array([[1, 2], [3, 4]], dtype=complex)
     with pytest.raises(AssertionError):
-        CustomGate(non_unitary_matrix)
+        CustomQubitGate(non_unitary_matrix)
 
 def test_custom_gate_composition():
     hadamard_matrix = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
-    hadamard_gate = CustomGate(hadamard_matrix)
+    hadamard_gate = CustomQubitGate(hadamard_matrix)
     s_matrix = np.array([[1, 0], [0, 1j]], dtype=complex)
-    s_gate = CustomGate(s_matrix)
-    composed_gate = CustomGate(hadamard_gate @ s_gate)
+    s_gate = CustomQubitGate(s_matrix)
+    composed_gate = CustomQubitGate(hadamard_gate @ s_gate)
     assert composed_gate.is_unitary(), "Composed gate should be unitary"
 
 def test_hermitian_gates():
@@ -161,7 +161,7 @@ def test_sqrt():
     assert sqrt_x.is_unitary()
     assert not sqrt_x.is_pauli()
     assert not sqrt_x.is_clifford()
-    assert isinstance(sqrt_x, Gate)
+    assert isinstance(sqrt_x, QubitGate)
     np.testing.assert_array_almost_equal(sqrt_x @ sqrt_x, gate)
     expected_matrix = np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
     np.testing.assert_array_almost_equal(sqrt_x, expected_matrix)
@@ -179,7 +179,7 @@ def test_kron():
     assert h_i.is_unitary()
     assert h_i.num_qubits() == 2
     assert h_i.is_multi_qubit()
-    assert isinstance(h_i, CustomGate)
+    assert isinstance(h_i, CustomQubitGate)
 
     # Test |00> state
     state = np.array([1, 0, 0, 0])
@@ -235,8 +235,8 @@ def test_to_qiskit():
 
 def test_from_qiskit():
     qiskit_gate = qiskit.circuit.library.XGate()
-    gate = Gate.from_qiskit(qiskit_gate=qiskit_gate)
-    assert isinstance(gate, Gate)
+    gate = QubitGate.from_qiskit(qiskit_gate=qiskit_gate)
+    assert isinstance(gate, QubitGate)
     np.testing.assert_array_equal(gate, qiskit_gate.to_matrix())
     assert gate.is_unitary()
     assert gate.num_qubits() == 1

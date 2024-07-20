@@ -1,10 +1,10 @@
 import qiskit
 import numpy as np
 
-from skq.gates.base import Gate
+from skq.gates.qubit.base import QubitGate
 
 
-class IGate(Gate):
+class IGate(QubitGate):
     """ 
     Identity gate: 
     [[1, 0]
@@ -16,7 +16,7 @@ class IGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.IGate:
         return qiskit.circuit.library.IGate()
     
-class XGate(Gate):
+class XGate(QubitGate):
     """ Pauli X (NOT) Gate. """
     def __new__(cls):
         return super().__new__(cls, [[0, 1], 
@@ -25,7 +25,7 @@ class XGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.XGate:
         return qiskit.circuit.library.XGate()
 
-class YGate(Gate):
+class YGate(QubitGate):
     """ Pauli Y gate. """
     def __new__(cls):
         return super().__new__(cls, [[0, -1j], 
@@ -34,7 +34,7 @@ class YGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.YGate:
         return qiskit.circuit.library.YGate()
     
-class ZGate(Gate):
+class ZGate(QubitGate):
     """ Pauli Z gate. 
     Special case of a phase shift gate with phi = pi.
     """
@@ -45,7 +45,7 @@ class ZGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.ZGate:
         return qiskit.circuit.library.ZGate()
 
-class HGate(Gate):
+class HGate(QubitGate):
     """ 
     Hadamard gate. Used to create superposition. 
     |0> -> (|0> + |1>) / sqrt(2)
@@ -58,7 +58,7 @@ class HGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.HGate:
         return qiskit.circuit.library.HGate()
     
-class PhaseGate(Gate):
+class PhaseGate(QubitGate):
     """ General phase shift gate. 
     Special cases of phase gates:
     - S gate: theta = pi / 2
@@ -92,7 +92,7 @@ class SGate(PhaseGate):
     def to_qiskit(self) -> qiskit.circuit.library.SGate:
         return qiskit.circuit.library.SGate()
     
-class RXGate(Gate):
+class RXGate(QubitGate):
     """ Generalized X rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -1j * np.sin(theta / 2)], 
@@ -103,7 +103,7 @@ class RXGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.RXGate:
         return qiskit.circuit.library.RXGate(self.theta)
     
-class RYGate(Gate):
+class RYGate(QubitGate):
     """ Generalized Y rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.cos(theta / 2), -np.sin(theta / 2)], 
@@ -114,7 +114,7 @@ class RYGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.RYGate:
         return qiskit.circuit.library.RYGate(self.theta)
     
-class RZGate(Gate):
+class RZGate(QubitGate):
     """ Generalized Z rotation gate. """
     def __new__(cls, theta):
         obj = super().__new__(cls, [[np.exp(-1j * theta / 2), 0], 
@@ -125,7 +125,7 @@ class RZGate(Gate):
     def to_qiskit(self) -> qiskit.circuit.library.RZGate:
         return qiskit.circuit.library.RZGate(self.theta)
 
-class U3Gate(Gate):
+class U3Gate(QubitGate):
     """ Rotation around 3-axes. Single qubit gate."""
     def __new__(cls, theta, phi, lam):
         # Rotation matrices

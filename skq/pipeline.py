@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.pipeline import _name_estimators, FeatureUnion
 
-from skq.gates import Gate, IGate
+from skq.gates import QubitGate, IGate
 from skq.utils import _check_quantum_state_array
 from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 
@@ -40,7 +40,7 @@ class QuantumLayer(FeatureUnion):
         else:
             raise ValueError(f"Transformers in QuantumFeatureUnion must be either type `SingleQubitTransformer` or `MultiQubitTransformer`. Got '{type(transformer)}'")
 
-    def _expand_single_qubit_gate(self, gate: Gate, qubit: int) -> np.array:
+    def _expand_single_qubit_gate(self, gate: QubitGate, qubit: int) -> np.array:
         """
         Expands a single qubit gate to a full gate.
         :param gate: 2x2 numpy array representing the gate.
@@ -55,7 +55,7 @@ class QuantumLayer(FeatureUnion):
                 full_gate = np.kron(full_gate, IGate())
         return full_gate
 
-    def _expand_multi_qubit_gate(self, gate: Gate, qubits: list[int]) -> np.array:
+    def _expand_multi_qubit_gate(self, gate: QubitGate, qubits: list[int]) -> np.array:
         """
         Expands a multi qubit gate to a full gate.
         :param gate: numpy array representing the gate.

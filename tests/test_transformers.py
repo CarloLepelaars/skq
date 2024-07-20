@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-
 from skq.transformers import HTransformer, TTransformer, CXTransformer, CHTransformer, CCXTransformer, CSwapTransformer
 
 

@@ -1,5 +1,5 @@
-from skq.gates.base import Gate
-from skq.gates.multi_qubit import *
+from skq.gates.qubit.base import QubitGate
+from skq.gates.qubit.multi import *
 from skq.transformers.base import BaseQubitTransformer
 
 
@@ -9,7 +9,7 @@ class MultiQubitTransformer(BaseQubitTransformer):
     :param gate: A valid skq quantum Gate object
     :param qubits: List of qubit indices to apply the gate to.
     """
-    def __init__(self, gate: Gate, *, qubits: list[int]):
+    def __init__(self, gate: QubitGate, *, qubits: list[int]):
         assert gate.shape[0] >= 4 and gate.shape[1] >= 4, "Multi Qubit Gate must be a matrix of at least 4x4"
         super().__init__(gate=gate, qubits=qubits)
         assert isinstance(qubits, list), "MultiQubitTransformer must be provided with a list of qubit indices."
