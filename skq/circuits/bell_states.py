@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline, make_pipeline
 
-from skq.pipeline import QuantumFeatureUnion
+from skq.pipeline import QuantumLayer
 from skq.transformers import XTransformer, HTransformer, ZTransformer, CXTransformer
 
 class BellStates:
@@ -38,7 +38,7 @@ class BellStates:
         :return: Circuit for creating the 1st Bell State.
         """
         return Pipeline([
-        ('H', QuantumFeatureUnion([
+        ('H', QuantumLayer([
             ('H', HTransformer(qubits=[0])),
         ], n_qubits=2),
         ),
@@ -54,7 +54,7 @@ class BellStates:
         """
         omega_plus = self.get_bell_state_omega_plus()
         phase_flip = Pipeline([
-            ('Z', QuantumFeatureUnion([
+            ('Z', QuantumLayer([
                 ('Z', ZTransformer(qubits=[0])),
             ], n_qubits=2),
             ),
@@ -69,7 +69,7 @@ class BellStates:
         """
         omega_plus = self.get_bell_state_omega_plus()
         bit_flip = Pipeline([
-            ('X', QuantumFeatureUnion([
+            ('X', QuantumLayer([
                 ('X', XTransformer(qubits=[1])),
             ], n_qubits=2),
             ),
@@ -84,10 +84,26 @@ class BellStates:
         """
         omega_plus = self.get_bell_state_omega_plus()
         phase_flip = Pipeline([
-            ('ZX', QuantumFeatureUnion([
+            ('ZX', QuantumLayer([
                 ('Z', ZTransformer(qubits=[0])),
                 ('X', XTransformer(qubits=[1])),
             ], n_qubits=2),
             ),
         ])
         return make_pipeline(omega_plus, phase_flip)
+
+class GHZStates:
+    """
+    Generalization of Bell States to 3 or more qubits.
+    Greenberger, Horne, and Zeilinger states.
+    """
+    # TODO Implement GHZ states for arbitrary number of qubits
+    ...
+
+
+class WState:
+    """
+    1 / sqrt(3) (|001⟩ + |010⟩ + |100⟩)
+    """
+    # TODO Implement W state 
+    ...

@@ -6,7 +6,7 @@ from skq.utils import _check_quantum_state_array
 from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 
 
-class QuantumFeatureUnion(FeatureUnion):
+class QuantumLayer(FeatureUnion):
     def __init__(self, transformer_list, n_qubits, **kwargs):
         self.n_qubits = n_qubits
         super().__init__(transformer_list, **kwargs)
@@ -35,7 +35,6 @@ class QuantumFeatureUnion(FeatureUnion):
                 if qubit in used_qubits:
                     raise ValueError(f"Qubit {qubit} is used by multiple transformers.")
                 used_qubits.add(qubit)
-
 
     def _construct_full_gate(self, transformer):
         if isinstance(transformer, SingleQubitTransformer):
@@ -81,7 +80,7 @@ class QuantumFeatureUnion(FeatureUnion):
                     full_gate[i, i ^ (control_index << target)] = gate[0, control_index]
         return full_gate
 
-def make_quantum_union(*transformers, n_qubits: int , n_jobs=None, verbose=False) -> QuantumFeatureUnion:
+def make_quantum_union(*transformers, n_qubits: int , n_jobs=None, verbose=False) -> QuantumLayer:
     """
     Convenience function for creating a QuantumFeatureUnion.
     :param transformers: List of (name, transform) tuples (implementing fit/transform) that are concatenated.
@@ -90,4 +89,4 @@ def make_quantum_union(*transformers, n_qubits: int , n_jobs=None, verbose=False
     :param verbose: If True, the time elapsed while fitting each transformer will be printed.
     :return: QuantumFeatureUnion object
     """
-    return QuantumFeatureUnion(_name_estimators(transformers), n_qubits=n_qubits, n_jobs=n_jobs, verbose=verbose)
+    return QuantumLayer(_name_estimators(transformers), n_qubits=n_qubits, n_jobs=n_jobs, verbose=verbose)

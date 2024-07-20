@@ -1,14 +1,14 @@
 import pytest
 import numpy as np
 
-from skq.pipeline import QuantumFeatureUnion
+from skq.pipeline import QuantumLayer
 from skq.transformers import HTransformer, ZTransformer, CXTransformer, TTransformer, U3Transformer, SWAPTransformer
 
 def test_quantum_feature_union_single_qubits():
     H_transformer = HTransformer(qubits=[0])
     Z_transformer = ZTransformer(qubits=[1])
     
-    qfu = QuantumFeatureUnion([('hadamard', H_transformer), ('pauli-z', Z_transformer)], n_qubits=2)
+    qfu = QuantumLayer([('hadamard', H_transformer), ('pauli-z', Z_transformer)], n_qubits=2)
     X = np.array([[1, 0, 0, 0]], dtype=complex)
     transformed_X = qfu.transform(X)
     
@@ -19,7 +19,7 @@ def test_quantum_feature_union_single_multi_qubit():
     CX_transformer = CXTransformer(qubits=[0, 1])
     T_transformer = TTransformer(qubits=[2])
     
-    qfu = QuantumFeatureUnion([('cnot', CX_transformer), ('t-gate', T_transformer)], n_qubits=3)
+    qfu = QuantumLayer([('cnot', CX_transformer), ('t-gate', T_transformer)], n_qubits=3)
     # Initial state |110>
     X = np.array([[0, 0, 0, 0, 0, 1, 0, 0]], dtype=complex)
     transformed_X = qfu.transform(X)
@@ -32,7 +32,7 @@ def test_quantum_feature_union_single_multi_qubit_swap():
     SWAP_transformer = SWAPTransformer(qubits=[0, 1])
     T_transformer = TTransformer(qubits=[2])
 
-    qfu = QuantumFeatureUnion([('swap', SWAP_transformer), ('t-gate', T_transformer)], n_qubits=3)
+    qfu = QuantumLayer([('swap', SWAP_transformer), ('t-gate', T_transformer)], n_qubits=3)
     
     # Initial state |100> -> [0, 0, 0, 0, 0, 0, 0, 1]
     X = np.array([[0, 0, 0, 0, 0, 0, 0, 1]], dtype=complex)
@@ -47,7 +47,7 @@ def test_quantum_feature_union_multiple_single_qubits():
     T_transformer = TTransformer(qubits=[1])
     U3_transformer = U3Transformer(theta=np.pi, phi=np.pi, lam=np.pi, qubits=[2])
     
-    qfu = QuantumFeatureUnion([
+    qfu = QuantumLayer([
         ('hadamard', H_transformer),
         ('t-gate', T_transformer),
         ('u3', U3_transformer)
@@ -62,7 +62,7 @@ def test_clashing_qubits():
     CX_transformer = CXTransformer(qubits=[0, 1])
     SWAP_transformer = SWAPTransformer(qubits=[1, 2])
 
-    qfu = QuantumFeatureUnion([('cnot', CX_transformer), ('swap', SWAP_transformer)], n_qubits=3)
+    qfu = QuantumLayer([('cnot', CX_transformer), ('swap', SWAP_transformer)], n_qubits=3)
     
     initial_state = np.array([[1, 0, 0, 0, 0, 0, 0, 0]], dtype=complex)
     
@@ -75,7 +75,7 @@ def test_invalid_transformer():
         pass
 
     invalid_transformer = InvalidTransformer()
-    qfu = QuantumFeatureUnion([('invalid', invalid_transformer)], n_qubits=1)
+    qfu = QuantumLayer([('invalid', invalid_transformer)], n_qubits=1)
     
     initial_state = np.array([[1, 0]], dtype=complex)
     
