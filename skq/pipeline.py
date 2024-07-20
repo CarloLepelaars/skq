@@ -7,6 +7,13 @@ from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 
 
 class QuantumLayer(FeatureUnion):
+    """ 
+    Concatenates multiple qubit transformers into a quantum system.
+    This union applies the Kronecker product of the gates of the transformers to simulate valid multi qubit systems.
+    :param transformer_list: List of (name, transform) tuples (implementing fit/transform) that are concatenated.
+    :param n_qubits: Number of qubits in the quantum circuit.
+    :param kwargs: Additional arguments to pass to sklearn FeatureUnion.
+    """
     def __init__(self, transformer_list, n_qubits, **kwargs):
         self.n_qubits = n_qubits
         super().__init__(transformer_list, **kwargs)
@@ -24,17 +31,6 @@ class QuantumLayer(FeatureUnion):
             full_gate = self._construct_full_gate(transformer)
             combined_gate = np.dot(combined_gate, full_gate)
         return np.array([combined_gate @ x for x in X])
-    
-    def _validate_transformers(self):
-        used_qubits = set()
-        for _, transformer in self.transformer_list:
-            if not hasattr(transformer, 'qubits'):
-                raise ValueError(f"Transformers in QuantumFeatureUnion must be either type `SingleQubitTransformer` or `MultiQubitTransformer`. Got '{type(transformer)}'")
-            # Check for transformers trying to use the same qubit
-            for qubit in transformer.qubits:
-                if qubit in used_qubits:
-                    raise ValueError(f"Qubit {qubit} is used by multiple transformers.")
-                used_qubits.add(qubit)
 
     def _construct_full_gate(self, transformer):
         if isinstance(transformer, SingleQubitTransformer):
@@ -79,6 +75,17 @@ class QuantumLayer(FeatureUnion):
                     full_gate[i ^ (control_index << target), i] = gate[control_index, 0]
                     full_gate[i, i ^ (control_index << target)] = gate[0, control_index]
         return full_gate
+    
+    def _validate_transformers(self):
+        used_qubits = set()
+        for _, transformer in self.transformer_list:
+            if not hasattr(transformer, 'qubits'):
+                raise ValueError(f"Transformers in QuantumFeatureUnion must be either type `SingleQubitTransformer` or `MultiQubitTransformer`. Got '{type(transformer)}'")
+            # Check for transformers trying to use the same qubit
+            for qubit in transformer.qubits:
+                if qubit in used_qubits:
+                    raise ValueError(f"Qubit {qubit} is used by multiple transformers.")
+                used_qubits.add(qubit)
 
 def make_quantum_union(*transformers, n_qubits: int , n_jobs=None, verbose=False) -> QuantumLayer:
     """
