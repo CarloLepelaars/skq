@@ -172,6 +172,12 @@ class Gate(np.ndarray):
         """ Compute the Kronecker product of two gates. """
         kron_matrix = np.kron(self, other)
         return CustomGate(kron_matrix)
+    
+    def hilbert_schmidt_inner_product(self, other):
+        """Calculate the Hilbert-Schmidt inner product with another gate."""
+        assert isinstance(other, Gate), "Other object must be an instance of Gate."
+        assert self.num_qubits() == other.num_qubits(), "Gates must have the same number of qubits for the Hilbert-Schmidt inner product."
+        return np.trace(self.conjugate_transpose() @ other)
 
 class CustomGate(Gate):
     """ Bespoke gate. Must be unitary to function as a quantum gate. """

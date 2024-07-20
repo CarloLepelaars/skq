@@ -187,6 +187,26 @@ def test_kron():
     expected_state = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2), 0])
     np.testing.assert_array_almost_equal(transformed_state, expected_state)
 
+def test_hilbert_schmidt_inner_product():
+    # Orthogonal gates should have a zero inner product
+    X = XGate()
+    Z = ZGate()
+    xz_inner_product = X.hilbert_schmidt_inner_product(Z)
+    assert isinstance(xz_inner_product, complex)
+    assert xz_inner_product == 0j
+
+    # I with I should have Hilbert-Schmidt inner product of 2
+    I = IGate()
+    ii_inner_product = I.hilbert_schmidt_inner_product(I)
+    assert isinstance(ii_inner_product, complex)
+    assert ii_inner_product == 2+0j
+
+    # T with Z should have a Hilbert-Schmidt inner product of 0.2929+0.7071j
+    T = TGate()
+    tz_inner_product = T.hilbert_schmidt_inner_product(Z)
+    assert isinstance(tz_inner_product, complex)
+    assert tz_inner_product == 0.2928932188134524+0.7071067811865475j
+
 def test_to_qiskit():
     gate = XGate()
     qiskit_gate = gate.to_qiskit()
