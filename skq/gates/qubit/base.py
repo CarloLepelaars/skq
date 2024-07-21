@@ -51,7 +51,11 @@ TWO_QUBIT_CLIFFORD_MATRICES = [
 ]
 
 class QubitGate(BaseGate):
-    """ Base class for Qubit gates. """
+    """ 
+    Base class for Qubit gates. 
+    A quantum system with a basis of 2 states. |0>, |1>.
+    Analogous to spin 1/2 particles.
+    """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         assert obj.is_at_least_nxn(n=2), "Gate must be at least a 2x2 matrix."

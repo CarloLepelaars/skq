@@ -3,7 +3,11 @@ from skq.gates.base import BaseGate
 
 
 class QutritGate(BaseGate):
-    """ Base class for Qutrit gates. """
+    """ 
+    Base class for Qutrit gates. 
+    These are quantum systems with a basis of 3 states. |0>, |1>, |2>. 
+    Analogous to spin 1 particles.
+    """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         assert obj.is_at_least_nxn(n=3), "Gate must be at least a 3x3 matrix"
