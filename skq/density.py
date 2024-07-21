@@ -15,15 +15,15 @@ class DensityMatrix(np.ndarray):
         return obj
     
     def is_hermitian(self) -> bool:
-        """ Check if the density matrix is Hermitian: U = U^dagger """
+        """ Check if the density matrix is Hermitian: U = U^dagger. """
         return np.allclose(self, self.conjugate_transpose())
     
     def is_positive_semidefinite(self) -> bool:
-        """ Check if the density matrix is positive semidefinite """
+        """ Check if the density matrix is positive semidefinite. """
         return np.all(self.eigenvalues() >= 0)
     
     def trace_equal_to_one(self) -> bool:
-        """ Check if the trace of the density matrix is equal to one """
+        """ Check if the trace of the density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
     
     def eigenvalues(self) -> np.ndarray:
