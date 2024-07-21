@@ -44,7 +44,6 @@ class DensityMatrix(np.ndarray):
         return self.conj().T
 
 
-
 def schmidt_decomposition(state_vector: np.array) -> tuple[np.array, np.array, np.array]:
     """
     Perform Schmidt decomposition on a bipartite quantum state.

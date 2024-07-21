@@ -54,19 +54,9 @@ class QubitGate(BaseGate):
     """ Base class for Qubit gates. """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
-        assert obj.is_at_least_2x2(), "Gate must be at least a 2x2 matrix"
-        assert obj.is_power_of_two_shape(), "Gate shape must be a power of 2"
+        assert obj.is_at_least_nxn(n=2), "Gate must be at least a 2x2 matrix."
+        assert obj.is_power_of_n_shape(n=2), "Gate shape must be a power of 2."
         return obj
-    
-    def is_at_least_2x2(self) -> bool:
-        rows, cols = self.shape
-        return rows >= 2 and cols >= 2, "Gate must be at least a 2x2 matrix"
-    
-    def is_power_of_two_shape(self) -> bool:
-        rows, cols = self.shape
-        rows_valid = (rows > 0) and (rows & (rows - 1)) == 0, f"Number of rows for gate must be a power of 2. Got '{rows}'"
-        cols_valid = (cols > 0) and (cols & (cols - 1)) == 0, f"Number of columns for gate must be a power of 2. Got '{cols}'"
-        return rows_valid and cols_valid
     
     def num_qubits(self) -> int:
         """ Return the number of qubits involved in the gate. """

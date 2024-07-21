@@ -11,21 +11,41 @@ class BaseGate(np.ndarray):
     def __new__(cls, input_array) -> 'BaseGate':
         arr = np.asarray(input_array, dtype=complex)
         obj = arr.view(cls)
-        assert obj.is_unitary(), "Gate must be unitary"
-        assert obj.is_2d(), "Gate must be a 2D matrix"
+        assert obj.is_unitary(), "Gate must be unitary."
+        assert obj.is_2d(), "Gate must be a 2D matrix."
+        assert obj.is_at_least_nxn(n=1), "Gate must be at least a 1x1 matrix."
         return obj
     
-    def is_2d(self) -> bool:
-        return len(self.shape) == 2, "Gate must be a 2D matrix"
-    
-    def num_levels(self) -> int:
-        """ Number of rows. Used for checking valid shapes. """
-        return self.shape[0]
-
     def is_unitary(self) -> bool:
         """ Check if the gate is unitary: U*U^dagger = I """
         identity = np.eye(self.shape[0])
         return np.allclose(self @ self.conjugate_transpose(), identity)
+    
+    def is_2d(self) -> bool:
+        return len(self.shape) == 2
+    
+    def is_at_least_nxn(self, n: int) -> bool:
+        """ Check if the gate is at least an n x n matrix. """
+        rows, cols = self.shape
+        return rows >= n and cols >= n
+
+    def is_power_of_n_shape(self, n: int) -> bool:
+        """ 
+        Check if the gate shape is a power of n. 
+        Qubits: n=2, Qutrits: n=3, Ququarts: n=4, etc.
+        """
+        def _is_power_of_n(x, n):
+            if x < 1:
+                return False
+            while x % n == 0:
+                x //= n
+            return x == 1
+        rows, cols = self.shape
+        return _is_power_of_n(rows, n) and _is_power_of_n(cols, n)
+    
+    def num_levels(self) -> int:
+        """ Number of rows. Used for checking valid shapes. """
+        return self.shape[0]
     
     def is_hermitian(self) -> bool:
         """ Check if the gate is Hermitian: U = U^dagger """
@@ -98,9 +118,3 @@ class BaseGate(np.ndarray):
         :param qiskit_gate: Qiskit Gate object
         """
         return NotImplementedError(f"Conversion from Qiskit Gate is not implemented for {self.__class__.__name__}.")
-    
-class CustomGate(BaseGate):
-    """ Bespoke unitary gate of any computational basis. """
-    def __new__(cls, input_array):
-        obj = super().__new__(cls, input_array)
-        return obj
