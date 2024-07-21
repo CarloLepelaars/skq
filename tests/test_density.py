@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from skq.decomposition import schmidt_decomposition
+from skq.density import schmidt_decomposition
 
 def test_schmidt_decomposition():
     # Schmidt decomposition is not applicable for single qubit states
