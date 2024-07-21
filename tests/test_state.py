@@ -25,10 +25,10 @@ def test_to_qiskit():
     state_vector = Statevector([1, 0, 0])
     qiskit_sv = state_vector.to_qiskit()
     assert isinstance(qiskit_sv, qiskit.quantum_info.Statevector)
-    np.testing.assert_array_almost_equal(qiskit_sv.data, state_vector)
+    np.testing.assert_array_almost_equal(qiskit_sv.data, state_vector[::-1])
 
 def test_from_qiskit():
-    qiskit_sv = qiskit.quantum_info.Statevector([1, 0, 0])
+    qiskit_sv = qiskit.quantum_info.Statevector([0, 0, 1])
     state_vector = Statevector.from_qiskit(qiskit_sv)
     assert isinstance(state_vector, Statevector)
-    np.testing.assert_array_almost_equal(state_vector, qiskit_sv.data)
+    np.testing.assert_array_almost_equal(state_vector, qiskit_sv.data[::-1])

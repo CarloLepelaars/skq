@@ -22,6 +22,14 @@ class DensityMatrix(np.ndarray):
         """ Check if the density matrix is positive semidefinite. """
         return np.all(self.eigenvalues() >= 0)
     
+    def is_pure(self) -> bool:
+        """ Check if the density matrix is a pure state. """
+        return np.isclose(np.trace(self @ self), 1)
+    
+    def is_mixed(self) -> bool:
+        """ Check if the density matrix is a mixed state. """
+        return not self.is_pure()
+    
     def trace_equal_to_one(self) -> bool:
         """ Check if the trace of the density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
