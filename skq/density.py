@@ -26,6 +26,10 @@ class DensityMatrix(np.ndarray):
         """ Check if the trace of the density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
     
+    def probabilities(self) -> float:
+        """ Return the probabilities of all possible states. """
+        return np.real(np.diag(self))
+
     def eigenvalues(self) -> np.ndarray:
         """ Return the eigenvalues of the density matrix. """
         return np.linalg.eigvals(self)
