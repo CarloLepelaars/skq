@@ -50,16 +50,23 @@ class Statevector(np.ndarray):
     
     def measure_index(self) -> int:
         """ 
-        Simulate a measurement of the state vector using the amplitudes. 
-        :param size: Number of measurements to simulate
-        :return: Index of the measured state
+        Simulate a measurement of the state and get a sampled index. 
+        :return: Index of the measured state.
+        For example: 
+        |0> -> 0
+        |00> -> 0
+        |11> -> 3
         """
         return np.random.choice(len(self), p=self.probabilities())
     
     def measure_bitstring(self) -> str:
         """ 
-        Simulate a measurement of the state vector using the amplitudes. 
-        :return: Bitstring representation of the measured state
+        Simulate a measurement of the state vector and get a bitstring representing the sample. 
+        :return: Bitstring representation of the measured state.
+        For example:
+        |0> -> "0"
+        |00> -> "00"
+        |11> -> "11"
         """
         return bin(self.measure_index())[2:].zfill(self.num_qubits())
     
