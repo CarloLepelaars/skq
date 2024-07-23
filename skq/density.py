@@ -35,7 +35,7 @@ class DensityMatrix(np.ndarray):
         return np.isclose(np.trace(self), 1)
     
     def probabilities(self) -> float:
-        """ Return the probabilities of all possible states. """
+        """ Return the probabilities of all possible state measurements. """
         return np.diag(self).real
 
     def eigenvalues(self) -> np.ndarray:
