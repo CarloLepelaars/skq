@@ -1,6 +1,7 @@
 import pytest
 import qiskit
 import numpy as np
+import pennylane as qml
 
 from skq.state import Statevector
 from skq.density import DensityMatrix
@@ -64,3 +65,17 @@ def test_from_qiskit():
     state_vector = Statevector.from_qiskit(qiskit_sv)
     assert isinstance(state_vector, Statevector)
     np.testing.assert_array_almost_equal(state_vector, qiskit_sv.data[::-1])
+
+def test_to_pennylane():
+    # |00> in big-endian
+    state_vector = Statevector([1, 0, 0, 0])
+    pennylane_sv = state_vector.to_pennylane()
+    assert isinstance(pennylane_sv, qml.QubitStateVector)
+    np.testing.assert_array_almost_equal(pennylane_sv.data[0], state_vector)
+
+def test_from_pennylane():
+    # |00> in big-endian
+    pennylane_sv = qml.QubitStateVector([1, 0, 0, 0], wires=range(2))
+    state_vector = Statevector.from_pennylane(pennylane_sv)
+    assert isinstance(state_vector, Statevector)
+    np.testing.assert_array_almost_equal(state_vector, pennylane_sv.data[0])

@@ -139,10 +139,10 @@ class CCYGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.ControlledGate:
         # There is no native CCY gate in Qiskit so we construct it.
         return qiskit.circuit.ControlledGate(name="ccy",
-                                                     num_qubits=3,
-                                                     params=[],
-                                                     num_ctrl_qubits=2, 
-                                                     base_gate=YGate())
+                                             num_qubits=3,
+                                             params=[],
+                                             num_ctrl_qubits=2, 
+                                             base_gate=YGate())
     
 class CCZGate(QubitGate):
     """ A 3-qubit controlled-controlled-Z (CCZ) gate. """
@@ -173,17 +173,58 @@ class MCXGate(QubitGate):
         return super().__new__(cls, gate)
     
     def to_qiskit(self) -> qiskit.circuit.library.CXGate | qiskit.circuit.library.CCXGate | qiskit.circuit.library.C3XGate | qiskit.circuit.library.C4XGate | qiskit.circuit.library.MCXGate:
-        match self.num_ctrl_qubits:
-            case 1:
-                return qiskit.circuit.library.CXGate()
-            case 2:
-                return qiskit.circuit.library.CCXGate()
-            case 3:
-                return qiskit.circuit.library.C3XGate()
-            case 4:
-                return qiskit.circuit.library.C4XGate()
-            case _:
-                return qiskit.circuit.library.MCXGate(self.num_ctrl_qubits)
+        if self.num_ctrl_qubits == 1:
+            return qiskit.circuit.library.CXGate()
+        elif self.num_ctrl_qubits == 2:
+            return qiskit.circuit.library.CCXGate()
+        elif self.num_ctrl_qubits == 3:
+            return qiskit.circuit.library.C3XGate()
+        elif self.num_ctrl_qubits == 4:
+            return qiskit.circuit.library.C4XGate()
+        else:
+            return qiskit.circuit.library.MCXGate(num_ctrl_qubits=self.num_ctrl_qubits)
+            
+class MCYGate(QubitGate):
+    """ Multi controlled-Y (MCY) gate. """
+    def __new__(cls, num_ctrl_qubits: int):
+        assert num_ctrl_qubits >= 1, "MCY gate must have at least one control qubit."
+        cls.num_ctrl_qubits = num_ctrl_qubits
+        levels = 2 ** (num_ctrl_qubits + 1)
+        gate = np.identity(levels)
+        gate[-2:, -2:] = YGate()
+        return super().__new__(cls, gate)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.CYGate | qiskit.circuit.ControlledGate:
+        if self.num_ctrl_qubits == 1:
+            return qiskit.circuit.library.CYGate()
+        else:
+            return qiskit.cicuit.ControlledGate(name="mcy",
+                                                        num_qubits=self.num_qubits(),
+                                                        params=[],
+                                                        num_ctrl_qubits=self.num_ctrl_qubits,
+                                                        base_gate=YGate())
+
+class MCZGate(QubitGate):
+    """ Multi controlled-Z (MCZ) gate. """
+    def __new__(cls, num_ctrl_qubits: int):
+        assert num_ctrl_qubits >= 1, "MCZ gate must have at least one control qubit."
+        cls.num_ctrl_qubits = num_ctrl_qubits
+        levels = 2 ** (num_ctrl_qubits + 1)
+        gate = np.identity(levels)
+        gate[-2:, -2:] = ZGate()
+        return super().__new__(cls, gate)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.CZGate | qiskit.circuit.ControlledGate:
+        if self.num_ctrl_qubits == 1:
+            return qiskit.circuit.library.CZGate()
+        elif self.num_ctrl_qubits == 2:
+            return qiskit.circuit.library.CCZGate()
+        else:
+            return qiskit.cicuit.ControlledGate(name="mcz",
+                                                num_qubits=self.num_qubits(),
+                                                params=[],
+                                                num_ctrl_qubits=self.num_ctrl_qubits,
+                                                base_gate=ZGate())
     
 # Aliases for gates
 ToffoliGate = CCXGate

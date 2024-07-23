@@ -1,5 +1,6 @@
 import qiskit
 import numpy as np
+import pennylane as qml
 
 from skq.density import DensityMatrix
 
@@ -92,18 +93,38 @@ class Statevector(np.ndarray):
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
         Convert the state vector to a Qiskit QuantumCircuit object.
-        :return: QuantumCircuit object representing the state vector
+        Qiskit uses little-endian convention for state vectors.
+        :return: Qiskit StateVector object
         """
         return qiskit.quantum_info.Statevector(self.reverse())
     
     @staticmethod
     def from_qiskit(statevector: qiskit.quantum_info.Statevector) -> "Statevector":
         """
-        Convert a Qiskit QuantumCircuit object to a state vector.
-        :param statevector: QuantumCircuit object representing the state vector
-        :return: State vector representation of the quantum state
+        Convert a Qiskit StateVector object to a scikit-q StateVector.
+        Qiskit uses little-endian convention for state vectors.
+        :param statevector: Qiiskit StateVector object
+        :return: scikit-q StateVector object
         """
         return Statevector(statevector.data[::-1])
+    
+    def to_pennylane(self) -> qml.QubitStateVector:
+        """
+        Convert the state vector to a PennyLane QubitStateVector object.
+        PennyLane uses big-endian convention for state vectors.
+        :return: PennyLane QubitStateVector object
+        """
+        return qml.QubitStateVector(self, wires=range(self.num_qubits()))
+    
+    @staticmethod
+    def from_pennylane(statevector: qml.QubitStateVector) -> "Statevector":
+        """
+        Convert a PennyLane QubitStateVector object to a scikit-q StateVector.
+        PennyLane uses big-endian convention for state vectors.
+        :param statevector: PennyLane QubitStateVector object
+        :return: scikit-q StateVector object
+        """
+        return Statevector(statevector.data[0])
     
 class ZeroState(Statevector):
     """ Zero state |0...0> """
