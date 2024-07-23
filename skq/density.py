@@ -47,6 +47,14 @@ class DensityMatrix(np.ndarray):
         _, vectors = np.linalg.eig(self)
         return vectors
     
+    def num_qubits(self) -> int:
+        """ Return the number of qubits in the density matrix. """
+        return int(np.log2(len(self)))
+    
+    def is_multi_qubit(self) -> bool:
+        """ Check if the density matrix represents a multi-qubit state. """
+        return self.num_qubits() > 1
+    
     def trace_norm(self) -> float:
         """ Return the trace norm of the density matrix. """
         return np.trace(np.sqrt(self.conjugate_transpose() @ self))
@@ -55,6 +63,24 @@ class DensityMatrix(np.ndarray):
         """ Return the trace norm distance between two density matrices. """
         assert isinstance(other, DensityMatrix), "'other' argument must be a valid DensityMatrix object."
         return self.trace_norm(self - other)
+    
+    def bloch_vector(self) -> np.ndarray:
+        """ Calculate the Bloch vector of the density matrix. """
+        if self.num_qubits() > 1:
+            raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
+        # Pauli matrices
+        sigma_x = np.array([[0, 1], 
+                            [1, 0]])
+        sigma_y = np.array([[0, -1j], 
+                            [1j, 0]])
+        sigma_z = np.array([[1, 0], 
+                            [0, -1]])
+        
+        # Bloch vector components
+        bx = np.trace(np.dot(self, sigma_x)).real
+        by = np.trace(np.dot(self, sigma_y)).real
+        bz = np.trace(np.dot(self, sigma_z)).real
+        return np.array([bx, by, bz])
     
     def conjugate_transpose(self) -> np.ndarray:
         """

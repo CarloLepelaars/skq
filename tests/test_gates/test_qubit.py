@@ -5,10 +5,10 @@ from skq.gates.qubit import *
 
 
 def test_base_gate():
-    gate = QubitGate([[1, 0], [0, 1]])
-    assert gate.is_unitary()
-    assert gate.is_hermitian()
-    assert isinstance(gate.trace(), complex)
+    gate = QubitGate([[1, 0], [0, 1]]) # Identity gate
+    assert gate.is_unitary(), "Gate should be unitary"
+    assert gate.is_hermitian(), "Identity Gate should be Hermitian"
+    assert isinstance(gate.trace(), complex), "Trace should be a complex number"
     np.testing.assert_array_equal(gate.eigenvalues(), [1, 1])
     np.testing.assert_array_equal(gate.eigenvectors(), [[1, 0], [0, 1]])
 
@@ -24,19 +24,34 @@ def test_single_qubit_clifford_gates():
     """ Single qubit Clifford gates"""
     for GateClass in [IGate, XGate, YGate, ZGate, HGate, SGate]:
         gate = GateClass()
-        assert gate.is_unitary()
-        assert gate.num_qubits() == 1
-        assert not gate.is_multi_qubit()
-        assert gate.is_clifford()
+        assert gate.is_unitary(), f"{GateClass.__name__} should be unitary"
+        assert gate.num_qubits() == 1, f"{GateClass.__name__} should operate on 1 qubit"
+        assert not gate.is_multi_qubit(), f"{GateClass.__name__} should not be a multi-qubit gate"
+        assert gate.is_clifford(), f"{GateClass.__name__} should be a single-qubit Clifford gate"
+
+    # Algebraic equivalences
+    # S = T^2 = P(pi/2)
+    np.testing.assert_almost_equal(SGate(), TGate()**2)
+    np.testing.assert_almost_equal(SGate(), PhaseGate(np.pi / 2))
+    # H = (X + Z) / sqrt(2)
+    np.testing.assert_almost_equal(HGate(), (XGate() + ZGate()) / np.sqrt(2))
+    # Z = HXH = P(pi)
+    np.testing.assert_almost_equal(ZGate(), HGate() @ XGate() @ HGate())
+    np.testing.assert_almost_equal(ZGate(), PhaseGate(np.pi))
+    # X = HZH
+    np.testing.assert_almost_equal(XGate(), HGate() @ ZGate() @ HGate())
 
 def test_t_gate():
     t_gate = TGate()
-    assert t_gate.is_unitary()
-    assert t_gate.num_qubits() == 1
-    assert not t_gate.is_multi_qubit()
-    assert not t_gate.is_pauli()
-    assert not t_gate.is_clifford()
-    assert hasattr(t_gate, "theta")
+    assert isinstance(t_gate, PhaseGate), "TGate should be an instance of PhaseGate"
+    assert t_gate.is_unitary(), "TGate should be unitary"
+    assert t_gate.num_qubits() == 1, "TGate should operate on 1 qubit"
+    assert not t_gate.is_multi_qubit(), "TGate should not be a multi-qubit gate"
+    assert not t_gate.is_pauli(), "TGate should not be a Pauli gate"
+    assert not t_gate.is_clifford(), "TGate should not be a Clifford gate"
+    assert hasattr(t_gate, "theta"), "TGate should have a theta attribute"
+    # T = P(pi/4)
+    np.testing.assert_almost_equal(t_gate, PhaseGate(np.pi / 4))
 
 def test_rotation_gates():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]

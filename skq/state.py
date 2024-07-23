@@ -82,6 +82,13 @@ class Statevector(np.ndarray):
         """
         return Statevector(self[::-1])
     
+    def bloch_vector(self) -> np.ndarray:
+        """
+        Return the Bloch vector representation of the state vector.
+        :return: Bloch vector representation of the quantum state
+        """
+        return self.density_matrix().bloch_vector()
+    
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
         Convert the state vector to a Qiskit QuantumCircuit object.
@@ -97,4 +104,24 @@ class Statevector(np.ndarray):
         :return: State vector representation of the quantum state
         """
         return Statevector(statevector.data[::-1])
+    
+class ZeroState(Statevector):
+    """ Zero state |0...0> """
+    def __new__(cls, num_qubits: int):
+        return super().__new__(cls, [1] + [0] * (2 ** num_qubits - 1))
+    
+class OneState(Statevector):
+    """ One state |1...1> """
+    def __new__(cls, num_qubits: int):
+        return super().__new__(cls, [0] * (2 ** num_qubits - 1) + [1])
+    
+class PlusState(Statevector):
+    """ Single Qubit |+> superpoisition state """
+    def __new__(cls):
+        return super().__new__(cls, [1, 1] / np.sqrt(2))
+    
+class MinusState(Statevector):
+    """ Single Qubit |-> superposition state """
+    def __new__(cls):
+        return super().__new__(cls, [1, -1] / np.sqrt(2))
     
