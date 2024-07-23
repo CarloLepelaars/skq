@@ -36,7 +36,7 @@ class DensityMatrix(np.ndarray):
     
     def probabilities(self) -> float:
         """ Return the probabilities of all possible states. """
-        return np.real(np.diag(self))
+        return np.diag(self).real
 
     def eigenvalues(self) -> np.ndarray:
         """ Return the eigenvalues of the density matrix. """
@@ -47,11 +47,20 @@ class DensityMatrix(np.ndarray):
         _, vectors = np.linalg.eig(self)
         return vectors
     
+    def trace_norm(self) -> float:
+        """ Return the trace norm of the density matrix. """
+        return np.trace(np.sqrt(self.conjugate_transpose() @ self))
+    
+    def distance(self, other: 'DensityMatrix') -> float:
+        """ Return the trace norm distance between two density matrices. """
+        assert isinstance(other, DensityMatrix), "'other' argument must be a valid DensityMatrix object."
+        return self.trace_norm(self - other)
+    
     def conjugate_transpose(self) -> np.ndarray:
         """
         Return the conjugate transpose (Hermitian adjoint) of the density matrix.
-        1. Transpose the matrix
-        2. Take the complex conjugate of each element (Flip the sign of the imaginary part)
+        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
+        2. Transpose the matrix
         """
         return self.conj().T
 

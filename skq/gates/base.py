@@ -62,8 +62,8 @@ class BaseGate(np.ndarray):
     def conjugate_transpose(self) -> np.ndarray:
         """
         Return the conjugate transpose (Hermitian adjoint) of the gate.
-        1. Transpose the matrix
-        2. Take the complex conjugate of each element (Flip the sign of the imaginary part)
+        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
+        2. Transpose the matrix
         """
         return self.conj().T
     
