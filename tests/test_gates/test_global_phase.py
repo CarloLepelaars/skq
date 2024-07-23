@@ -3,17 +3,17 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.gates.quscalar import *
+from skq.gates.global_phase import *
 
 
 def test_base_gate():
-    qu_scalar = QuScalarGate(np.pi/4)
+    qu_scalar = GlobalPhaseGate(np.pi/4)
     assert qu_scalar.scalar == pytest.approx(np.exp(1j * np.pi/4))
     assert qu_scalar.scalar == pytest.approx(np.sqrt(2)/2 + 1j * np.sqrt(2)/2)
     assert qu_scalar.phase == pytest.approx(np.pi/4)
     assert qu_scalar.inverse().phase == pytest.approx(-np.pi/4)
-    assert qu_scalar.combine(QuScalarGate(-np.pi)).phase == pytest.approx(-3*np.pi/4)
-    assert qu_scalar.multiply(QuScalarGate(np.pi/2)).phase == pytest.approx(3*np.pi/4)
+    assert qu_scalar.combine(GlobalPhaseGate(-np.pi)).phase == pytest.approx(-3*np.pi/4)
+    assert qu_scalar.multiply(GlobalPhaseGate(np.pi/2)).phase == pytest.approx(3*np.pi/4)
     # Qiskit conversion comparisons
     qiskit_gate = qu_scalar.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.GlobalPhaseGate)
@@ -61,7 +61,7 @@ def test_full_phase():
     assert full_phase.multiply(FullPhase()).phase == pytest.approx(0)
     
 def test_to_qiskit():
-    qu_scalar = QuScalarGate(np.pi/4)
+    qu_scalar = GlobalPhaseGate(np.pi/4)
     qiskit_gate = qu_scalar.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.GlobalPhaseGate)
     assert qiskit_gate.params[0] == qu_scalar.phase
@@ -69,17 +69,17 @@ def test_to_qiskit():
 
 def test_from_qiskit():
     qiskit_gate = qiskit.circuit.library.GlobalPhaseGate(np.pi/4)
-    qu_scalar = QuScalarGate.from_qiskit(qiskit_gate)
+    qu_scalar = GlobalPhaseGate.from_qiskit(qiskit_gate)
     assert qu_scalar.phase == pytest.approx(np.pi/4)
 
 def test_to_pennylane():
-    qu_scalar = QuScalarGate(np.pi/4)
+    qu_scalar = GlobalPhaseGate(np.pi/4)
     pennylane_gate = qu_scalar.to_pennylane()
     assert isinstance(pennylane_gate, qml.GlobalPhase)
     assert pennylane_gate.parameters[0] == qu_scalar.phase
 
 def test_from_pennylane():
     pennylane_gate = qml.GlobalPhase(np.pi/4)
-    qu_scalar = QuScalarGate.from_pennylane(pennylane_gate)
+    qu_scalar = GlobalPhaseGate.from_pennylane(pennylane_gate)
     assert qu_scalar.phase == pytest.approx(np.pi/4)
     
