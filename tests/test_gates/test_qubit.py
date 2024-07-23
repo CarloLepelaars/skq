@@ -1,6 +1,8 @@
 import pytest
 import qiskit
 import numpy as np
+import pennylane as qml
+
 from skq.gates.qubit import *
 
 
@@ -251,11 +253,31 @@ def test_to_qiskit():
 
 def test_from_qiskit():
     qiskit_gate = qiskit.circuit.library.XGate()
-    gate = QubitGate.from_qiskit(qiskit_gate=qiskit_gate)
+    gate = QubitGate.from_qiskit(gate=qiskit_gate)
     assert isinstance(gate, QubitGate)
     np.testing.assert_array_equal(gate, qiskit_gate.to_matrix())
     assert gate.is_unitary()
     assert gate.num_qubits() == 1
     assert gate.is_pauli()
     assert gate.is_clifford()    
+
+def test_to_pennylane():
+    gate = XGate()
+    pennylane_gate = gate.to_pennylane(wires=0)
+    assert isinstance(pennylane_gate, qml.operation.Operation)
+    np.testing.assert_array_equal(pennylane_gate.matrix(), gate)
+
+    gate = IGate()
+    pennylane_gate = gate.to_pennylane(wires=0)
+    assert isinstance(pennylane_gate, qml.operation.Operation)
+    np.testing.assert_array_equal(pennylane_gate.matrix(), gate)
+
+def test_from_pennylane():
+    pennylane_gate = qml.PauliX(wires=[0])
+    gate = QubitGate.from_pennylane(gate=pennylane_gate)
+    assert isinstance(gate, QubitGate)
+    np.testing.assert_array_equal(gate, pennylane_gate.matrix())
+    assert gate.num_qubits() == 1
+    assert gate.is_pauli()
+    assert gate.is_clifford()
     

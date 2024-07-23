@@ -1,7 +1,10 @@
 import qiskit
 import numpy as np
 import scipy as sp
+import pennylane as qml
+
 from skq.gates.base import BaseGate
+
 
 # I, X, Y, Z Pauli matrices
 SINGLE_QUBIT_PAULI_MATRICES = [
@@ -91,22 +94,7 @@ class QubitGate(BaseGate):
             return any(np.allclose(self, clifford) for clifford in TWO_QUBIT_CLIFFORD_MATRICES)
         else:
             return NotImplementedError("Clifford check not supported for gates with more than 2 qubits")
-
-    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
-        """ Convert gate to a Qiskit Gate object. """
-        gate_name = self.__class__.__name__
-        print(f"No Qiskit alias (to_qiskit) defined for '{gate_name}'. Initializing as UnitaryGate.")
-        return qiskit.circuit.library.UnitaryGate(self, label=gate_name)
         
-    @staticmethod 
-    def from_qiskit(qiskit_gate: qiskit.circuit.gate.Gate) -> 'CustomQubitGate':
-        """ 
-        Convert a Qiskit Gate to scikit-q CustomGate. 
-        :param qiskit_gate: Qiskit Gate object
-        """
-        assert isinstance(qiskit_gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
-        return CustomQubitGate(qiskit_gate.to_matrix())
-    
     def sqrt(self) -> 'CustomQubitGate':
         """ Compute the square root of the gate. """
         sqrt_matrix = sp.linalg.sqrtm(self)
@@ -116,6 +104,37 @@ class QubitGate(BaseGate):
         """ Compute the Kronecker product of two gates. """
         kron_matrix = np.kron(self, other)
         return CustomQubitGate(kron_matrix)
+
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        """ Convert gate to a Qiskit Gate object. """
+        gate_name = self.__class__.__name__
+        print(f"No to_qiskit defined for '{gate_name}'. Initializing as UnitaryGate.")
+        return qiskit.circuit.library.UnitaryGate(self, label=gate_name)
+        
+    @staticmethod 
+    def from_qiskit(gate: qiskit.circuit.gate.Gate) -> 'CustomQubitGate':
+        """ 
+        Convert a Qiskit Gate to skq CustomGate. 
+        :param gate: Qiskit Gate object
+        """
+        assert isinstance(gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
+        return CustomQubitGate(gate.to_matrix())
+    
+    def to_pennylane(self) -> qml.QubitUnitary:
+        """ Convert gate to a PennyLane QubitUnitary. """
+        gate_name = self.__class__.__name__
+        print(f"No to_pennylane defined for '{gate_name}'. Initializing as QubitUnitary.")
+        return qml.QubitUnitary(self, wires=list(range(self.num_qubits())))
+    
+    @staticmethod
+    def from_pennylane(gate: qml.operation.Operation) -> 'CustomQubitGate':
+        """ 
+        Convert a PennyLane Operation to skqq CustomGate. 
+        :param gate: PennyLane Operation object
+        """
+        assert isinstance(gate, qml.operation.Operation), "Input must be a PennyLane Operation object"
+        return CustomQubitGate(gate.matrix())
+
 
 class CustomQubitGate(QubitGate):
     """ Bespoke Qubit gate. """

@@ -1,5 +1,6 @@
 import qiskit
 import numpy as np
+import pennylane as qml
 
 from skq.gates.base import BaseGate
 
@@ -57,5 +58,21 @@ class QuScalarGate(BaseGate):
         if not isinstance(qiskit_gate, qiskit.circuit.library.GlobalPhaseGate):
             raise ValueError(f"Expected GlobalPhaseGate, got {type(qiskit_gate)}.")
         phase = qiskit_gate.params[0]
+        return QuScalarGate(phase)
+    
+    def to_pennylane(self) -> qml.GlobalPhase:
+        """ Convert QuScalar to a PennyLane GlobalPhase. """
+        return qml.GlobalPhase(self.phase)
+    
+    @staticmethod
+    def from_pennylane(pennylane_gate: qml.operation.Operation) -> "QuScalarGate":
+        """ 
+        Convert a PennyLane GlobalPhase to a QuScalar object. 
+        :param pennylane_gate: PennyLane GlobalPhase object
+        :return: A QuScalar object
+        """
+        if not isinstance(pennylane_gate, qml.GlobalPhase):
+            raise ValueError(f"Expected GlobalPhase, got {type(pennylane_gate)}.")
+        phase = pennylane_gate.parameters[0]
         return QuScalarGate(phase)
     

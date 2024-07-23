@@ -1,5 +1,6 @@
 import qiskit
 import numpy as np
+import pennylane as qml
 
 from skq.gates.qubit.base import QubitGate
 
@@ -16,6 +17,9 @@ class IGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.IGate:
         return qiskit.circuit.library.IGate()
     
+    def to_pennylane(self, wires: list[int] | int) -> qml.I:
+        return qml.I(wires=wires)
+    
 class XGate(QubitGate):
     """ Pauli X (NOT) Gate. """
     def __new__(cls):
@@ -24,6 +28,9 @@ class XGate(QubitGate):
     
     def to_qiskit(self) -> qiskit.circuit.library.XGate:
         return qiskit.circuit.library.XGate()
+    
+    def to_pennylane(self, wires: list[int] | int) -> qml.X:
+        return qml.X(wires=wires)
 
 class YGate(QubitGate):
     """ Pauli Y gate. """
@@ -33,6 +40,9 @@ class YGate(QubitGate):
     
     def to_qiskit(self) -> qiskit.circuit.library.YGate:
         return qiskit.circuit.library.YGate()
+    
+    def to_pennylane(self, wires: list[int] | int) -> qml.Y:
+        return qml.Y(wires=wires)
     
 class ZGate(QubitGate):
     """ Pauli Z gate. 
@@ -44,6 +54,9 @@ class ZGate(QubitGate):
     
     def to_qiskit(self) -> qiskit.circuit.library.ZGate:
         return qiskit.circuit.library.ZGate()
+    
+    def to_pennylane(self) -> qml.Z:
+        return qml.Z()
 
 class HGate(QubitGate):
     """ 
@@ -57,6 +70,9 @@ class HGate(QubitGate):
     
     def to_qiskit(self) -> qiskit.circuit.library.HGate:
         return qiskit.circuit.library.HGate()
+    
+    def to_pennylane(self, wires: list[int] | int) -> qml.Hadamard:
+        return qml.Hadamard(wires=wires)
     
 class PhaseGate(QubitGate):
     """ General phase shift gate. 
