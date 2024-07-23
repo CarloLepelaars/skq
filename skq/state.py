@@ -40,6 +40,10 @@ class Statevector(np.ndarray):
         """ Check if the state vector represents a multi-qubit state. """
         return self.num_qubits() > 1
     
+    def is_indistinguishable(self, other: 'Statevector') -> bool:
+        """ Check if two state vectors are indistinguishable by checking if their density matrices are the same. """
+        return np.allclose(self.density_matrix(), other.density_matrix())
+    
     def density_matrix(self) -> DensityMatrix:
         """ Return the density matrix representation of the state vector. """
         return DensityMatrix(np.outer(self, self.conj()))
