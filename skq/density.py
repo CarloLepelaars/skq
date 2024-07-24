@@ -89,6 +89,17 @@ class DensityMatrix(np.ndarray):
         2. Transpose the matrix
         """
         return self.conj().T
+    
+    @staticmethod
+    def from_probabilities(probabilities: np.array) -> 'DensityMatrix':
+        """
+        Create a density matrix from a list of probabilities.
+        :param probabilities: A 1D array of probabilities
+        :return: Density matrix
+        """
+        assert np.isclose(np.sum(probabilities), 1), f"Probabilities must sum to one. Got sum: {np.sum(probabilities)}"
+        assert len(probabilities.shape) == 1, f"Probabilities must be a 1D array. Got shape: {probabilities.shape}"
+        return DensityMatrix(np.diag(probabilities))
 
 
 def schmidt_decomposition(state_vector: np.array) -> tuple[np.array, np.array, np.array]:
