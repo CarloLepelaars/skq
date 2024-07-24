@@ -1,6 +1,32 @@
 import pytest
 import numpy as np
-from skq.density import schmidt_decomposition
+from skq.state import Statevector
+from skq.density import DensityMatrix, schmidt_decomposition
+
+def test_zero_and_one_density_matrix():
+    # Zero state |0⟩
+    zero_state = Statevector([1, 0])
+    zero_density_matrix = zero_state.density_matrix()
+    assert np.allclose(zero_density_matrix, np.array([[1, 0], 
+                                                      [0, 0]]))
+
+    # One state |1⟩
+    one_state = Statevector([0, 1])
+    one_density_matrix = one_state.density_matrix()
+    assert np.allclose(one_density_matrix, np.array([[0, 0], 
+                                                     [0, 1]]))
+    
+def test_density_mixed_state():
+    # Mixed state |ψ⟩ = 0.5 |0⟩⟨0| + 0.5 |1⟩⟨1|
+    mixed_state = np.array([[0.5, 0], 
+                            [0, 0.5]])
+    mixed_density_matrix = DensityMatrix(mixed_state)
+    assert mixed_density_matrix.is_mixed()
+    assert np.allclose(mixed_density_matrix, np.array([[0.5, 0], 
+                                                       [0, 0.5]]))
+    assert np.allclose(mixed_density_matrix.probabilities(), [0.5, 0.5])
+    assert mixed_density_matrix.num_qubits() == 1
+    assert np.allclose(mixed_density_matrix.bloch_vector(), np.array([0, 0, 0]))
 
 def test_schmidt_decomposition():
     # Schmidt decomposition is not applicable for single qubit states
