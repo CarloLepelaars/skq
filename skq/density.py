@@ -85,6 +85,16 @@ class DensityMatrix(np.ndarray):
         """
         return self.conj().T
     
+    def kron(self, other: 'DensityMatrix') -> 'DensityMatrix':
+        """
+        Compute the Kronecker (tensor) product of two density matrices.
+        This can be used to create so-called "product states" that represent 
+        the independence between two quantum systems.
+        :param other: Density matrix
+        :return: Kronecker product of the two density matrices
+        """
+        return DensityMatrix(np.kron(self, other))
+    
     @staticmethod
     def from_probabilities(probabilities: np.array) -> 'DensityMatrix':
         """
