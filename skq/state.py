@@ -92,7 +92,7 @@ class Statevector(np.ndarray):
     
     def bloch_vector(self) -> np.ndarray:
         """
-        Return the Bloch vector representation of the state vector.
+        Return the Bloch vector representation of the state vector using the (pure) density matrix.
         :return: Bloch vector representation of the quantum state
         """
         return self.density_matrix().bloch_vector()

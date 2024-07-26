@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.linalg import svd
 
+from skq.gates.qubit import XGate, YGate, ZGate
+
 
 class DensityMatrix(np.ndarray):
     """
@@ -68,18 +70,11 @@ class DensityMatrix(np.ndarray):
         """ Calculate the Bloch vector of the density matrix. """
         if self.num_qubits() > 1:
             raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
-        # Pauli matrices
-        sigma_x = np.array([[0, 1], 
-                            [1, 0]])
-        sigma_y = np.array([[0, -1j], 
-                            [1j, 0]])
-        sigma_z = np.array([[1, 0], 
-                            [0, -1]])
         
         # Bloch vector components
-        bx = np.trace(np.dot(self, sigma_x)).real
-        by = np.trace(np.dot(self, sigma_y)).real
-        bz = np.trace(np.dot(self, sigma_z)).real
+        bx = np.trace(np.dot(self, XGate())).real
+        by = np.trace(np.dot(self, YGate())).real
+        bz = np.trace(np.dot(self, ZGate())).real
         return np.array([bx, by, bz])
     
     def conjugate_transpose(self) -> np.ndarray:
