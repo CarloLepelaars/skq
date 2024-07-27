@@ -115,13 +115,15 @@ class Statevector(np.ndarray):
         """
         return Statevector(statevector.data[::-1])
     
-    def to_pennylane(self) -> qml.QubitStateVector:
+    def to_pennylane(self, wires: list[int] | int = None) -> qml.QubitStateVector:
         """
         Convert the state vector to a PennyLane QubitStateVector object.
         PennyLane uses big-endian convention for state vectors.
+        :param wires: List of wires to apply the state vector to
         :return: PennyLane QubitStateVector object
         """
-        return qml.QubitStateVector(self, wires=range(self.num_qubits()))
+        wires = wires if wires is not None else range(self.num_qubits())
+        return qml.QubitStateVector(self, wires=wires)
     
     @staticmethod
     def from_pennylane(statevector: qml.QubitStateVector) -> "Statevector":

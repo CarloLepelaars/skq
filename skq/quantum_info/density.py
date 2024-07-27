@@ -1,5 +1,6 @@
 import qiskit
 import numpy as np
+import pennylane as qml
 
 from skq.gates.qubit import XGate, YGate, ZGate
 
@@ -110,6 +111,24 @@ class DensityMatrix(np.ndarray):
         :return: DensityMatrix object
         """
         return DensityMatrix(density_matrix.data)
+    
+    def to_pennylane(self, wires: list[int] | int = None) -> qml.QubitDensityMatrix:
+        """
+        Convert the density matrix to a PennyLane QubitDensityMatrix.
+        :param wires: List of wires to apply the density matrix to
+        :return: PennyLane QubitDensityMatrix object
+        """
+        wires = wires if wires is not None else range(self.num_qubits())
+        return qml.QubitDensityMatrix(self, wires=wires)
+    
+    @staticmethod
+    def from_pennylane(density_matrix: qml.QubitDensityMatrix) -> "DensityMatrix":
+        """
+        Convert a PennyLane QubitDensityMarix object to a scikit-q StateVector.
+        :param density_matrix: PennyLane QubitDensityMatrix object
+        :return: scikit-q StateVector object
+        """
+        return DensityMatrix(density_matrix.data[0])
     
     @staticmethod
     def from_probabilities(probabilities: np.array) -> 'DensityMatrix':
