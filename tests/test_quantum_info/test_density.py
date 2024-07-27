@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
-from skq.state import Statevector
-from skq.density import DensityMatrix, schmidt_decomposition
+from skq.quantum_info import Statevector
+from skq.quantum_info import DensityMatrix, schmidt_decomposition
 
 def test_zero_and_one_density_matrix():
     # Zero state |0⟩

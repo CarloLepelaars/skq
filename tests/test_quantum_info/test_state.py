@@ -3,8 +3,8 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.state import Statevector
-from skq.density import DensityMatrix
+from skq.quantum_info import Statevector
+from skq.quantum_info import DensityMatrix
 
 def test_statevector_initialization():
     # |00>

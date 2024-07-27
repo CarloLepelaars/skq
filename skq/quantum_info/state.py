@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.density import DensityMatrix
+from skq.quantum_info.density import DensityMatrix
 
 
 class Statevector(np.ndarray):
