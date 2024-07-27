@@ -14,7 +14,7 @@ class DensityMatrix(np.ndarray):
         obj = arr.view(cls)
         assert obj.is_hermitian(), "Density matrix must be Hermitian."
         assert obj.is_positive_semidefinite(), "Density matrix must be positive semidefinite (All eigenvalues >= 0)."
-        assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one."
+        assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one. Normalize to unit trace if you want to use this matrix as a DensityMatrix."
         return obj
     
     def is_hermitian(self) -> bool:

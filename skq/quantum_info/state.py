@@ -17,7 +17,7 @@ class Statevector(np.ndarray):
         obj = arr.view(cls)
         assert obj.is_1d(), "State vector must be 1D."
         assert obj.is_normalized(), "State vector must be normalized."
-        assert obj.is_power_of_two_len(), "State vector length must be a power of 2."
+        assert obj.is_power_of_two_len(), "State vector length must be a least length 2 and a power of 2."
         return obj
     
     def is_1d(self) -> bool:
@@ -31,7 +31,7 @@ class Statevector(np.ndarray):
     def is_power_of_two_len(self) -> bool:
         """ Check if a number is a power of two """
         n = len(self)
-        return (n > 0) and (n & (n - 1)) == 0
+        return n >= 2 and (n & (n - 1)) == 0
     
     def num_qubits(self) -> int:
         """ Return the number of qubits in the state vector. """

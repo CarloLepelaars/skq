@@ -1,5 +1,6 @@
-from skq.gates.qubit.base import QubitGate
 from skq.gates.qubit.multi import *
+from skq.quantum_info import Statevector
+from skq.gates.qubit.base import QubitGate
 from skq.transformers.base import BaseQubitTransformer
 
 
@@ -14,6 +15,19 @@ class MultiQubitTransformer(BaseQubitTransformer):
         super().__init__(gate=gate, qubits=qubits)
         assert isinstance(qubits, list), "MultiQubitTransformer must be provided with a list of qubit indices."
         assert len(qubits) == gate.num_qubits(), f"Number of qubits in gate ({gate.num_qubits()}) must match the number of defined qubits in MultiQubitTransformer ({len(qubits)})."
+
+class PhaseOracleTransformer(MultiQubitTransformer):
+    def __init__(self, target_state: np.ndarray):
+        self.target_state = Statevector(target_state)
+        self.n_qubits = self.target_state.num_qubits()
+        self.oracle_gate = PhaseOracleGate(self.target_state)
+        super().__init__(gate=self.oracle_gate, qubits=list(range(self.n_qubits)))
+
+class GroverDiffusionTransformer(MultiQubitTransformer):
+    def __init__(self, n_qubits: int):
+        self.n_qubits = n_qubits
+        self.diffusion_gate = GroverDiffusionGate(n_qubits)
+        super().__init__(gate=self.diffusion_gate, qubits=list(range(n_qubits)))
 
 class CXTransformer(MultiQubitTransformer):
     """ Controlled-X (CNOT) gate """

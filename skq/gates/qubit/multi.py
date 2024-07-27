@@ -1,9 +1,75 @@
 import qiskit
 import numpy as np
 
+from skq.quantum_info import Statevector
 from skq.gates.qubit.base import QubitGate
 from skq.gates.qubit.single import XGate, YGate, ZGate, HGate
 
+class PhaseOracleGate(QubitGate):
+    """
+    Phase Oracle as used in Grover's search algorithm.
+    :param target_state: The target state to mark.
+    target_state is assumed to be in Big-Endian format.
+    """
+    def __new__(cls, target_state: np.ndarray):
+        state = Statevector(target_state)
+        n_qubits = state.num_qubits()
+        identity = MIGate(n_qubits)
+        target_index = np.argmax(target_state)
+        phase_inversion = MIGate(n_qubits)
+        phase_inversion[target_index, target_index] = -1
+        oracle_matrix = identity - 2 * np.outer(target_state, target_state.conj())
+        return super().__new__(cls, oracle_matrix)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        reversed_matrix = self[::-1, ::-1]
+        return qiskit.circuit.library.UnitaryGate(reversed_matrix, label='PhaseOracle')
+    
+class EqualSuperpositionGate(QubitGate):
+    """
+    Equal Superposition Matrix Gate used in Grover's diffusion operator.
+    :param n_qubits: The number of qubits in the system.
+    """
+    def __new__(cls, n_qubits: int):
+        assert n_qubits >= 1, "EqualSuperpositionGate must have at least one qubit."
+        size = 2 ** n_qubits
+        H = np.ones((size, size)) / size
+        return super().__new__(cls, H)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        reversed_matrix = self[::-1, ::-1]
+        return qiskit.circuit.library.UnitaryGate(reversed_matrix, label='EqualSuperposition')
+    
+class GroverDiffusionGate(QubitGate):
+    """
+    Grover Diffusion Operator Gate as used in Grover's search algorithm.
+    This gate amplifies the amplitude of the marked state.
+    :param n_qubits: The number of qubits in the system.
+    """
+    def __new__(cls, n_qubits: int):
+        assert n_qubits >= 1, "GroverDiffusionGate must have at least one qubit."
+        diffusion_matrix = 2 * EqualSuperpositionGate(n_qubits) - MIGate(n_qubits)
+        return super().__new__(cls, diffusion_matrix)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        reversed_matrix = self[::-1, ::-1]
+        return qiskit.circuit.library.UnitaryGate(reversed_matrix, label='GroverDiffusion')
+    
+class MIGate(QubitGate):
+    """ 
+    Multi-qubit identity gate. 
+    :param num_qubits: Number of qubits in the system.
+    """
+    def __new__(cls, num_qubits: int):
+        assert num_qubits >= 1, "MultiIGate must have at least one qubit."
+        return super().__new__(cls, np.eye(2 ** num_qubits))
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # No endianness conversion needed for the identity gate
+        return qiskit.circuit.library.UnitaryGate(self, label=f'I_{self.num_qubits()}q')
 
 class CXGate(QubitGate):
     """ 
