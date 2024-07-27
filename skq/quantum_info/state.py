@@ -118,7 +118,7 @@ class Statevector(np.ndarray):
         """
         Convert a Qiskit StateVector object to a scikit-q StateVector.
         Qiskit uses little-endian convention for state vectors.
-        :param statevector: Qiiskit StateVector object
+        :param statevector: Qiskit StateVector object
         :return: scikit-q StateVector object
         """
         return Statevector(statevector.data[::-1])

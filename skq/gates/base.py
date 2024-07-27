@@ -1,5 +1,6 @@
 import qiskit
 import numpy as np
+import pennylane as qml
 
 
 class BaseGate(np.ndarray):
@@ -108,6 +109,12 @@ class BaseGate(np.ndarray):
         assert self.num_levels() == other.num_levels(), "Gates must have the same number of rows for the Hilbert-Schmidt inner product."
         return np.trace(self.conjugate_transpose() @ other)
     
+    def big_to_little_endian(self) -> 'BaseGate':
+        """Convert a gate matrix from big-endian to little-endian."""
+        num_qubits = self.num_qubits()
+        perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
+        return self[np.ix_(perm, perm)]
+    
     def to_qiskit(self):
         """ Convert gate to a Qiskit Gate object. """
         raise NotImplementedError(f"Conversion to Qiskit Gate is not implemented for {self.__class__.__name__}.")
@@ -118,3 +125,9 @@ class BaseGate(np.ndarray):
         :param qiskit_gate: Qiskit Gate object
         """
         return NotImplementedError(f"Conversion from Qiskit Gate is not implemented for {self.__class__.__name__}.")
+    
+    def to_pennylane(self):
+        raise NotImplementedError(f"Conversion to PennyLane is not implemented for {self.__class__.__name__}.")
+    
+    def from_pennylane(self, pennylane_gate: qml.operation.Operation):
+        return NotImplementedError(f"Conversion from PennyLane is not implemented for {self.__class__.__name__}.")

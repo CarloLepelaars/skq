@@ -106,30 +106,42 @@ class QubitGate(BaseGate):
         return CustomQubitGate(kron_matrix)
 
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
-        """ Convert gate to a Qiskit Gate object. """
+        """ 
+        Convert gate to a Qiskit Gate object. 
+        Qiskit using little endian convention, so we permute the order of the qubits.
+        :return: Qiskit UnitaryGate object
+        """
         gate_name = self.__class__.__name__
         print(f"No to_qiskit defined for '{gate_name}'. Initializing as UnitaryGate.")
-        return qiskit.circuit.library.UnitaryGate(self, label=gate_name)
+        return qiskit.circuit.library.UnitaryGate(self.big_to_little_endian(), label=gate_name)
         
     @staticmethod 
     def from_qiskit(gate: qiskit.circuit.gate.Gate) -> 'CustomQubitGate':
         """ 
         Convert a Qiskit Gate to skq CustomGate. 
+        Qiskit using little endian convention, so we permute the order of the qubits.
         :param gate: Qiskit Gate object
         """
         assert isinstance(gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
-        return CustomQubitGate(gate.to_matrix())
+        return CustomQubitGate(QubitGate(gate.to_matrix()).big_to_little_endian())
     
-    def to_pennylane(self) -> qml.QubitUnitary:
-        """ Convert gate to a PennyLane QubitUnitary. """
+    def to_pennylane(self, wires: list[int] | int= None) -> qml.QubitUnitary:
+        """ 
+        Convert gate to a PennyLane QubitUnitary. 
+        PennyLane use the big endian convention, so no need to reverse the order of the qubits. 
+        :param wires: List of wires the gate acts on
+        :return: PennyLane QubitUnitary object
+        """
         gate_name = self.__class__.__name__
         print(f"No to_pennylane defined for '{gate_name}'. Initializing as QubitUnitary.")
-        return qml.QubitUnitary(self, wires=list(range(self.num_qubits())))
+        wires = wires if wires is not None else list(range(self.num_qubits()))
+        return qml.QubitUnitary(self, wires=wires)
     
     @staticmethod
     def from_pennylane(gate: qml.operation.Operation) -> 'CustomQubitGate':
         """ 
-        Convert a PennyLane Operation to skqq CustomGate. 
+        Convert a PennyLane Operation to skqq CustomGate.
+        PennyLane use the big endian convention, so no need to reverse the order of the qubits. 
         :param gate: PennyLane Operation object
         """
         assert isinstance(gate, qml.operation.Operation), "Input must be a PennyLane Operation object"
@@ -141,7 +153,4 @@ class CustomQubitGate(QubitGate):
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         return obj
-    
-    def to_qiskit(self) -> str:
-        return qiskit.circuit.library.UnitaryGate(self, label="CustomGate")
     
