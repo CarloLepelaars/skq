@@ -97,6 +97,14 @@ class Statevector(np.ndarray):
         """
         return self.density_matrix().bloch_vector()
     
+    def conjugate_transpose(self) -> np.ndarray:
+        """
+        Return the conjugate transpose (Hermitian adjoint) of the density matrix.
+        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
+        2. Transpose the matrix
+        """
+        return self.conj().T
+    
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
         Convert the state vector to a Qiskit QuantumCircuit object.

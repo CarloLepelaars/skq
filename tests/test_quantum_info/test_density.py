@@ -29,6 +29,33 @@ def test_density_mixed_state():
     assert mixed_density_matrix.num_qubits() == 1
     assert np.allclose(mixed_density_matrix.bloch_vector(), np.array([0, 0, 0]))
 
+def test_density_conjugate_transpose():
+    mixed_state = DensityMatrix(np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
+                                          [0.02-0.05j, 0.25+0.j, 0.0125+0.025j, 0.0125-0.0125j],
+                                          [0.0125+0.025j, 0.0125-0.025j, 0.25+0.j, 0.025+0.025j],
+                                          [0.0125-0.0125j, 0.0125+0.0125j, 0.025-0.025j, 0.25+0.j]]))
+    complex_conjugate = mixed_state.conjugate_transpose()
+    # Same as initial state because a DensityMatrix is Hermitian
+    expected_complex_conjugate = DensityMatrix(np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
+                                                         [0.02-0.05j, 0.25+0.j, 0.0125+0.025j, 0.0125-0.0125j],
+                                                         [0.0125+0.025j, 0.0125-0.025j, 0.25+0.j, 0.025+0.025j],
+                                                         [0.0125-0.0125j, 0.0125+0.0125j, 0.025-0.025j, 0.25+0.j]]))
+    np.testing.assert_array_almost_equal(complex_conjugate, expected_complex_conjugate)
+
+    # (A^H)^H = A
+    double_conjugate = complex_conjugate.conjugate_transpose()
+    np.testing.assert_array_almost_equal(double_conjugate, mixed_state)
+
+    # (A + B)^H = A^H + B^H
+    A_plus_B_conjugate = (mixed_state + mixed_state).conjugate_transpose()
+    A_conjugate_plus_B_conjugate = mixed_state.conjugate_transpose() + mixed_state.conjugate_transpose()
+    np.testing.assert_array_almost_equal(A_plus_B_conjugate, A_conjugate_plus_B_conjugate)
+
+    # (AB)^H = B^H A^H
+    AB_conjugate = (mixed_state @ mixed_state).conjugate_transpose()
+    BA_conjugate = mixed_state.conjugate_transpose() @ mixed_state.conjugate_transpose()
+    np.testing.assert_array_almost_equal(AB_conjugate, BA_conjugate)
+
 def test_density_from_to_qiskit():
     mixed_state = np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
                            [0.02-0.05j, 0.25+0.j, 0.0125+0.025j, 0.0125-0.0125j],

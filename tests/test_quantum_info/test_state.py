@@ -30,6 +30,27 @@ def test_statevector_initialization():
     with pytest.raises(AssertionError):
         Statevector([[1, 0], [0, 1]])
 
+def test_conjugate_transpose():
+    # Bell state (|00> + |11>) / sqrt(2)
+    state_vector = Statevector([1, 0, 0, 1] / np.sqrt(2))
+    complex_conjugate = state_vector.conjugate_transpose()
+    expected_complex_conjugate = np.array([1, 0, 0, 1]) / np.sqrt(2)
+    np.testing.assert_array_almost_equal(complex_conjugate, expected_complex_conjugate)
+
+    # (A^H)^H = A
+    double_conjugate = complex_conjugate.conjugate_transpose()
+    np.testing.assert_array_almost_equal(double_conjugate, state_vector)
+
+    # (A + B)^H = A^H + B^H
+    A_plus_B_conjugate = (state_vector + state_vector).conjugate_transpose()
+    A_conjugate_plus_B_conjugate = state_vector.conjugate_transpose() + state_vector.conjugate_transpose()
+    np.testing.assert_array_almost_equal(A_plus_B_conjugate, A_conjugate_plus_B_conjugate)
+
+    # (AB)^H = B^H A^H
+    AB_conjugate = (state_vector @ state_vector).conjugate_transpose()
+    BA_conjugate = state_vector.conjugate_transpose() @ state_vector.conjugate_transpose()
+    np.testing.assert_array_almost_equal(AB_conjugate, BA_conjugate)
+    
 def test_density_matrix():
     # |0><0|
     state_vector = Statevector([1, 0])
