@@ -1,4 +1,5 @@
 import pytest
+import qiskit
 import numpy as np
 from skq.quantum_info import Statevector
 from skq.quantum_info import DensityMatrix, schmidt_decomposition
@@ -28,51 +29,17 @@ def test_density_mixed_state():
     assert mixed_density_matrix.num_qubits() == 1
     assert np.allclose(mixed_density_matrix.bloch_vector(), np.array([0, 0, 0]))
 
-def test_schmidt_decomposition():
-    # Schmidt decomposition is not applicable for single qubit states
-    with pytest.raises(AssertionError):
-        schmidt_decomposition(np.array([1, 0]))
-    # Non-bipartite states
-    with pytest.raises(AssertionError):
-        schmidt_decomposition(np.array([1, 0, 0]))
+def test_density_from_to_qiskit():
+    mixed_state = np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
+                           [0.02-0.05j, 0.25+0.j, 0.0125+0.025j, 0.0125-0.0125j],
+                           [0.0125+0.025j, 0.0125-0.025j, 0.25+0.j, 0.025+0.025j],
+                           [0.0125-0.0125j, 0.0125+0.0125j, 0.025-0.025j, 0.25+0.j]])
+    mixed_density_matrix = DensityMatrix(mixed_state)
+    qiskit_density_matrix = mixed_density_matrix.to_qiskit()
+    assert isinstance(qiskit_density_matrix, qiskit.quantum_info.DensityMatrix)
+    assert np.allclose(qiskit_density_matrix.data, mixed_state)
 
-    # Basis state |00>
-    basis_state_00 = np.array([1, 0, 0, 0])
-    coeffs, basis_A, basis_B = schmidt_decomposition(basis_state_00)
-    assert np.allclose(coeffs, [1, 0])
-    assert np.allclose(basis_A[:, 0], [1, 0])
-    assert np.allclose(basis_B[:, 0], [1, 0])
-
-    # Bell state |ψ⟩ = (|00⟩ + |11⟩) / sqrt(2)
-    bell_state = np.array([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
-    coeffs, basis_A, basis_B = schmidt_decomposition(bell_state)
-    assert np.allclose(coeffs, [1/np.sqrt(2), 1/np.sqrt(2)])
-    assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
-    assert np.allclose(basis_B[:, 0], [1, 0]) or np.allclose(basis_B[:, 0], [0, 1])
-
-    # State |ψ⟩ = (|00⟩ + |01⟩ + |10⟩ + |11⟩) / 2
-    intricate_state = np.array([1/2, 1/2, 1/2, 1/2])
-    coeffs, basis_A, basis_B = schmidt_decomposition(intricate_state)
-    assert np.allclose(coeffs, [1, 0])
-    assert (np.allclose(basis_A[:, 0], [1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [1/np.sqrt(2), -1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [-1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [-1/np.sqrt(2), -1/np.sqrt(2)]))
-    assert (np.allclose(basis_B[:, 0], [1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [1/np.sqrt(2), -1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [-1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [-1/np.sqrt(2), -1/np.sqrt(2)]))
-
-    # State |ψ⟩ = (sqrt(3)/2 |00⟩ + 1/2 |11⟩)
-    intricate_state_2 = np.array([np.sqrt(3)/2, 0, 0, 1/2])
-    coeffs, basis_A, basis_B = schmidt_decomposition(intricate_state_2)
-    assert np.allclose(coeffs, [np.sqrt(3)/2, 1/2])
-    assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
-    assert np.allclose(basis_B[:, 0], [1, 0]) or np.allclose(basis_B[:, 0], [0, 1])
-
-    # Three-qubit GHZ state (i.e. maximum entanglement across 3 qubits) |ψ⟩ = (|000⟩ + |111⟩) / sqrt(2)
-    ghz_state = np.array([1/np.sqrt(2), 0, 0, 0, 0, 0, 0, 1/np.sqrt(2)])
-    coeffs, basis_A, basis_B = schmidt_decomposition(ghz_state)
-    assert np.allclose(coeffs, [1/np.sqrt(2), 1/np.sqrt(2)])
-    assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
-    assert (np.allclose(basis_B[:, 0], [1, 0, 0, 0]) or np.allclose(basis_B[:, 0], [0, 0, 0, 1]))
+    test_qiskit_density_matrix = qiskit.quantum_info.DensityMatrix(mixed_state)
+    skq_density_matrix = DensityMatrix.from_qiskit(test_qiskit_density_matrix)
+    assert isinstance(skq_density_matrix, DensityMatrix)
+    assert np.allclose(skq_density_matrix, test_qiskit_density_matrix.data)

@@ -1,5 +1,5 @@
+import qiskit
 import numpy as np
-from scipy.linalg import svd
 
 from skq.gates.qubit import XGate, YGate, ZGate
 
@@ -95,6 +95,22 @@ class DensityMatrix(np.ndarray):
         """
         return DensityMatrix(np.kron(self, other))
     
+    def to_qiskit(self) -> qiskit.quantum_info.DensityMatrix:
+        """
+        Convert the density matrix to a Qiskit DensityMatrix object.
+        :return: Qiskit DensityMatrix object
+        """
+        return qiskit.quantum_info.DensityMatrix(self)
+    
+    @staticmethod
+    def from_qiskit(density_matrix: qiskit.quantum_info.DensityMatrix) -> 'DensityMatrix':
+        """
+        Create a DensityMatrix object from a Qiskit DensityMatrix object.
+        :param density_matrix: Qiskit DensityMatrix object
+        :return: DensityMatrix object
+        """
+        return DensityMatrix(density_matrix.data)
+    
     @staticmethod
     def from_probabilities(probabilities: np.array) -> 'DensityMatrix':
         """
@@ -105,25 +121,4 @@ class DensityMatrix(np.ndarray):
         assert np.isclose(np.sum(probabilities), 1), f"Probabilities must sum to one. Got sum: {np.sum(probabilities)}"
         assert len(probabilities.shape) == 1, f"Probabilities must be a 1D array. Got shape: {probabilities.shape}"
         return DensityMatrix(np.diag(probabilities))
-
-
-def schmidt_decomposition(state_vector: np.array) -> tuple[np.array, np.array, np.array]:
-    """
-    Perform Schmidt decomposition on a bipartite quantum state.
-    :param state_vector: Bipartite quantum state vector
-    :return: Tuple of Schmidt coefficients, Basis A and Basis B
-    """
-    assert len(state_vector) > 2, "Invalid state vector: Schmidt decomposition is not applicable for single qubit states."
-    assert len(state_vector) % 2 == 0, "Invalid state vector: Not a bipartite state"
     
-    # Infer dimensions
-    N = len(state_vector)
-    dim_A = int(np.sqrt(N))
-    dim_B = N // dim_A
-
-    # SVD on the state matrix
-    state_matrix = state_vector.reshape(dim_A, dim_B)
-    U, S, Vh = svd(state_matrix)
-
-    # Coefficients (S), Basis A (U) and Basis B (Vh^dagger)
-    return S, U, Vh.conj().T

@@ -6,6 +6,7 @@ import pennylane as qml
 from skq.quantum_info import Statevector
 from skq.quantum_info import DensityMatrix
 
+
 def test_statevector_initialization():
     # |00>
     state_vector = Statevector([1, 0, 0, 0])
