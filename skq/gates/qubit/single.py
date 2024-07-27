@@ -55,8 +55,8 @@ class ZGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.ZGate:
         return qiskit.circuit.library.ZGate()
     
-    def to_pennylane(self) -> qml.Z:
-        return qml.Z()
+    def to_pennylane(self, wires: list[int] | int) -> qml.Z:
+        return qml.Z(wires=wires)
 
 class HGate(QubitGate):
     """ 

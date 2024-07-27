@@ -10,7 +10,7 @@ class DensityMatrix(np.ndarray):
     Density matrix representation of a quantum state.
     """
     def __new__(cls, input_array):
-        arr = np.asarray(input_array)
+        arr = np.asarray(input_array, dtype=complex)
         obj = arr.view(cls)
         assert obj.is_hermitian(), "Density matrix must be Hermitian."
         assert obj.is_positive_semidefinite(), "Density matrix must be positive semidefinite (All eigenvalues >= 0)."
@@ -21,9 +21,10 @@ class DensityMatrix(np.ndarray):
         """ Check if the density matrix is Hermitian: U = U^dagger. """
         return np.allclose(self, self.conjugate_transpose())
     
-    def is_positive_semidefinite(self) -> bool:
-        """ Check if the density matrix is positive semidefinite. """
-        return np.all(self.eigenvalues() >= 0)
+    def is_positive_semidefinite(self):
+        """ Check if the matrix is positive semidefinite. """
+        eigenvalues = np.linalg.eigvalsh(self)
+        return np.all(eigenvalues >= 0)
     
     def is_pure(self) -> bool:
         """ Check if the density matrix is a pure state. """

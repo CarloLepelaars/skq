@@ -13,7 +13,7 @@ class Statevector(np.ndarray):
     Big-endian -> Least significant qubit (LSB) is on the left. Like |q0 q1> where q0 is the LSB.
     """
     def __new__(cls, input_array):
-        arr = np.asarray(input_array)
+        arr = np.asarray(input_array, dtype=complex)
         obj = arr.view(cls)
         assert obj.is_1d(), "State vector must be 1D."
         assert obj.is_normalized(), "State vector must be normalized."
@@ -163,3 +163,40 @@ class MinusState(Statevector):
     def __new__(cls):
         return super().__new__(cls, [1, -1] / np.sqrt(2))
     
+class PhiPlusState(Statevector):
+    """ Bell state |Φ+> """
+    def __new__(cls):
+        return super().__new__(cls, [1, 0, 0, 1] / np.sqrt(2))
+    
+class PhiMinusState(Statevector):
+    """ Bell state |Φ-> """
+    def __new__(cls):
+        return super().__new__(cls, [1, 0, 0, -1] / np.sqrt(2))
+    
+class PsiPlusState(Statevector):
+    """ Bell state |Ψ+> """
+    def __new__(cls):
+        return super().__new__(cls, [0, 1, 1, 0] / np.sqrt(2))
+    
+class PsiMinusState(Statevector):
+    """ Bell state |Ψ-> """
+    def __new__(cls):
+        return super().__new__(cls, [0, 1, -1, 0] / np.sqrt(2))
+    
+class GHZState(Statevector):
+    """ GHZ state |000> + |111> """
+    def __new__(cls, num_qubits: int):
+        assert num_qubits >= 3, "GHZ state requires at least 3 qubits."
+        state = np.zeros(2 ** num_qubits)
+        state[0] = 1 / np.sqrt(2)
+        state[-1] = 1 / np.sqrt(2)
+        return super().__new__(cls, state)
+    
+class WState(Statevector):
+    """ W state |001> + |010> + |100> """
+    def __new__(cls, num_qubits: int):
+        assert num_qubits >= 3, "W state requires at least 3 qubits."
+        state = np.zeros(2 ** num_qubits)
+        for i in range(num_qubits):
+            state[2 ** i] = 1 / np.sqrt(num_qubits)
+        return super().__new__(cls, state)

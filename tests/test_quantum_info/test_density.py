@@ -8,6 +8,12 @@ def test_zero_and_one_density_matrix():
     # Zero state |0⟩
     zero_state = Statevector([1, 0])
     zero_density_matrix = zero_state.density_matrix()
+    assert isinstance(zero_density_matrix, DensityMatrix)
+    assert zero_density_matrix.is_pure()
+    assert zero_density_matrix.num_qubits() == 1
+    assert zero_density_matrix.is_multi_qubit() == False
+    assert zero_density_matrix.is_hermitian()
+    assert zero_density_matrix.dtype == complex
     assert np.allclose(zero_density_matrix, np.array([[1, 0], 
                                                       [0, 0]]))
 
@@ -22,6 +28,7 @@ def test_density_mixed_state():
     mixed_state = np.array([[0.5, 0], 
                             [0, 0.5]])
     mixed_density_matrix = DensityMatrix(mixed_state)
+    assert mixed_density_matrix.dtype == complex
     assert mixed_density_matrix.is_mixed()
     assert np.allclose(mixed_density_matrix, np.array([[0.5, 0], 
                                                        [0, 0.5]]))

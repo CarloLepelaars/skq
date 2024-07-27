@@ -3,7 +3,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.quantum_info import Statevector
+from skq.quantum_info.state import *
 from skq.quantum_info import DensityMatrix
 
 
@@ -11,11 +11,13 @@ def test_statevector_initialization():
     # |00>
     state_vector = Statevector([1, 0, 0, 0])
     assert isinstance(state_vector, Statevector)
+    assert state_vector.dtype == complex
     assert state_vector.is_normalized()
 
     # Bell state (|00> + |11>) / sqrt(2)
     state_vector = Statevector([1, 0, 0, 1] / np.sqrt(2))
     assert isinstance(state_vector, Statevector)
+    assert state_vector.dtype == complex
     assert state_vector.is_normalized()
     
     # Non-normalized state vector
@@ -50,7 +52,7 @@ def test_conjugate_transpose():
     AB_conjugate = (state_vector @ state_vector).conjugate_transpose()
     BA_conjugate = state_vector.conjugate_transpose() @ state_vector.conjugate_transpose()
     np.testing.assert_array_almost_equal(AB_conjugate, BA_conjugate)
-    
+
 def test_density_matrix():
     # |0><0|
     state_vector = Statevector([1, 0])
@@ -101,3 +103,81 @@ def test_from_pennylane():
     state_vector = Statevector.from_pennylane(pennylane_sv)
     assert isinstance(state_vector, Statevector)
     np.testing.assert_array_almost_equal(state_vector, pennylane_sv.data[0])
+
+def test_bell_states_initialization():
+    # Bell state |Φ+>
+    # (|00> + |11>) / sqrt(2)
+    phi_plus = PhiPlusState()
+    assert isinstance(phi_plus, Statevector)
+    np.testing.assert_array_almost_equal(phi_plus, [1, 0, 0, 1] / np.sqrt(2))
+    
+    # Bell state |Φ->
+    # (|00> - |11>) / sqrt(2)
+    phi_minus = PhiMinusState()
+    assert isinstance(phi_minus, Statevector)
+    np.testing.assert_array_almost_equal(phi_minus, [1, 0, 0, -1] / np.sqrt(2))
+    
+    # Bell state |Ψ+>
+    # (|01> + |10>) / sqrt(2)
+    psi_plus = PsiPlusState()
+    assert isinstance(psi_plus, Statevector)
+    np.testing.assert_array_almost_equal(psi_plus, [0, 1, 1, 0] / np.sqrt(2))
+    
+    # Bell state |Ψ->
+    # (|01> - |10>) / sqrt(2)
+    psi_minus = PsiMinusState()
+    assert isinstance(psi_minus, Statevector)
+    np.testing.assert_array_almost_equal(psi_minus, [0, 1, -1, 0] / np.sqrt(2))
+
+def test_ghz_state_initialization():
+    # GHZ state |000> + |111> for 3 qubits
+    ghz_state = GHZState(3)
+    assert isinstance(ghz_state, Statevector)
+    assert ghz_state.is_normalized()
+    expected_state = np.zeros(2**3)
+    expected_state[0] = 1 / np.sqrt(2)
+    expected_state[-1] = 1 / np.sqrt(2)
+    np.testing.assert_array_almost_equal(ghz_state, expected_state)
+    
+def test_w_state_initialization():
+    # W state |001> + |010> + |100> for 3 qubits
+    w_state = WState(3)
+    assert isinstance(w_state, Statevector)
+    assert w_state.is_normalized()
+    expected_state = np.zeros(2**3)
+    for i in range(3):
+        expected_state[2**i] = 1 / np.sqrt(3)
+    np.testing.assert_array_almost_equal(w_state, expected_state)
+
+def test_specific_state_density_matrix():
+    # PhiPlusState
+    phi_plus = PhiPlusState()
+    density_matrix = phi_plus.density_matrix()
+    expected_density_matrix = np.outer([1, 0, 0, 1] / np.sqrt(2), np.array([1, 0, 0, 1]).conj() / np.sqrt(2))
+    np.testing.assert_array_almost_equal(density_matrix, expected_density_matrix)
+
+    # GHZState for 3 qubits
+    ghz_state = GHZState(3)
+    density_matrix = ghz_state.density_matrix()
+    expected_state = np.zeros(2**3)
+    expected_state[0] = 1 / np.sqrt(2)
+    expected_state[-1] = 1 / np.sqrt(2)
+    expected_density_matrix = np.outer(expected_state, expected_state.conj())
+    np.testing.assert_array_almost_equal(density_matrix, expected_density_matrix)
+
+def test_specific_state_measurement():
+    # GHZState for 3 qubits
+    # Outputs should be |000> or |111>
+    ghz_state = GHZState(3)
+    measured_state = ghz_state.measure_index()
+    assert measured_state in [0, 7]
+    bitstring = ghz_state.measure_bitstring()
+    assert bitstring in ["000", "111"]
+
+    # WState for 3 qubits
+    # Outputs should be |001>, |010>, or |100>
+    w_state = WState(3)
+    measured_state = w_state.measure_index()
+    assert measured_state in [1, 2, 4]
+    bitstring = w_state.measure_bitstring()
+    assert bitstring in ["001", "010", "100"]
