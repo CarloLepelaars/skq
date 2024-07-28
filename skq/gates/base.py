@@ -56,6 +56,16 @@ class BaseGate(np.ndarray):
         """ Check if the gate is the identity matrix. """
         return np.allclose(self, np.eye(self.shape[0]))
     
+    def commute(self, other: 'BaseGate') -> bool:
+        """
+        Check if the gate commutes with another gate.
+        Two gates U and V commute if UV = VU.
+        :param other: Gate object to check commutation with.
+        """
+        assert isinstance(other, BaseGate), "Other object must be a valid Gate object."
+        assert self.num_levels() == other.num_levels(), "Gates must have the same number of rows for the commutation check."
+        return np.allclose(self @ other, other @ self)
+    
     def matrix_trace(self) -> complex:
         """ Compute the trace of the gate. The trace is the sum of the diagonal elements. """
         return np.trace(self)
@@ -109,25 +119,26 @@ class BaseGate(np.ndarray):
         assert self.num_levels() == other.num_levels(), "Gates must have the same number of rows for the Hilbert-Schmidt inner product."
         return np.trace(self.conjugate_transpose() @ other)
     
-    def big_to_little_endian(self) -> 'BaseGate':
-        """Convert a gate matrix from big-endian to little-endian."""
-        num_qubits = self.num_qubits()
-        perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
-        return self[np.ix_(perm, perm)]
-    
     def to_qiskit(self):
         """ Convert gate to a Qiskit Gate object. """
         raise NotImplementedError(f"Conversion to Qiskit Gate is not implemented for {self.__class__.__name__}.")
     
-    def from_qiskit(self, qiskit_gate: qiskit.circuit.gate.Gate):
+    def from_qiskit(self, qiskit_gate: qiskit.circuit.gate.Gate) -> 'BaseGate':
         """ 
-        Convert a Qiskit Gate to scikit-q CustomGate. 
+        Convert a Qiskit Gate to scikit-q Gate. 
         :param qiskit_gate: Qiskit Gate object
+        :return: scikit-q Gate object
         """
         return NotImplementedError(f"Conversion from Qiskit Gate is not implemented for {self.__class__.__name__}.")
     
     def to_pennylane(self):
+        """ Convert gate to a PennyLane gate object. """
         raise NotImplementedError(f"Conversion to PennyLane is not implemented for {self.__class__.__name__}.")
     
-    def from_pennylane(self, pennylane_gate: qml.operation.Operation):
+    def from_pennylane(self, pennylane_gate: qml.operation.Operation) -> 'BaseGate':
+        """
+        Convert a PennyLane Operation to scikit-q Gate.
+        :param pennylane_gate: PennyLane Operation object.
+        :return: scikit-q Gate object
+        """
         return NotImplementedError(f"Conversion from PennyLane is not implemented for {self.__class__.__name__}.")

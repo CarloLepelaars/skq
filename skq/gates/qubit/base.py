@@ -104,6 +104,12 @@ class QubitGate(BaseGate):
         """ Compute the Kronecker product of two gates. """
         kron_matrix = np.kron(self, other)
         return CustomQubitGate(kron_matrix)
+    
+    def big_to_little_endian(self) -> 'BaseGate':
+        """Convert a gate matrix from big-endian to little-endian."""
+        num_qubits = self.num_qubits()
+        perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
+        return self[np.ix_(perm, perm)]
 
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         """ 

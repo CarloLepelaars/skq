@@ -5,11 +5,18 @@ import pennylane as qml
 
 from skq.gates.qubit import *
 
+import pytest
+import numpy as np
+
+from skq.gates.qubit import *
+
 
 def test_base_gate():
     gate = QubitGate([[1, 0], [0, 1]]) # Identity gate
-    assert gate.is_unitary(), "Gate should be unitary"
-    assert gate.is_hermitian(), "Identity Gate should be Hermitian"
+    assert gate.num_qubits() == 1, "Identity Gate should have 1 qubit"
+    assert not gate.is_multi_qubit(), "Identity Gate is not a multi-qubit gate"
+    assert gate.is_pauli(), "Identity Gate is a Pauli Gate"
+    assert gate.is_clifford(), "Identity Gate is a Clifford Gate"
     assert isinstance(gate.trace(), complex), "Trace should be a complex number"
     np.testing.assert_array_equal(gate.eigenvalues(), [1, 1])
     np.testing.assert_array_equal(gate.eigenvectors(), [[1, 0], [0, 1]])
@@ -246,6 +253,25 @@ def test_hilbert_schmidt_inner_product():
     assert isinstance(tz_inner_product, complex)
     assert tz_inner_product == 0.2928932188134524+0.7071067811865475j
 
+def test_big_to_little_endian():
+    # Hadamard
+    gate = HGate()
+    little_endian_gate = gate.big_to_little_endian()
+    # Little endian is the same as big endian
+    expected_matrix = np.array([[1, 1], 
+                                [1, -1]]) / np.sqrt(2)
+    np.testing.assert_array_almost_equal(little_endian_gate, expected_matrix)
+
+    # CNOT
+    gate = CXGate()
+    little_endian_gate = gate.big_to_little_endian()
+    # Permuted matrix for little endian
+    expected_matrix = np.array([[1, 0, 0, 0], 
+                                [0, 0, 0, 1], 
+                                [0, 0, 1, 0], 
+                                [0, 1, 0, 0]])
+    np.testing.assert_array_almost_equal(little_endian_gate, expected_matrix)
+
 def test_to_qiskit():
     # Hadamard
     gate = HGate()
@@ -278,7 +304,6 @@ def test_from_qiskit():
     assert gate.is_unitary()
     assert gate.num_qubits() == 2
     assert gate.is_clifford()
-
 
 def test_to_pennylane():
     gate = XGate()
