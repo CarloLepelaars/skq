@@ -5,8 +5,8 @@ import pennylane as qml
 
 class BaseGate(np.ndarray):
     """ 
-    Base class for quantum gates of any computational basis using NumPy. 
-    The main requirement is that the gate must be a 2D unitary matrix (U*U^dagger = I).
+    Base class for quantum gates of any computational basis. 
+    The gate must be a 2D unitary matrix.
     :param input_array: Input array to create the gate. Will be converted to a NumPy array.
     """
     def __new__(cls, input_array) -> 'BaseGate':
@@ -18,11 +18,12 @@ class BaseGate(np.ndarray):
         return obj
     
     def is_unitary(self) -> bool:
-        """ Check if the gate is unitary: U*U^dagger = I """
+        """ Check if the gate is unitary (U*U^dagger = I) """
         identity = np.eye(self.shape[0])
         return np.allclose(self @ self.conjugate_transpose(), identity)
     
     def is_2d(self) -> bool:
+        """ Check if the gate is a 2D matrix. """
         return len(self.shape) == 2
     
     def is_at_least_nxn(self, n: int) -> bool:
@@ -72,7 +73,7 @@ class BaseGate(np.ndarray):
 
     def conjugate_transpose(self) -> np.ndarray:
         """
-        Return the conjugate transpose (Hermitian adjoint) of the gate.
+        Return the conjugate transpose (i.e. Hermitian adjoint or 'dagger operation') of the gate.
         1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
         2. Transpose the matrix
         """
