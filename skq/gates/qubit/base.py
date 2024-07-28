@@ -105,8 +105,8 @@ class QubitGate(BaseGate):
         kron_matrix = np.kron(self, other)
         return CustomQubitGate(kron_matrix)
     
-    def big_to_little_endian(self) -> 'BaseGate':
-        """Convert a gate matrix from big-endian to little-endian."""
+    def convert_endianness(self) -> 'BaseGate':
+        """Convert a gate matrix from big-endian to little-endian and vice versa."""
         num_qubits = self.num_qubits()
         perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
         return self[np.ix_(perm, perm)]
@@ -119,7 +119,8 @@ class QubitGate(BaseGate):
         """
         gate_name = self.__class__.__name__
         print(f"No to_qiskit defined for '{gate_name}'. Initializing as UnitaryGate.")
-        return qiskit.circuit.library.UnitaryGate(self.big_to_little_endian(), label=gate_name)
+        return qiskit.circuit.library.UnitaryGate(self.convert_endianness
+(), label=gate_name)
         
     @staticmethod 
     def from_qiskit(gate: qiskit.circuit.gate.Gate) -> 'CustomQubitGate':
@@ -129,7 +130,8 @@ class QubitGate(BaseGate):
         :param gate: Qiskit Gate object
         """
         assert isinstance(gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
-        return CustomQubitGate(QubitGate(gate.to_matrix()).big_to_little_endian())
+        return CustomQubitGate(QubitGate(gate.to_matrix()).convert_endianness
+())
     
     def to_pennylane(self, wires: list[int] | int= None) -> qml.QubitUnitary:
         """ 

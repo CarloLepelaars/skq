@@ -253,10 +253,10 @@ def test_hilbert_schmidt_inner_product():
     assert isinstance(tz_inner_product, complex)
     assert tz_inner_product == 0.2928932188134524+0.7071067811865475j
 
-def test_big_to_little_endian():
+def test_convert_endianness():
     # Hadamard
     gate = HGate()
-    little_endian_gate = gate.big_to_little_endian()
+    little_endian_gate = gate.convert_endianness()
     # Little endian is the same as big endian
     expected_matrix = np.array([[1, 1], 
                                 [1, -1]]) / np.sqrt(2)
@@ -264,7 +264,7 @@ def test_big_to_little_endian():
 
     # CNOT
     gate = CXGate()
-    little_endian_gate = gate.big_to_little_endian()
+    little_endian_gate = gate.convert_endianness()
     # Permuted matrix for little endian
     expected_matrix = np.array([[1, 0, 0, 0], 
                                 [0, 0, 0, 1], 
@@ -277,13 +277,13 @@ def test_to_qiskit():
     gate = HGate()
     qiskit_gate = gate.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.HGate)
-    np.testing.assert_array_equal(gate.big_to_little_endian(), qiskit_gate.to_matrix())
+    np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
 
     # CNOT
     gate = CXGate()
     qiskit_gate = gate.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.CXGate)
-    np.testing.assert_array_equal(gate.big_to_little_endian(), qiskit_gate.to_matrix())
+    np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
 
 
 def test_from_qiskit():
@@ -291,7 +291,7 @@ def test_from_qiskit():
     qiskit_gate = qiskit.circuit.library.HGate()
     gate = QubitGate.from_qiskit(gate=qiskit_gate)
     assert isinstance(gate, QubitGate)
-    np.testing.assert_array_equal(gate.big_to_little_endian(), qiskit_gate.to_matrix())
+    np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
     assert gate.is_unitary()
     assert gate.num_qubits() == 1
     assert gate.is_clifford()    
@@ -300,7 +300,7 @@ def test_from_qiskit():
     qiskit_gate = qiskit.circuit.library.CXGate()
     gate = QubitGate.from_qiskit(gate=qiskit_gate)
     assert isinstance(gate, QubitGate)
-    np.testing.assert_array_equal(gate.big_to_little_endian(), qiskit_gate.to_matrix())
+    np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
     assert gate.is_unitary()
     assert gate.num_qubits() == 2
     assert gate.is_clifford()
