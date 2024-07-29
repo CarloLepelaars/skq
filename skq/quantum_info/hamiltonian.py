@@ -27,7 +27,7 @@ class Hamiltonian(np.ndarray):
         return len(self.shape) == 2
     
     def is_at_least_2x2(self) -> bool:
-        """Check if the Hamiltonian is at least a 2x2 matrix."""
+        """ Check if the Hamiltonian is at least a 2x2 matrix. """
         return self.shape[0] >= 2 and self.shape[1] >= 2
 
     def is_hermitian(self) -> bool:
@@ -35,7 +35,7 @@ class Hamiltonian(np.ndarray):
         return np.allclose(self, self.conjugate_transpose())
     
     def num_qubits(self) -> int:
-        """Return the number of qubits in the Hamiltonian."""
+        """ Return the number of qubits in the Hamiltonian. """
         return int(np.log2(self.shape[0]))
     
     def is_multi_qubit(self) -> bool:
@@ -43,15 +43,11 @@ class Hamiltonian(np.ndarray):
         return self.num_qubits() > 1
     
     def conjugate_transpose(self) -> np.ndarray:
-        """
-        Return the conjugate transpose (Hermitian adjoint) of the Hamiltonian.
-        """
+        """ Return the conjugate transpose (Hermitian adjoint) of the Hamiltonian. """
         return self.conj().T
     
     def time_evolution_operator(self, t: float) -> np.ndarray:
-        """
-        Time evolution operator U(t) = exp(-iHt/hbar).
-        """
+        """ Time evolution operator U(t) = exp(-iHt/hbar). """
         return scipy.linalg.expm(-1j * self * t / self.hbar)
 
     def eigenvalues(self) -> np.ndarray:
