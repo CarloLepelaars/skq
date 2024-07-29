@@ -8,7 +8,7 @@ from skq.quantum_info.density import DensityMatrix
 class Statevector(np.ndarray):
     """
     Statevector representation for a quantum (qubit) state.
-    NOTE: Statevector is assumed to be constructed in big-endian format.
+    NOTE: Input is assumed to be in big-endian format.
     Little-endian -> Least significant qubit (LSB) is on the right. Like |q1 q0> where q0 is the LSB.
     Big-endian -> Least significant qubit (LSB) is on the left. Like |q0 q1> where q0 is the LSB.
     """
@@ -46,10 +46,7 @@ class Statevector(np.ndarray):
         return np.allclose(self.density_matrix(), other.density_matrix())
     
     def magnitude(self) -> float:
-        """ 
-        Magnitude (or norm) of the state vector. 
-        sqrt(<ψ|ψ>)
-        """
+        """  Magnitude (or norm) of the state vector. sqrt(<ψ|ψ>) """
         np.linalg.norm(self)
 
     def density_matrix(self) -> DensityMatrix:
@@ -92,17 +89,13 @@ class Statevector(np.ndarray):
     
     def bloch_vector(self) -> np.ndarray:
         """
-        Return the Bloch vector representation of the state vector using the (pure) density matrix.
+        Return the Bloch vector representation of the state vector from the density matrix.
         :return: Bloch vector representation of the quantum state
         """
         return self.density_matrix().bloch_vector()
     
     def conjugate_transpose(self) -> np.ndarray:
-        """
-        Return the conjugate transpose (Hermitian adjoint) of the density matrix.
-        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
-        2. Transpose the matrix
-        """
+        """ Return the conjugate transpose (Hermitian adjoint) of the state vector. """
         return self.conj().T
     
     def orthonormal_basis(self) -> np.ndarray:
@@ -207,3 +200,4 @@ class WState(Statevector):
         for i in range(num_qubits):
             state[2 ** i] = 1 / np.sqrt(num_qubits)
         return super().__new__(cls, state)
+    
