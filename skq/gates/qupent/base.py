@@ -6,7 +6,7 @@ class QupentGate(BaseGate):
     """ 
     Base class for Qupent gates. 
     These are quantum systems with a basis of 5 states. |0>, |1>, |2>, |3>, |4>. 
-    Analogous to spin 2 particles.
+    Models spin-2 particles like the graviton.
     """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)

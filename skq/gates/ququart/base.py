@@ -6,7 +6,7 @@ class QuquartGate(BaseGate):
     """ 
     Base class for Ququart gates. 
     These are quantum systems with a basis of 4 states. |0>, |1>, |2>, |3>. 
-    Analogous to spin 3/2 particles.
+    Models spin-3/2 particles like baryons.
     """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)

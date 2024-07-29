@@ -57,7 +57,7 @@ class QubitGate(BaseGate):
     """ 
     Base class for Qubit gates. 
     A quantum system with a basis of 2 states. |0>, |1>.
-    Analogous to spin 1/2 particles.
+    Models spin-1/2 particles like electrons.
     """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
