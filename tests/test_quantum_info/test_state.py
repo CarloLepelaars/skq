@@ -76,6 +76,24 @@ def test_measure():
     bitstring = state_vector.measure_bitstring()
     assert bitstring in ["00", "11"]
 
+def test_orthonormal_basis():
+    # Single qubit states
+    state_vector = Statevector([1/np.sqrt(2), 1/np.sqrt(2)])
+    basis = state_vector.orthonormal_basis()
+    expected_basis = np.array([[1/np.sqrt(2)], [1/np.sqrt(2)]])
+    np.testing.assert_array_almost_equal(basis, expected_basis)
+
+    state_vector = Statevector([1/2, np.sqrt(3)/2])
+    basis = state_vector.orthonormal_basis()
+    expected_basis = np.array([[1/2], [np.sqrt(3)/2]])
+    np.testing.assert_array_almost_equal(basis, expected_basis)
+
+    # Multi-qubit state
+    state_vector = Statevector([1/2, 1/2, 1/2, 1/2])
+    basis = state_vector.orthonormal_basis()
+    expected_basis = np.array([[1/2], [1/2], [1/2], [1/2]])
+    np.testing.assert_array_almost_equal(basis, expected_basis)
+
 def test_to_qiskit():
     # |00> in big-endian
     state_vector = Statevector([1, 0, 0, 0])

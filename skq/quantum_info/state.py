@@ -105,6 +105,13 @@ class Statevector(np.ndarray):
         """
         return self.conj().T
     
+    def orthonormal_basis(self) -> np.ndarray:
+        """ 
+        Orthonormal basis using the Gram-Schmidt process. 
+        :return: 2D array representing the orthonormal basis.
+        """
+        return np.array([self / np.linalg.norm(self)]).T
+
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
         Convert the state vector to a Qiskit QuantumCircuit object.
@@ -121,7 +128,7 @@ class Statevector(np.ndarray):
         :param statevector: Qiskit StateVector object
         :return: scikit-q StateVector object
         """
-        return Statevector(statevector.data[::-1])
+        return Statevector(statevector.data).reverse()
     
     def to_pennylane(self, wires: list[int] | int = None) -> qml.QubitStateVector:
         """
