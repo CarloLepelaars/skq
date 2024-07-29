@@ -21,11 +21,11 @@ class Statevector(np.ndarray):
         return obj
     
     def is_1d(self) -> bool:
-        """ Check if the state vector is 1D. """
+        """ State vector is 1D. """
         return self.ndim == 1
     
     def is_normalized(self) -> bool:
-        """ Check if the state vector is normalized: ||ψ|| = 1. """
+        """ State vector is normalized: ||ψ|| = 1. """
         return np.isclose(np.linalg.norm(self), 1)
     
     def is_power_of_two_len(self) -> bool:
@@ -34,15 +34,15 @@ class Statevector(np.ndarray):
         return n >= 2 and (n & (n - 1)) == 0
     
     def num_qubits(self) -> int:
-        """ Return the number of qubits in the state vector. """
+        """ Number of qubits in the state vector. """
         return int(np.log2(len(self)))
     
     def is_multi_qubit(self) -> bool:
-        """ Check if the state vector represents a multi-qubit state. """
+        """ State vector represents a multi-qubit state. """
         return self.num_qubits() > 1
     
     def is_indistinguishable(self, other: 'Statevector') -> bool:
-        """ Check if two state vectors are indistinguishable by checking if their density matrices are the same. """
+        """ Two state vectors are indistinguishable if their density matrices are the same. """
         return np.allclose(self.density_matrix(), other.density_matrix())
     
     def magnitude(self) -> float:
@@ -54,7 +54,7 @@ class Statevector(np.ndarray):
         return DensityMatrix(np.outer(self, self.conj()))
     
     def probabilities(self) -> np.ndarray:
-        """ Return the probabilities of all possible states. """
+        """ Probabilities of all possible states. """
         return np.abs(self) ** 2
     
     def measure_index(self) -> int:
@@ -88,14 +88,11 @@ class Statevector(np.ndarray):
         return Statevector(self[::-1])
     
     def bloch_vector(self) -> np.ndarray:
-        """
-        Return the Bloch vector representation of the state vector from the density matrix.
-        :return: Bloch vector representation of the quantum state
-        """
+        """ Bloch vector representation of the quantum state. """
         return self.density_matrix().bloch_vector()
     
     def conjugate_transpose(self) -> np.ndarray:
-        """ Return the conjugate transpose (Hermitian adjoint) of the state vector. """
+        """ Conjugate transpose (Hermitian adjoint) of the state vector. """
         return self.conj().T
     
     def orthonormal_basis(self) -> np.ndarray:
@@ -154,7 +151,7 @@ class OneState(Statevector):
         return super().__new__(cls, [0] * (2 ** num_qubits - 1) + [1])
     
 class PlusState(Statevector):
-    """ Single Qubit |+> superpoisition state """
+    """ Single Qubit |+> superposition state """
     def __new__(cls):
         return super().__new__(cls, [1, 1] / np.sqrt(2))
     
