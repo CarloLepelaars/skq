@@ -2,24 +2,20 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
+from skq.base import Operator
 from skq.gates.qubit import XGate, YGate, ZGate
 
 
-class DensityMatrix(np.ndarray):
+class DensityMatrix(Operator):
     """
     Density matrix representation of a quantum state.
     """
     def __new__(cls, input_array):
-        arr = np.asarray(input_array, dtype=complex)
-        obj = arr.view(cls)
+        obj = super().__new__(cls, input_array)
         assert obj.is_hermitian(), "Density matrix must be Hermitian."
         assert obj.is_positive_semidefinite(), "Density matrix must be positive semidefinite (All eigenvalues >= 0)."
         assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one. Normalize to unit trace if you want to use this matrix as a DensityMatrix."
         return obj
-    
-    def is_hermitian(self) -> bool:
-        """ Check if the density matrix is Hermitian: U = U^dagger. """
-        return np.allclose(self, self.conjugate_transpose())
     
     def is_positive_semidefinite(self):
         """ Check if the matrix is positive semidefinite. """
@@ -34,6 +30,23 @@ class DensityMatrix(np.ndarray):
         """ Check if the density matrix is a mixed state. """
         return not self.is_pure()
     
+    def eigenvalues(self) -> np.ndarray:
+        """ 
+        Return the eigenvalues of the Density Matrix. 
+        Optimized for Hermitian matrices.
+        :return: Array of eigenvalues.
+        """
+        return np.linalg.eigvalsh(self)
+
+    def eigenvectors(self) -> np.ndarray:
+        """ 
+        Return the eigenvectors of the Density Matrix.
+        Optimized for Hermitian matrices.
+        :return: Array of eigenvectors.
+        """
+        _, vectors = np.linalg.eigh(self)
+        return vectors
+    
     def trace_equal_to_one(self) -> bool:
         """ Check if the trace of the density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
@@ -42,15 +55,6 @@ class DensityMatrix(np.ndarray):
         """ Return the probabilities of all possible state measurements. """
         return np.diag(self).real
 
-    def eigenvalues(self) -> np.ndarray:
-        """ Return the eigenvalues of the density matrix. """
-        return np.linalg.eigvals(self)
-    
-    def eigenvectors(self) -> np.ndarray:
-        """ Return the eigenvectors of the density matrix. """
-        _, vectors = np.linalg.eig(self)
-        return vectors
-    
     def num_qubits(self) -> int:
         """ Return the number of qubits in the density matrix. """
         return int(np.log2(len(self)))
@@ -78,14 +82,6 @@ class DensityMatrix(np.ndarray):
         by = np.trace(np.dot(self, YGate())).real
         bz = np.trace(np.dot(self, ZGate())).real
         return np.array([bx, by, bz])
-    
-    def conjugate_transpose(self) -> np.ndarray:
-        """
-        Return the conjugate transpose (Hermitian adjoint) of the density matrix.
-        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
-        2. Transpose the matrix
-        """
-        return self.conj().T
     
     def kron(self, other: 'DensityMatrix') -> 'DensityMatrix':
         """

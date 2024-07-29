@@ -12,7 +12,7 @@ def test_hamiltonian_properties():
     H = Hamiltonian(h_matrix)
 
     assert H.is_2d(), "Hamiltonian should be 2D."
-    assert H.is_at_least_2x2(), "Hamiltonian should be at least 2x2."
+    assert H.is_at_least_nxn(2), "Hamiltonian should be at least 2x2."
     assert H.is_hermitian(), "Hamiltonian should be Hermitian."
     assert H.num_qubits() == 1, "Hamiltonian should correspond to 1 qubit."
 

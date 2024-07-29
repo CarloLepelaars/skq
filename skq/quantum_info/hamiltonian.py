@@ -3,8 +3,10 @@ import numpy as np
 import scipy.linalg
 import pennylane as qml
 
+from skq.base import Operator
 
-class Hamiltonian(np.ndarray):
+
+class Hamiltonian(Operator):
     """
     Class representing a Hamiltonian in quantum computing.
 
@@ -14,50 +16,40 @@ class Hamiltonian(np.ndarray):
     """
     def __new__(cls, input_array, hbar: float = 1.0):
         assert hbar > 0, "The reduced Planck constant must be greater than zero."
-        arr = np.asarray(input_array, dtype=complex)
-        obj = arr.view(cls)
-        assert obj.is_2d(), "Hamiltonian must be a 2D matrix."
-        assert obj.is_at_least_2x2(), "Hamiltonian must be at least a 2x2 matrix."
+        obj = super().__new__(cls, input_array)
+        assert obj.is_at_least_nxn(n=2), "Hamiltonian must be at least a 2x2 matrix."
         assert obj.is_hermitian(), "Hamiltonian must be Hermitian."
         obj.hbar = hbar
         return obj
-    
-    def is_2d(self) -> bool:
-        """ Check if the gate is a 2D matrix. """
-        return len(self.shape) == 2
-    
-    def is_at_least_2x2(self) -> bool:
-        """ Check if the Hamiltonian is at least a 2x2 matrix. """
-        return self.shape[0] >= 2 and self.shape[1] >= 2
-
-    def is_hermitian(self) -> bool:
-        """ Check if the Hamiltonian is Hermitian. """
-        return np.allclose(self, self.conjugate_transpose())
     
     def num_qubits(self) -> int:
         """ Return the number of qubits in the Hamiltonian. """
         return int(np.log2(self.shape[0]))
     
+    def eigenvalues(self) -> np.ndarray:
+        """ 
+        Return the eigenvalues of the Hamiltonian. 
+        Optimized for Hermitian matrices.
+        :return: Array of eigenvalues.
+        """
+        return np.linalg.eigvalsh(self)
+
+    def eigenvectors(self) -> np.ndarray:
+        """ 
+        Return the eigenvectors of the Hamiltonian.
+        Optimized for Hermitian matrices.
+        :return: Array of eigenvectors.
+        """
+        _, vectors = np.linalg.eigh(self)
+        return vectors
+    
     def is_multi_qubit(self) -> bool:
         """ Check if the gate involves multiple qubits. """
         return self.num_qubits() > 1
     
-    def conjugate_transpose(self) -> np.ndarray:
-        """ Return the conjugate transpose (Hermitian adjoint) of the Hamiltonian. """
-        return self.conj().T
-    
     def time_evolution_operator(self, t: float) -> np.ndarray:
         """ Time evolution operator U(t) = exp(-iHt/hbar). """
         return scipy.linalg.expm(-1j * self * t / self.hbar)
-
-    def eigenvalues(self) -> np.ndarray:
-        """ Return the eigenvalues of the Hamiltonian. """
-        return np.linalg.eigvalsh(self)
-
-    def eigenvectors(self) -> np.ndarray:
-        """ Return the eigenvectors of the Hamiltonian. """
-        _, vectors = np.linalg.eigh(self)
-        return vectors
 
     def ground_state_energy(self) -> float:
         """ Ground state energy. i.e. the smallest eigenvalue. """

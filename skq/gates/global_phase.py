@@ -4,6 +4,7 @@ import pennylane as qml
 
 from skq.gates.base import BaseGate
 
+
 class GlobalPhaseGate(BaseGate):
     """
     Class representing a Global Phase
