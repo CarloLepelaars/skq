@@ -112,3 +112,25 @@ def test_qutrit_swap_gate():
     assert np.allclose(swap_gate @ initial_state, expected_state), "SWAP gate did not perform correctly."
     # |10> -> |01>
     assert np.allclose(swap_gate @ expected_state, initial_state), "SWAP gate did not perform correctly."
+
+    # |12>
+    initial_state = np.zeros((9,), dtype=complex)
+    initial_state[5] = 1
+    # |21>
+    expected_state = np.zeros((9,), dtype=complex)
+    expected_state[7] = 1
+    # |12> -> |21>
+    assert np.allclose(swap_gate @ initial_state, expected_state), "SWAP gate did not perform correctly."
+    # |21> -> |12>
+    assert np.allclose(swap_gate @ expected_state, initial_state), "SWAP gate did not perform correctly."
+
+    # |20>
+    initial_state = np.zeros((9,), dtype=complex)
+    initial_state[6] = 1
+    # |02>
+    expected_state = np.zeros((9,), dtype=complex)
+    expected_state[2] = 1
+    # |20> -> |02>
+    assert np.allclose(swap_gate @ initial_state, expected_state), "SWAP gate did not perform correctly."
+    # |02> -> |20>
+    assert np.allclose(swap_gate @ expected_state, initial_state), "SWAP gate did not perform correctly."
