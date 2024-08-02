@@ -1,8 +1,23 @@
+import inspect
 import pytest
 import numpy as np
 
 from skq.gates.qubit import *
 
+
+def test_base_attrs():
+    import skq.gates.qubit as all_qubit_gates
+    import skq.gates.qutrit as all_qutrit_gates
+    import skq.gates.ququart as all_ququart_gates
+    import skq.gates.qupent as all_qupent_gates
+    for module in [all_qubit_gates, all_qutrit_gates, all_ququart_gates, all_qupent_gates]:
+        all_objs = [obj for _, obj in inspect.getmembers(module)]
+        for obj in all_objs:
+            if inspect.isclass(obj) and not obj in [BaseGate, CustomQubitGate]:
+                assert hasattr(obj, "to_qiskit"), f"{obj} does not have to_qiskit method."
+                assert hasattr(obj, "to_pennylane"), f"{obj} does not have to_pennylane method."
+                assert hasattr(obj, "from_qiskit"), f"{obj} does not have from_qiskit method."
+                assert hasattr(obj, "from_pennylane"), f"{obj} does not have from_pennylane method."
 
 def test_base_gate():
     # Z Gate

@@ -14,7 +14,7 @@ class QuquartGate(BaseGate):
         assert obj.is_power_of_n_shape(n=4), "Gate shape must be a power of 4"
         return obj
     
-    def num_ququart(self) -> int:
+    def num_ququarts(self) -> int:
         """ Return the number of ququarts involved in the gate. """
         return int(np.log(self.shape[0]) / np.log(4))
     

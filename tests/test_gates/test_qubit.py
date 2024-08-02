@@ -5,11 +5,6 @@ import pennylane as qml
 
 from skq.gates.qubit import *
 
-import pytest
-import numpy as np
-
-from skq.gates.qubit import *
-
 
 def test_base_gate():
     gate = QubitGate([[1, 0], [0, 1]]) # Identity gate
@@ -58,7 +53,7 @@ def test_t_gate():
     assert not t_gate.is_multi_qubit(), "TGate should not be a multi-qubit gate"
     assert not t_gate.is_pauli(), "TGate should not be a Pauli gate"
     assert not t_gate.is_clifford(), "TGate should not be a Clifford gate"
-    assert hasattr(t_gate, "theta"), "TGate should have a theta attribute"
+    assert hasattr(t_gate, "phi"), "TGate should have a phi attribute"
     # T = P(pi/4)
     np.testing.assert_almost_equal(t_gate, PhaseGate(np.pi / 4))
 
@@ -71,7 +66,7 @@ def test_rotation_gates():
             assert gate.num_qubits() == 1, f"{GateClass.__name__} should operate on 1 qubit"
             assert not gate.is_multi_qubit(), f"{GateClass.__name__} should not be a multi-qubit gate"
             assert gate.frobenius_norm() == pytest.approx(np.sqrt(2)), f"{GateClass.__name__} Frobenius norm should be sqrt(2)"
-            assert hasattr(gate, "theta")
+            assert hasattr(gate, "phi")
 
 def test_rotation_eigenvalues():
     theta = np.pi / 2

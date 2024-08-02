@@ -48,12 +48,17 @@ class QutritGate(BaseGate):
         qubit_gate = self.qutrit_to_qubit()
         return qubit_gate.to_qiskit()
     
-    def to_pennylane(self, wires: list[int] | int= None) -> qml.QubitUnitary:
+    def to_pennylane(self, wires: list[int] | int = None, qutrit_gate = False) -> qml.QubitUnitary | qml.QutritUnitary:
         """ 
         Convert gate to a PennyLane QubitUnitary. 
         PennyLane only supports qubit gates, so we convert the qutrit gate to a qubit gate first.
         :param wires: List of wires the gate acts on
-        :return: PennyLane QubitUnitary object
+        :param qutrit_gate: If True, return a QutritUnitary gate instead of a qubit gate
+        :return:
+        If qutrit_gate is True, return a PennyLane QutritUnitary object.
+        If qutrit_gate is False, return a PennyLane QubitUnitary object.
         """
-        qubit_gate = self.qutrit_to_qubit()
-        return qubit_gate.to_pennylane(wires=wires)
+        if qutrit_gate:
+            return qml.QutritUnitary(self, wires=wires)
+        else:
+            return self.qutrit_to_qubit().to_pennylane(wires=wires)
