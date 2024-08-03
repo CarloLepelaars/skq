@@ -49,6 +49,7 @@ class QutritZGate(QutritGate):
                                               [0, np.exp(2*np.pi*1j/3), 0], 
                                               [0, 0, np.exp(-2*np.pi*1j/3)]]))
     
+    
 class QutritHGate(QutritGate):
     """ 
     Hadamard gate for a qutrit. 

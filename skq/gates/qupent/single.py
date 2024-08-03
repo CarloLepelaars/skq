@@ -24,9 +24,12 @@ class QupentXGate(QupentGate):
 class QupentZGate(QupentGate):
     """ Z gate for qupents. """
     def __new__(cls):
-        phases = [np.exp(2j * k * np.pi / 5) for k in range(5)]
+        d = 5
+        omega = np.exp(2j * np.pi / d)
+        phases = [omega**k for k in range(d)]
         obj = super().__new__(cls, np.diag(phases))
         return obj
+    
     
 class QupentHGate(QupentGate):
     """ Hadamard gate for qupents. """

@@ -19,26 +19,28 @@ class QuquartXGate(QuquartGate):
             [0, 0, 1, 0]
         ]))
         return obj
-
+    
+    
 class QuquartZGate(QuquartGate):
     """ Z gate for ququarts. """
     def __new__(cls):
         obj = super().__new__(cls, np.array([
             [1, 0, 0, 0],
-            [0, -1, 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, -1]
+            [0, 1j, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, -1j]
         ]))
         return obj
+
     
 class QuquartHGate(QuquartGate):
     """ Hadamard gate for ququarts. """
     def __new__(cls):
         obj = super().__new__(cls, np.array([
             [1, 1, 1, 1],
+            [1, 1j, -1, -1j],
             [1, -1, 1, -1],
-            [1, 1, -1, -1],
-            [1, -1, -1, 1]
+            [1, -1j, -1, 1j]
         ]) / 2)
         return obj
     

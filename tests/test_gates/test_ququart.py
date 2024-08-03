@@ -30,9 +30,9 @@ def test_ququart_z_gate():
     three_state = np.array([0, 0, 0, 1], dtype=complex)
 
     assert np.allclose(gate @ zero_state, zero_state)
-    assert np.allclose(gate @ one_state, [0, -1, 0, 0])
-    assert np.allclose(gate @ two_state, [0, 0, 1, 0])
-    assert np.allclose(gate @ three_state, [0, 0, 0, -1])
+    assert np.allclose(gate @ one_state, [0, 0+1j, 0, 0])
+    assert np.allclose(gate @ two_state, [0, 0, -1, 0])
+    assert np.allclose(gate @ three_state, [0, 0, 0, 0-1j])
 
 def test_ququart_h_gate():
     gate = QuquartHGate()
@@ -43,9 +43,9 @@ def test_ququart_h_gate():
 
     # Expected transformations
     expected_zero = np.array([1, 1, 1, 1]) / 2
-    expected_one = np.array([1, -1, 1, -1]) / 2
-    expected_two = np.array([1, 1, -1, -1]) / 2
-    expected_three = np.array([1, -1, -1, 1]) / 2
+    expected_one = np.array([1, 0+1j, -1, -1j]) / 2
+    expected_two = np.array([1, -1, 1, -1]) / 2
+    expected_three = np.array([1, 0-1j, -1, 0+1j]) / 2
 
     assert np.allclose(gate @ zero_state, expected_zero), "H gate transformation on |0> is incorrect."
     assert np.allclose(gate @ one_state, expected_one), "H gate transformation on |1> is incorrect."
