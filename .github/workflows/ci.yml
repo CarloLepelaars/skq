@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
-          poetry config virtualenvs.create false
+          poetry config virtualenvs.create false --local
       - name: Install dependencies
         run: poetry install
       - name: Run tests
