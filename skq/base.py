@@ -66,10 +66,10 @@ class Operator(np.ndarray):
     def conjugate_transpose(self) -> np.ndarray:
         """ 
         Conjugate transpose (i.e. Hermitian adjoint or 'dagger operation') of the operator.
-        1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
-        2. Transpose the matrix
+        1. Transpose the matrix
+        2. Take the complex conjugate of each element (Flip the sign of the imaginary part)
         """
-        return self.conj().T
+        return self.T.conj()
     
     def eigenvalues(self) -> np.ndarray:
         """ 

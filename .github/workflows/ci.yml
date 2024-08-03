@@ -31,9 +31,17 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           echo "$(python -m site --user-base)/bin" >> $GITHUB_PATH
           poetry config virtualenvs.create false
-
       - name: Install dependencies
         run: poetry install
-
       - name: Run tests
-        run: poetry run pytest -s
+        run: |
+          pytest -s --cov=scikit-q --cov-report term-missing --cov-config=.coveragerc --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          directory: ./coverage/reports/
+          fail_ci_if_error: true
+          verbose: true
+          files: ./coverage.xml
