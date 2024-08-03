@@ -4,6 +4,7 @@ import pennylane as qml
 from scipy.linalg import expm
 
 from skq.base import Operator
+from skq.constants import BOLTZMANN_CONSTANT
 from skq.gates.qubit import XGate, YGate, ZGate
 
 
@@ -142,13 +143,10 @@ class GibbsState(DensityMatrix):
     :param hamiltonian: Hamiltonian matrix of the system
     :param temperature: Temperature of the system in Kelvin
     """
-    # Boltzmann constant in J/K
-    BOLTZMANN_CONSTANT = 1.380649e-23  
-
     def __new__(cls, hamiltonian: np.array, temperature: float):
         cls.hamiltonian = hamiltonian
         cls.temperature = temperature
-        cls.beta = 1 / (cls.BOLTZMANN_CONSTANT * temperature)
+        cls.beta = 1 / (BOLTZMANN_CONSTANT * temperature)
         cls.exp_neg_beta_H = expm(-cls.beta * hamiltonian)
         cls.partition_function = np.trace(cls.exp_neg_beta_H)
         density_matrix = cls.exp_neg_beta_H / cls.partition_function
@@ -156,11 +154,11 @@ class GibbsState(DensityMatrix):
 
     def free_energy(self) -> float:
         """ Helmholtz free energy. """
-        return -self.BOLTZMANN_CONSTANT * self.temperature * np.log(self.partition_function)
+        return -BOLTZMANN_CONSTANT * self.temperature * np.log(self.partition_function)
     
     def heat_capacity(self) -> float:
         """ Calculate the heat capacity. """
-        beta = 1 / (self.BOLTZMANN_CONSTANT * self.temperature)
+        beta = 1 / (BOLTZMANN_CONSTANT * self.temperature)
         energy_squared = np.trace(self @ self.hamiltonian @ self.hamiltonian)
         energy_mean = self.internal_energy(self.hamiltonian) ** 2
         return beta ** 2 * (energy_squared - energy_mean)
