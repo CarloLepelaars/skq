@@ -37,8 +37,9 @@ def test_base_gate():
     trace = gate.trace()
     assert trace == 0, "Trace of Z Gate should be 0"
     assert isinstance(trace, complex), "Trace should be a complex number"
-    np.testing.assert_array_equal(gate.eigenvalues(), [1+0j, -1+0j])
-    np.testing.assert_array_equal(gate.eigenvectors(), [[1, 0], [0, 1]])
+    np.testing.assert_array_equal(gate.eigenvalues(), [-1, 1])
+    np.testing.assert_array_equal(gate.eigenvectors(), [[0, 1], 
+                                                        [1, 0]])
 
     # Identity commutes with any gate
     identity = IGate()

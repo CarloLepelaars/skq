@@ -1,16 +1,14 @@
 import qiskit
 import numpy as np
 import pennylane as qml
-from scipy.linalg import expm, logm
+from scipy.linalg import expm
 
 from skq.base import Operator
 from skq.gates.qubit import XGate, YGate, ZGate
 
 
 class DensityMatrix(Operator):
-    """
-    Density matrix representation of a quantum state.
-    """
+    """ Density matrix representation of a qubit state. """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         assert obj.is_hermitian(), "Density matrix must be Hermitian."
@@ -19,37 +17,20 @@ class DensityMatrix(Operator):
         return obj
     
     def is_positive_semidefinite(self):
-        """ Check if the matrix is positive semidefinite. """
+        """ Matrix is positive semidefinite. """
         eigenvalues = np.linalg.eigvalsh(self)
         return np.all(eigenvalues >= 0)
     
     def is_pure(self) -> bool:
-        """ Check if the density matrix is a pure state. """
+        """ Check if density matrix is pure. """
         return np.isclose(np.trace(self @ self), 1)
     
     def is_mixed(self) -> bool:
-        """ Check if the density matrix is a mixed state. """
+        """ Check if density matrix is mixed. """
         return not self.is_pure()
     
-    def eigenvalues(self) -> np.ndarray:
-        """ 
-        Return the eigenvalues of the Density Matrix. 
-        Optimized for Hermitian matrices.
-        :return: Array of eigenvalues.
-        """
-        return np.linalg.eigvalsh(self)
-
-    def eigenvectors(self) -> np.ndarray:
-        """ 
-        Return the eigenvectors of the Density Matrix.
-        Optimized for Hermitian matrices.
-        :return: Array of eigenvectors.
-        """
-        _, vectors = np.linalg.eigh(self)
-        return vectors
-    
     def trace_equal_to_one(self) -> bool:
-        """ Trace of the density matrix is equal to one. """
+        """ Trace of density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
     
     def probabilities(self) -> float:
@@ -89,7 +70,7 @@ class DensityMatrix(Operator):
         Kronecker (tensor) product of two density matrices.
         This can be used to create so-called "product states" that represent 
         the independence between two quantum systems.
-        :param other: Density matrix
+        :param other: DensityMatrix object
         :return: Kronecker product of the two density matrices
         """
         return DensityMatrix(np.kron(self, other))
@@ -173,11 +154,11 @@ class GibbsState(DensityMatrix):
         density_matrix = cls.exp_neg_beta_H / cls.partition_function
         return super().__new__(cls, density_matrix)
 
-    def free_energy(self):
+    def free_energy(self) -> float:
         """ Helmholtz free energy. """
         return -self.BOLTZMANN_CONSTANT * self.temperature * np.log(self.partition_function)
     
-    def heat_capacity(self):
+    def heat_capacity(self) -> float:
         """ Calculate the heat capacity. """
         beta = 1 / (self.BOLTZMANN_CONSTANT * self.temperature)
         energy_squared = np.trace(self @ self.hamiltonian @ self.hamiltonian)

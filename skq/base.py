@@ -19,22 +19,23 @@ class Operator(np.ndarray):
         return obj
     
     def is_square(self) -> bool:
-        """ Check if the operator is a square matrix. """
+        """ Operator is a square matrix. """
         return self.shape[0] == self.shape[1]
     
     def is_2d(self) -> bool:
-        """ Check if the operator is a 2D matrix. """
+        """ Operator is a 2D matrix. """
         return len(self.shape) == 2
     
     def is_at_least_nxn(self, n: int) -> bool:
-        """ Check if the gate is at least an n x n matrix. """
+        """ Operator is at least an n x n matrix. """
         rows, cols = self.shape
         return rows >= n and cols >= n
 
     def is_power_of_n_shape(self, n: int) -> bool:
         """ 
-        Check if the gate shape is a power of n. 
-        Qubits: n=2, Qutrits: n=3, Ququarts: n=4, etc.
+        Operator shape is a power of n. 
+        Qubits: n=2, Qutrits: n=3, Ququarts: n=4, Qupents: n=5, etc.
+        :param n: Number to check for power of n shape.
         """
         def _is_power_of_n(x, n):
             if x < 1:
@@ -55,7 +56,6 @@ class Operator(np.ndarray):
     
     def is_equal(self, other) -> bool:
         """ Check if the operator is effectively equal to another operator. 
-        NOTE: Do not overwrite __eq__ method to avoid issues with native NumPy array comparison. 
         """
         return np.allclose(self, other, atol=1e-8)
     
@@ -65,7 +65,7 @@ class Operator(np.ndarray):
 
     def conjugate_transpose(self) -> np.ndarray:
         """ 
-        Return the conjugate transpose (i.e. Hermitian adjoint or 'dagger operation') of the operator.
+        Conjugate transpose (i.e. Hermitian adjoint or 'dagger operation') of the operator.
         1. Take the complex conjugate of each element (Flip the sign of the imaginary part)
         2. Transpose the matrix
         """
@@ -73,18 +73,17 @@ class Operator(np.ndarray):
     
     def eigenvalues(self) -> np.ndarray:
         """ 
-        Return the eigenvalues of the operator. 
-        Hermitian operators use eigvalsh for faster computation.
+        Eigenvalues of the operator. 
+        Hermitian operators use eigvalsh for stable and faster computation.
         """
-        return np.linalg.eigvals(self)
+        return np.linalg.eigvalsh(self) if self.is_hermitian() else np.linalg.eigvals(self)
 
     def eigenvectors(self) -> np.ndarray:
         """ 
-        Return the eigenvectors of the operator.
-        Hermitian operators use eigh for faster computation.
+        Eigenvectors of the operator.
+        Hermitian operators use eigh for stable and faster computation.
         """
-        _, vectors = np.linalg.eig(self)
-        return vectors
+        return np.linalg.eigh(self)[1] if self.is_hermitian() else np.linalg.eig(self)[1]
     
     def frobenius_norm(self) -> float:
         """ Compute the Frobenius norm """

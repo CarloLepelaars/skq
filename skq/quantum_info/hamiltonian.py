@@ -23,28 +23,11 @@ class Hamiltonian(Operator):
         return obj
     
     def num_qubits(self) -> int:
-        """ Return the number of qubits in the Hamiltonian. """
+        """ Number of qubits in the Hamiltonian. """
         return int(np.log2(self.shape[0]))
     
-    def eigenvalues(self) -> np.ndarray:
-        """ 
-        Return the eigenvalues of the Hamiltonian. 
-        Optimized for Hermitian matrices.
-        :return: Array of eigenvalues.
-        """
-        return np.linalg.eigvalsh(self)
-
-    def eigenvectors(self) -> np.ndarray:
-        """ 
-        Return the eigenvectors of the Hamiltonian.
-        Optimized for Hermitian matrices.
-        :return: Array of eigenvectors.
-        """
-        _, vectors = np.linalg.eigh(self)
-        return vectors
-    
     def is_multi_qubit(self) -> bool:
-        """ Check if the gate involves multiple qubits. """
+        """ Check if Hamiltonian involves multiple qubits. """
         return self.num_qubits() > 1
     
     def time_evolution_operator(self, t: float) -> np.ndarray:
@@ -57,15 +40,25 @@ class Hamiltonian(Operator):
         return eigenvalues[0]
 
     def ground_state(self) -> np.ndarray:
-        """ Compute the ground state. i.e. the eigenvector corresponding to the smallest eigenvalue. """
+        """ The eigenvector corresponding to the smallest eigenvalue. """
         _, eigenvectors = np.linalg.eigh(self)
         return eigenvectors[:, 0]
     
     def convert_endianness(self) -> 'Hamiltonian':
-        """ Convert a Hamiltonian from big-endian to little-endian and vice versa. """
+        """ Hamiltonian from big-endian to little-endian and vice versa. """
         num_qubits = self.num_qubits()
         perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
         return self[np.ix_(perm, perm)]
+    
+    def add_noise(self, noise_strength: float, noise_operator: np.array) -> 'Hamiltonian':
+        """
+        Add noise to the Hamiltonian.
+        :param noise_strength: Strength of the noise. Generally in range [0.0001, 0.5].
+        :param noise_operator: Operator representing the noise. For example Pauli matrices.
+        :return: A new Hamiltonian with noise added.
+        """
+        assert noise_operator.shape == self.shape, "Noise operator must have the same dimensions as the Hamiltonian."
+        return Hamiltonian(self + noise_strength * noise_operator, hbar=self.hbar)
 
     def to_qiskit(self) -> qiskit.quantum_info.Operator:
         """

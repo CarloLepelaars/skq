@@ -7,7 +7,9 @@ from skq.base import Operator
 
 
 def test_operator():
-    gate = Operator([[0, 1], [1, 0]])
+    # Pauli X Gate
+    gate = Operator([[0, 1], 
+                     [1, 0]])
     assert gate.dtype == complex, "Gate should be complex"
     assert gate.num_levels() == 2, "Gate should have 2 levels"
     assert gate.is_square(), "Gate should be square"
@@ -24,9 +26,10 @@ def test_operator():
     assert trace == 0, "Trace of X Gate should be 0"
     assert isinstance(trace, complex), "Trace should be a complex number"
     assert gate.frobenius_norm() == np.sqrt(2), "Frobenius norm of X Gate should be sqrt(2)"
-    np.testing.assert_array_almost_equal(gate.eigenvalues(), [1+0j, -1+0j])
-    np.testing.assert_array_almost_equal(gate.eigenvectors(), [[1, 1], 
-                                                               [1, -1]] / np.sqrt(2))
+    # Hermitian -> Eigenvalues are real
+    np.testing.assert_array_almost_equal(gate.eigenvalues(), [-1., 1.])
+    np.testing.assert_array_almost_equal(gate.eigenvectors(), [[-1, 1], 
+                                                               [1, 1]] / np.sqrt(2))
 
     with pytest.raises(NotImplementedError):
         gate.to_qiskit()
