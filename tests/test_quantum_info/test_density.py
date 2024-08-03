@@ -1,8 +1,9 @@
 import qiskit
 import numpy as np
 import pennylane as qml
-from skq.quantum_info import Statevector
-from skq.quantum_info import DensityMatrix
+
+from skq.quantum_info import Statevector, DensityMatrix, GibbsState
+
 
 def test_zero_and_one_density_matrix():
     # Zero state |0⟩
@@ -23,6 +24,9 @@ def test_zero_and_one_density_matrix():
     assert np.allclose(one_density_matrix, np.array([[0, 0], 
                                                      [0, 1]]))
     
+    assert np.isclose(one_density_matrix.entropy(), 0)
+    assert np.isclose(one_density_matrix.internal_energy(np.array([[0, 0], [0, 1]])), 1)
+    
 def test_density_mixed_state():
     # Mixed state |ψ⟩ = 0.5 |0⟩⟨0| + 0.5 |1⟩⟨1|
     mixed_state = np.array([[0.5, 0], 
@@ -35,6 +39,9 @@ def test_density_mixed_state():
     assert np.allclose(mixed_density_matrix.probabilities(), [0.5, 0.5])
     assert mixed_density_matrix.num_qubits() == 1
     assert np.allclose(mixed_density_matrix.bloch_vector(), np.array([0, 0, 0]))
+    
+    assert np.isclose(mixed_density_matrix.entropy(), np.log(2))
+    assert np.isclose(mixed_density_matrix.internal_energy(np.array([[0, 0], [0, 1]])), 0.5)
 
 def test_density_conjugate_transpose():
     mixed_state = DensityMatrix(np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
@@ -94,3 +101,35 @@ def test_density_from_to_pennylane():
     assert isinstance(skq_density_matrix, DensityMatrix)
     assert np.allclose(skq_density_matrix, test_pennylane_density_matrix.parameters)
     assert np.allclose(skq_density_matrix, mixed_state)
+
+def test_gibbs_state():
+    # Define Hamiltonian and Temperature
+    simple_hamiltonian = np.array([[0, 0], [0, 1]])
+    temperature = 1.0
+
+    # Create Gibbs state
+    gibbs_state = GibbsState(simple_hamiltonian, temperature)
+
+    assert isinstance(gibbs_state, DensityMatrix)
+    eigenvalues = gibbs_state.eigenvalues()
+    assert np.all(eigenvalues >= 0)
+    assert np.isclose(np.sum(eigenvalues), 1)
+
+    # 0K temperature
+    zero_temperature = 1e-10 
+    gibbs_state_zero = GibbsState(simple_hamiltonian, zero_temperature)
+    # Ground state projection
+    expected_density_matrix_zero = np.array([[1, 0], [0, 0]]) 
+    np.testing.assert_allclose(gibbs_state_zero, expected_density_matrix_zero)
+
+    # Very high temperature
+    high_temperature = 1e30
+    gibbs_state_high = GibbsState(simple_hamiltonian, high_temperature)
+     # Maximally mixed state
+    expected_density_matrix_high = np.array([[0.5, 0], [0, 0.5]])
+    np.testing.assert_allclose(gibbs_state_high, expected_density_matrix_high)
+
+    assert gibbs_state.free_energy() <= 0
+    assert gibbs_state.entropy() >= 0  
+    assert gibbs_state.internal_energy(simple_hamiltonian) >= 0 
+    assert gibbs_state.heat_capacity() >= 0 

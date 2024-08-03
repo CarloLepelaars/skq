@@ -1,6 +1,7 @@
 import qiskit
 import numpy as np
 import pennylane as qml
+from scipy.linalg import expm, logm
 
 from skq.base import Operator
 from skq.gates.qubit import XGate, YGate, ZGate
@@ -48,15 +49,15 @@ class DensityMatrix(Operator):
         return vectors
     
     def trace_equal_to_one(self) -> bool:
-        """ Check if the trace of the density matrix is equal to one. """
+        """ Trace of the density matrix is equal to one. """
         return np.isclose(np.trace(self), 1)
     
     def probabilities(self) -> float:
-        """ Return the probabilities of all possible state measurements. """
+        """ Probabilities of all possible state measurements. """
         return np.diag(self).real
 
     def num_qubits(self) -> int:
-        """ Return the number of qubits in the density matrix. """
+        """ Number of qubits in the density matrix. """
         return int(np.log2(len(self)))
     
     def is_multi_qubit(self) -> bool:
@@ -64,16 +65,16 @@ class DensityMatrix(Operator):
         return self.num_qubits() > 1
     
     def trace_norm(self) -> float:
-        """ Return the trace norm of the density matrix. """
+        """ Trace norm of the density matrix. """
         return np.trace(np.sqrt(self.conjugate_transpose() @ self))
     
     def distance(self, other: 'DensityMatrix') -> float:
-        """ Return the trace norm distance between two density matrices. """
+        """ Trace norm distance between two density matrices. """
         assert isinstance(other, DensityMatrix), "'other' argument must be a valid DensityMatrix object."
         return self.trace_norm(self - other)
     
     def bloch_vector(self) -> np.ndarray:
-        """ Calculate the Bloch vector of the density matrix. """
+        """ Bloch vector of the density matrix. """
         if self.num_qubits() > 1:
             raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
         
@@ -85,13 +86,28 @@ class DensityMatrix(Operator):
     
     def kron(self, other: 'DensityMatrix') -> 'DensityMatrix':
         """
-        Compute the Kronecker (tensor) product of two density matrices.
+        Kronecker (tensor) product of two density matrices.
         This can be used to create so-called "product states" that represent 
         the independence between two quantum systems.
         :param other: Density matrix
         :return: Kronecker product of the two density matrices
         """
         return DensityMatrix(np.kron(self, other))
+    
+    def entropy(self):
+        """ von Neumann entropy. """
+        eigenvals = self.eigenvalues()
+        # Only consider non-zero eigenvalues
+        nonzero_eigenvalues = eigenvals[eigenvals > 0]
+        return -np.sum(nonzero_eigenvalues * np.log(nonzero_eigenvalues))
+    
+    def internal_energy(self, hamiltonian: np.array) -> float:
+        """ 
+        Expected value of the Hamiltonian. 
+        :param hamiltonian: Hamiltonian matrix
+        :return: Expected value of the Hamiltonian
+        """
+        return np.trace(self @ hamiltonian)
     
     def to_qiskit(self) -> qiskit.quantum_info.DensityMatrix:
         """
@@ -138,3 +154,32 @@ class DensityMatrix(Operator):
         assert len(probabilities.shape) == 1, f"Probabilities must be a 1D array. Got shape: {probabilities.shape}"
         return DensityMatrix(np.diag(probabilities))
     
+
+class GibbsState(DensityMatrix):
+    """
+    Gibbs (mixed) state representation of a quantum state in thermal equilibrium.
+    :param hamiltonian: Hamiltonian matrix of the system
+    :param temperature: Temperature of the system in Kelvin
+    """
+    # Boltzmann constant in J/K
+    BOLTZMANN_CONSTANT = 1.380649e-23  
+
+    def __new__(cls, hamiltonian: np.array, temperature: float):
+        cls.hamiltonian = hamiltonian
+        cls.temperature = temperature
+        cls.beta = 1 / (cls.BOLTZMANN_CONSTANT * temperature)
+        cls.exp_neg_beta_H = expm(-cls.beta * hamiltonian)
+        cls.partition_function = np.trace(cls.exp_neg_beta_H)
+        density_matrix = cls.exp_neg_beta_H / cls.partition_function
+        return super().__new__(cls, density_matrix)
+
+    def free_energy(self):
+        """ Helmholtz free energy. """
+        return -self.BOLTZMANN_CONSTANT * self.temperature * np.log(self.partition_function)
+    
+    def heat_capacity(self):
+        """ Calculate the heat capacity. """
+        beta = 1 / (self.BOLTZMANN_CONSTANT * self.temperature)
+        energy_squared = np.trace(self @ self.hamiltonian @ self.hamiltonian)
+        energy_mean = self.internal_energy(self.hamiltonian) ** 2
+        return beta ** 2 * (energy_squared - energy_mean)
