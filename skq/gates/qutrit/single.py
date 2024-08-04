@@ -74,8 +74,8 @@ class QutritTGate(QutritGate):
     """
     def __new__(cls):
         return super().__new__(cls, np.array([[1, 0, 0],
-                                            [0, np.exp(2*np.pi*1j/3), 0],
-                                            [0, 0, np.exp(4*np.pi*1j/3)]]))
+                                            [0, np.exp(2*np.pi*1j/9), 0],
+                                            [0, 0, np.exp(-2*np.pi*1j/9)]]))
     
 class QutritPhaseGate(QutritGate):
     """ 
