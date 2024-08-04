@@ -66,6 +66,16 @@ def test_qutrittgate():
     assert np.allclose(gate @ one_state, [0, np.exp(2*np.pi*1j/9), 0])
     assert np.allclose(gate @ two_state, [0, 0, np.exp(-2*np.pi*1j/9)])
 
+def test_qutritrgate():
+    gate = QutritRGate()
+    zero_state = np.array([1, 0, 0], dtype=complex)
+    one_state = np.array([0, 1, 0], dtype=complex)
+    two_state = np.array([0, 0, 1], dtype=complex)
+
+    assert np.allclose(gate @ zero_state, [1, 0, 0])
+    assert np.allclose(gate @ one_state, [0, 1, 0])
+    assert np.allclose(gate @ two_state, [0, 0, -1])
+
 def test_qutrit_phase_gate():
     phi_0, phi_1, phi_2 = np.pi/3, np.pi/2, np.pi
     gate = QutritPhaseGate(phi_0, phi_1, phi_2)

@@ -69,13 +69,20 @@ class QutritTGate(QutritGate):
     """ 
     T gate for a qutrit. 
     |0> -> |0>
-    |1> -> exp(2*pi*i/3)|1>
-    |2> -> exp(4*pi*i/3)|2>
+    |1> -> exp(2*pi*i/9)|1>
+    |2> -> exp(-2*pi*i/9)|2>
     """
     def __new__(cls):
         return super().__new__(cls, np.array([[1, 0, 0],
                                             [0, np.exp(2*np.pi*1j/9), 0],
                                             [0, 0, np.exp(-2*np.pi*1j/9)]]))
+    
+class QutritRGate(QutritGate):
+    """ R gate for a qutrit (non-Clifford gate). """
+    def __new__(cls):
+        return super().__new__(cls, np.array([[1, 0, 0],
+                                              [0, 1, 0],
+                                              [0, 0, -1]]))
     
 class QutritPhaseGate(QutritGate):
     """ 
