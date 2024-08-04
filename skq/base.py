@@ -1,3 +1,4 @@
+import pyquil
 import qiskit
 import numpy as np
 import pennylane as qml
@@ -98,7 +99,7 @@ class Operator(np.ndarray):
         assert self.num_levels() == other.num_levels(), "Operators must have the same number of rows for the commutation check."
         return np.allclose(self @ other, other @ self)
     
-    def to_qiskit(self):
+    def to_qiskit(self) -> qiskit.quantum_info.Operator:
         """ Convert operator to a Qiskit. """
         raise NotImplementedError(f"Conversion to Qiskit Gate is not implemented for {self.__class__.__name__}.")
     
@@ -121,4 +122,15 @@ class Operator(np.ndarray):
         :return: scikit-q Operator
         """
         raise NotImplementedError(f"Conversion from PennyLane is not implemented for {self.__class__.__name__}.")
-
+    
+    def to_pyquil(self) -> pyquil.gates.Gate:
+        """ Convert operator to a PyQuil gate. """
+        raise NotImplementedError(f"Conversion to PyQuil is not implemented for {self.__class__.__name__}.")
+    
+    def from_pyquil(self, pyquil_operator: pyquil.gates.Gate) -> 'Operator':
+        """
+        Convert a PyQuil gate to scikit-q Operator.
+        :param pyquil_operator: PyQuil object.
+        :return: scikit-q Operator
+        """
+        raise NotImplementedError(f"Conversion from PyQuil is not implemented for {self.__class__.__name__}.")

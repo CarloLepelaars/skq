@@ -1,3 +1,4 @@
+import pyquil
 import qiskit
 import numpy as np
 import scipy as sp
@@ -105,11 +106,14 @@ class QubitGate(BaseGate):
         kron_matrix = np.kron(self, other)
         return CustomQubitGate(kron_matrix)
     
-    def convert_endianness(self) -> 'BaseGate':
+    def convert_endianness(self) -> 'QubitGate':
         """ Convert a gate matrix from big-endian to little-endian and vice versa. """
         num_qubits = self.num_qubits()
-        perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
-        return self[np.ix_(perm, perm)]
+        if num_qubits == 1:
+            return self
+        permutation = np.arange(2**num_qubits).reshape([2]*num_qubits).transpose().flatten()
+        return self[permutation][:, permutation]
+
 
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         """ 
@@ -129,7 +133,7 @@ class QubitGate(BaseGate):
         :param gate: Qiskit Gate object
         """
         assert isinstance(gate, qiskit.circuit.gate.Gate), "Input must be a Qiskit Gate object"
-        return CustomQubitGate(QubitGate(gate.to_matrix()).convert_endianness())
+        return CustomQubitGate(gate.to_matrix()).convert_endianness()
     
     def to_pennylane(self, wires: list[int] | int= None) -> qml.QubitUnitary:
         """ 
@@ -152,6 +156,27 @@ class QubitGate(BaseGate):
         """
         assert isinstance(gate, qml.operation.Operation), "Input must be a PennyLane Operation object"
         return CustomQubitGate(gate.matrix())
+    
+    def to_pyquil(self) -> pyquil.quilbase.Gate:
+        """ 
+        Convert gate to a PyQuil DefGate object. 
+        PyQuil uses little endian convention, so we permute the order of the qubits.
+        :return: PyQuil DefGate
+        """
+        gate_name = self.__class__.__name__
+        print(f"No to_pyquil defined for '{gate_name}'. Initializing as DefGate.")
+        gate_definition = pyquil.quil.DefGate(gate_name, self.convert_endianness())
+        return gate_definition
+    
+    @staticmethod
+    def from_pyquil(gate: pyquil.quil.DefGate) -> 'CustomQubitGate':
+        """ 
+        Convert a PyQuil to CustomQubitGate. 
+        PyQuil uses little endian convention, so we permute the order of the qubits.
+        :param gate: scikit-q CustomQubitGate object
+        """
+        assert isinstance(gate, pyquil.quil.DefGate), "Input must be a PyQuil DefGate object"
+        return CustomQubitGate(gate.matrix).convert_endianness()
 
 
 class CustomQubitGate(QubitGate):

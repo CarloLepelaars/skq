@@ -280,7 +280,6 @@ def test_to_qiskit():
     assert isinstance(qiskit_gate, qiskit.circuit.library.CXGate)
     np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
 
-
 def test_from_qiskit():
     # Hadamard
     qiskit_gate = qiskit.circuit.library.HGate()
@@ -319,4 +318,43 @@ def test_from_pennylane():
     assert gate.num_qubits() == 1
     assert gate.is_pauli()
     assert gate.is_clifford()
+
+
+def test_to_pyquil():
+    # Hadamard gate
+    hadamard_matrix = 1/np.sqrt(2) * np.array([[1, 1], [1, -1]])
+    gate = CustomQubitGate(hadamard_matrix)
+    pyquil_defgate = gate.to_pyquil()
+    assert isinstance(pyquil_defgate, pyquil.quil.DefGate)
+    np.testing.assert_array_almost_equal(gate.convert_endianness(), pyquil_defgate.matrix)
+
+    # CNOT gate
+    cnot_matrix = np.array([[1, 0, 0, 0], 
+                            [0, 1, 0, 0], 
+                            [0, 0, 0, 1], 
+                            [0, 0, 1, 0]])
+    gate = CustomQubitGate(cnot_matrix)
+    pyquil_defgate = gate.to_pyquil()
+    assert isinstance(pyquil_defgate, pyquil.quil.DefGate)
+    np.testing.assert_array_almost_equal(gate.convert_endianness(), pyquil_defgate.matrix)
+
+def test_from_pyquil():
+    # Hadamard gate
+    hadamard_matrix = 1/np.sqrt(2) * np.array([[1, 1], [1, -1]])
+    pyquil_defgate = pyquil.quil.DefGate("CustomHadamard", hadamard_matrix)
+    gate = CustomQubitGate.from_pyquil(pyquil_defgate)
+    assert isinstance(gate, CustomQubitGate)
+    np.testing.assert_array_almost_equal(gate.convert_endianness(), pyquil_defgate.matrix)
+    assert gate.num_qubits() == 1
+
+    # CY gate
+    cy = np.array([[1, 0, 0, 0], 
+                   [0, 1, 0, 0], 
+                   [0, 0, 0, -1j], 
+                   [0, 0, 1j, 0]])
+    pyquil_defgate = pyquil.quil.DefGate("CY", cy)
+    gate = CustomQubitGate.from_pyquil(pyquil_defgate)
+    assert isinstance(gate, CustomQubitGate)
+    np.testing.assert_array_almost_equal(gate.convert_endianness(), pyquil_defgate.matrix)
+    assert gate.num_qubits() == 2
     

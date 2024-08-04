@@ -1,3 +1,4 @@
+import pyquil
 import qiskit
 import numpy as np
 import pennylane as qml
@@ -105,7 +106,7 @@ class Statevector(np.ndarray):
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
         Convert the state vector to a Qiskit QuantumCircuit object.
-        Qiskit uses little-endian convention for state vectors.
+        Qiskit uses little-endian convention.
         :return: Qiskit StateVector object
         """
         return qiskit.quantum_info.Statevector(self.reverse())
@@ -114,7 +115,7 @@ class Statevector(np.ndarray):
     def from_qiskit(statevector: qiskit.quantum_info.Statevector) -> "Statevector":
         """
         Convert a Qiskit StateVector object to a scikit-q StateVector.
-        Qiskit uses little-endian convention for state vectors.
+        Qiskit uses little-endian convention.
         :param statevector: Qiskit StateVector object
         :return: scikit-q StateVector object
         """
@@ -123,7 +124,7 @@ class Statevector(np.ndarray):
     def to_pennylane(self, wires: list[int] | int = None) -> qml.QubitStateVector:
         """
         Convert the state vector to a PennyLane QubitStateVector object.
-        PennyLane uses big-endian convention for state vectors.
+        PennyLane uses big-endian convention.
         :param wires: List of wires to apply the state vector to
         :return: PennyLane QubitStateVector object
         """
@@ -134,11 +135,28 @@ class Statevector(np.ndarray):
     def from_pennylane(statevector: qml.QubitStateVector) -> "Statevector":
         """
         Convert a PennyLane QubitStateVector object to a scikit-q StateVector.
-        PennyLane uses big-endian convention for state vectors.
+        PennyLane uses big-endian convention.
         :param statevector: PennyLane QubitStateVector object
         :return: scikit-q StateVector object
         """
         return Statevector(statevector.data[0])
+    
+    def to_pyquil(self):
+        """
+        Convert the state vector to a PyQuil object.
+        PyQuil uses little-endian convention.
+        :return: PyQuil object
+        """
+        raise NotImplementedError("Conversion to PyQuil is not implemented.")
+    
+    @staticmethod
+    def from_pyquil():
+        """
+        Convert a PyQuil object to a scikit-q StateVector object.
+        PyQuil uses little-endian convention.
+        :return: scikit-q StateVector object
+        """
+        raise NotImplementedError("Conversion from PyQuil is not implemented.")
     
 class ZeroState(Statevector):
     """ Zero state |0...0> """

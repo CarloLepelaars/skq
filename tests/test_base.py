@@ -1,3 +1,4 @@
+import pyquil
 import qiskit
 import pytest
 import numpy as np
@@ -39,3 +40,7 @@ def test_operator():
         gate.from_qiskit(qiskit_operator=qiskit.circuit.library.XGate())
     with pytest.raises(NotImplementedError):
         gate.from_pennylane(pennylane_operator=qml.PauliX(wires=0))
+    with pytest.raises(NotImplementedError):
+        gate.to_pyquil()
+    with pytest.raises(NotImplementedError):
+        gate.from_pyquil(pyquil_operator=pyquil.gates.X(0))
