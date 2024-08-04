@@ -1,7 +1,7 @@
-import pyquil
 import qiskit
 import numpy as np
 import pennylane as qml
+from scipy.linalg import svd
 
 from skq.quantum_info.density import DensityMatrix
 
@@ -102,6 +102,23 @@ class Statevector(np.ndarray):
         :return: 2D array representing the orthonormal basis.
         """
         return np.array([self / np.linalg.norm(self)]).T
+    
+    def schmidt_decomposition(self) -> tuple[np.array, np.array, np.array]:
+        """
+        Perform Schmidt decomposition on a quantum state.
+        :return: Tuple of Schmidt coefficients, Basis A and Basis B
+        """        
+        # Infer dimensions
+        N = len(self)
+        dim_A = int(np.sqrt(N))
+        dim_B = N // dim_A
+
+        # Singular Value Decomposition
+        state_matrix = self.reshape(dim_A, dim_B)
+        U, S, Vh = svd(state_matrix)
+
+        # Coefficients (S), Basis A (U) and Basis B (Vh^dagger)
+        return S, U, Vh.conj().T
 
     def to_qiskit(self) -> qiskit.quantum_info.Statevector:
         """
@@ -150,7 +167,7 @@ class Statevector(np.ndarray):
         raise NotImplementedError("Conversion to PyQuil is not implemented.")
     
     @staticmethod
-    def from_pyquil():
+    def from_pyquil(statevector) -> "Statevector":
         """
         Convert a PyQuil object to a scikit-q StateVector object.
         PyQuil uses little-endian convention.

@@ -134,3 +134,15 @@ class Operator(np.ndarray):
         :return: scikit-q Operator
         """
         raise NotImplementedError(f"Conversion from PyQuil is not implemented for {self.__class__.__name__}.")
+
+class HermitianOperator(Operator):
+    """
+    Hermitian operator (observable) class.
+    :param input_array: Input array to create the operator. Will be converted to a NumPy array.
+    """
+    def __new__(cls, input_array):
+        obj = super().__new__(cls, input_array)
+        assert obj.is_hermitian(), "Hermitian operator must be Hermitian."
+        assert obj.is_at_least_nxn(n=2), "Hermitian operator must be at least a 2x2 matrix."
+        return obj
+    

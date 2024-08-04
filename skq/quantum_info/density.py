@@ -3,16 +3,15 @@ import numpy as np
 import pennylane as qml
 from scipy.linalg import expm
 
-from skq.base import Operator
+from skq.base import HermitianOperator
 from skq.constants import BOLTZMANN_CONSTANT
 from skq.gates.qubit import XGate, YGate, ZGate
 
 
-class DensityMatrix(Operator):
+class DensityMatrix(HermitianOperator):
     """ Density matrix representation of a qubit state. """
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
-        assert obj.is_hermitian(), "Density matrix must be Hermitian."
         assert obj.is_positive_semidefinite(), "Density matrix must be positive semidefinite (All eigenvalues >= 0)."
         assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one. Normalize to unit trace if you want to use this matrix as a DensityMatrix."
         return obj
