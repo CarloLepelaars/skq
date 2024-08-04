@@ -97,6 +97,7 @@ def test_hamiltonian_pennylane_conversion():
 
 def test_ising_hamiltonian():
     H = IsingHamiltonian(num_qubits=2, J=1.0, h=0.5)
+    assert H.num_qubits() == 2, "Hamiltonian should correspond to 2 qubits."
     
     expected_h_matrix = np.array([
         [-1, -0.5, -0.5, 0.],
@@ -108,6 +109,7 @@ def test_ising_hamiltonian():
 
 def test_heisenberg_hamiltonian():
     H = HeisenbergHamiltonian(num_qubits=2, J=1.0)
+    assert H.num_qubits() == 2, "Hamiltonian should correspond to 2 qubits."
     
     expected_h_matrix = np.array([
         [1.0, 0.0, 0.0, 0.0],

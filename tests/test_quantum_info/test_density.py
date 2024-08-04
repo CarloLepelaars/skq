@@ -14,6 +14,8 @@ def test_zero_and_one_density_matrix():
     assert zero_density_matrix.num_qubits() == 1
     assert zero_density_matrix.is_multi_qubit() == False
     assert zero_density_matrix.is_hermitian()
+    assert zero_density_matrix.is_positive_semidefinite()
+    assert zero_density_matrix.trace_equal_to_one()
     assert zero_density_matrix.dtype == complex
     assert np.allclose(zero_density_matrix, np.array([[1, 0], 
                                                       [0, 0]]))
