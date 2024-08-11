@@ -17,17 +17,17 @@ class MultiQubitTransformer(BaseQubitTransformer):
         assert len(qubits) == gate.num_qubits(), f"Number of qubits in gate ({gate.num_qubits()}) must match the number of defined qubits in MultiQubitTransformer ({len(qubits)})."
 
 class PhaseOracleTransformer(MultiQubitTransformer):
-    def __init__(self, target_state: np.ndarray):
+    """ Phase Oracle """
+    def __init__(self, *, qubits: list[int], target_state: np.ndarray):
         self.target_state = Statevector(target_state)
-        self.n_qubits = self.target_state.num_qubits()
         self.oracle_gate = PhaseOracleGate(self.target_state)
-        super().__init__(gate=self.oracle_gate, qubits=list(range(self.n_qubits)))
+        super().__init__(gate=self.oracle_gate, qubits=qubits)
 
 class GroverDiffusionTransformer(MultiQubitTransformer):
-    def __init__(self, n_qubits: int):
-        self.n_qubits = n_qubits
-        self.diffusion_gate = GroverDiffusionGate(n_qubits)
-        super().__init__(gate=self.diffusion_gate, qubits=list(range(n_qubits)))
+    """ Grover Diffusion"""
+    def __init__(self, *, qubits: list[int]):
+        self.diffusion_gate = GroverDiffusionGate(len(qubits))
+        super().__init__(gate=self.diffusion_gate, qubits=qubits)
 
 class CXTransformer(MultiQubitTransformer):
     """ Controlled-X (CNOT) gate """

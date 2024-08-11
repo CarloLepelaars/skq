@@ -19,15 +19,22 @@ def test_zero_and_one_density_matrix():
     assert zero_density_matrix.dtype == complex
     assert np.allclose(zero_density_matrix, np.array([[1, 0], 
                                                       [0, 0]]))
+    np.testing.assert_array_almost_equal(zero_density_matrix**2, zero_density_matrix)
+    np.testing.assert_array_almost_equal((zero_density_matrix**2).trace(), 1)
 
     # One state |1⟩
     one_state = Statevector([0, 1])
     one_density_matrix = one_state.density_matrix()
+    assert isinstance(one_density_matrix, DensityMatrix)
+    assert one_density_matrix.is_pure()
     assert np.allclose(one_density_matrix, np.array([[0, 0], 
                                                      [0, 1]]))
     
     assert np.isclose(one_density_matrix.entropy(), 0)
     assert np.isclose(one_density_matrix.internal_energy(np.array([[0, 0], [0, 1]])), 1)
+    assert (one_density_matrix**2).trace() == 1
+    np.testing.assert_array_almost_equal(one_density_matrix**2, one_density_matrix)
+
     
 def test_density_mixed_state():
     # Mixed state |ψ⟩ = 0.5 |0⟩⟨0| + 0.5 |1⟩⟨1|
@@ -36,6 +43,7 @@ def test_density_mixed_state():
     mixed_density_matrix = DensityMatrix(mixed_state)
     assert mixed_density_matrix.dtype == complex
     assert mixed_density_matrix.is_mixed()
+    assert not mixed_density_matrix.is_pure()
     assert np.allclose(mixed_density_matrix, np.array([[0.5, 0], 
                                                        [0, 0.5]]))
     assert np.allclose(mixed_density_matrix.probabilities(), [0.5, 0.5])
@@ -44,6 +52,9 @@ def test_density_mixed_state():
     
     assert np.isclose(mixed_density_matrix.entropy(), np.log(2))
     assert np.isclose(mixed_density_matrix.internal_energy(np.array([[0, 0], [0, 1]])), 0.5)
+
+    assert not np.allclose(mixed_density_matrix**2, mixed_density_matrix)
+    assert (mixed_density_matrix**2).trace() < 1
 
 def test_density_conjugate_transpose():
     mixed_state = DensityMatrix(np.array([[0.25+0.j, 0.02+0.05j, 0.0125-0.025j, 0.0125+0.0125j],
