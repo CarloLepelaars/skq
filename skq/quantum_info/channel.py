@@ -88,8 +88,8 @@ class QuantumChannel(SuperOperator):
                 composed_kraus.append(np.dot(k1, k2))
 
         composed_kraus = np.array(composed_kraus, dtype=np.complex128)
-        kraus_sum = sum(np.dot(k.conj().T, k) for k in composed_kraus).astype(np.complex128)
-        normalization_factor = np.linalg.inv(sqrtm(kraus_sum))
+        kraus_sum = sum(np.dot(k.conj().T, k) for k in composed_kraus)
+        normalization_factor = np.linalg.inv(sqrtm(kraus_sum).astype(np.complex128))
         normalized_kraus = [np.dot(normalization_factor, k) for k in composed_kraus]
         return QuantumChannel(np.array(normalized_kraus), representation="kraus")
     
