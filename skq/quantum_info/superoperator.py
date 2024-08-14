@@ -3,7 +3,7 @@ import numpy as np
 class SuperOperator(np.ndarray):
     """ Base class for quantum superoperators. For example quantum channels. """
     def __new__(cls, input_array: np.array):
-        arr = np.array(input_array, dtype=complex)
+        arr = np.array(input_array, dtype=np.complex128)
         obj = arr.view(cls)
         assert obj.is_at_least_nxn(n=1), "Superoperator must be at least a 1x1 matrix."
         assert obj.is_power_of_n_shape(n=2), "Superoperator must have a power of 2 shape."
