@@ -87,7 +87,7 @@ class QuantumChannel(SuperOperator):
             for k2 in other_kraus:
                 composed_kraus.append(np.dot(k1, k2))
 
-        composed_kraus = np.array(composed_kraus, dtype=np.complex128)
+        composed_kraus = np.array(composed_kraus, dtype=complex)
         kraus_sum = sum(np.dot(k.conj().T, k) for k in composed_kraus)
         normalization_factor = np.linalg.inv(sqrtm(kraus_sum).astype(np.complex128))
         normalized_kraus = [np.dot(normalization_factor, k) for k in composed_kraus]
@@ -181,13 +181,13 @@ class QuantumChannel(SuperOperator):
             if np.isclose(w[i], 0):
                 continue
             kraus_operators.append(np.sqrt(w[i]) * v[:, i].reshape(d, d))
-        return QuantumChannel(np.array(kraus_operators, dtype=np.complex128), representation="kraus")
+        return QuantumChannel(np.array(kraus_operators, dtype=complex), representation="kraus")
     
     def _kraus_to_stinespring(self) -> "QuantumChannel":
         """ Convert kraus representation to stinespring representation. """
         d = self[0].shape[0]
         num_kraus = len(self)
-        stinespring_matrix = np.zeros((d * num_kraus, d), dtype=np.complex128)
+        stinespring_matrix = np.zeros((d * num_kraus, d), dtype=complex)
         for i, k in enumerate(self):
             stinespring_matrix[i * d:(i + 1) * d, :] = k
         return QuantumChannel(stinespring_matrix, representation="stinespring")
@@ -199,5 +199,5 @@ class QuantumChannel(SuperOperator):
         kraus_operators = []
         for i in range(num_kraus):
             kraus_operators.append(self[i * d:(i + 1) * d, :])
-        return QuantumChannel(np.array(kraus_operators, dtype=np.complex128), representation="kraus")
+        return QuantumChannel(np.array(kraus_operators, dtype=complex), representation="kraus")
     
