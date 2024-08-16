@@ -1,14 +1,16 @@
 import pytest
 import numpy as np
 
-from skq.quantum_info.channel import QuantumChannel
+from skq.quantum_info.density import DensityMatrix
+from skq.quantum_info.channel import (QuantumChannel, NoiseChannel, QubitResetChannel,
+                                      CompletelyDephasingChannel, AmplitudeDampingChannel)
 
 
 def test_choi_validation():
-    choi_matrix = np.array([[1, 0, 0, 0], 
-                            [0, 1, 0, 0], 
-                            [0, 0, 1, 0], 
-                            [0, 0, 0, 1]], dtype=complex) / 2
+    choi_matrix = np.array([[1, 0, 0, 1],
+                            [0, 0, 0, 0],
+                            [0, 0, 0, 0],
+                            [1, 0, 0, 1]], dtype=complex) / 2
     channel = QuantumChannel(choi_matrix, representation="choi")
     assert channel.is_nd(2), "Choi matrix should be 2D"
     assert channel.is_square(), "Choi matrix should be square"
@@ -113,13 +115,75 @@ def test_tensor_channels():
     assert tensor_channel.representation == "choi"
     assert np.allclose(tensor_channel.to_choi(), expected_choi), "Tensor product channel should match expected Choi matrix."
 
+def test_call_channel():
+    # Amplitude damping
+    gamma = 0.3
+    kraus_operators = np.array([
+        np.array([[1, 0], [0, np.sqrt(1 - gamma)]], dtype=complex),
+        np.array([[0, np.sqrt(gamma)], [0, 0]], dtype=complex)
+    ])
+    channel = QuantumChannel(kraus_operators, representation="kraus")
+    # Density matrix of qubit in |1>
+    rho = DensityMatrix(np.array([[0, 0], 
+                                  [0, 1]], dtype=complex))
+    output = channel(rho)
+    expected_output = np.array([[gamma, 0],
+                                [0, 1 - gamma]], dtype=complex)
+    assert isinstance(output, DensityMatrix), "Channel should return a DensityMatrix"
+    assert np.allclose(output, expected_output), "Channel is not applied correctly to state"
+
 def test_fidelity_channels():
     # Identity channel represented in Choi form
-    choi_matrix_1 = np.eye(4, dtype=complex) / 2
-    choi_matrix_2 = np.eye(4, dtype=complex) / 2
-    
+    choi_matrix_1 = np.array([[1, 0, 0, 1],
+                            [0, 0, 0, 0],
+                            [0, 0, 0, 0],
+                            [1, 0, 0, 1]], dtype=complex) / 2
+    choi_matrix_2 = np.array([[1, 0, 0, 1],
+                            [0, 0, 0, 0],
+                            [0, 0, 0, 0],
+                            [1, 0, 0, 1]], dtype=complex) / 2
     channel1 = QuantumChannel(choi_matrix_1, representation="choi")
     channel2 = QuantumChannel(choi_matrix_2, representation="choi")
     
     fidelity = channel1.fidelity(channel2)
     assert np.isclose(fidelity, 1.0), "Fidelity between two identical channels should be 1."
+
+def test_qubit_reset_channel():
+    reset_channel = QubitResetChannel()
+    assert reset_channel.representation == "kraus"
+    assert reset_channel.shape == (2, 2, 2)
+
+def test_noise_channel():
+    noise_channel = NoiseChannel(0.1)
+    assert noise_channel.representation == "kraus"
+    assert noise_channel.shape == (4, 2, 2)
+
+    # Check that channel on density matrix is equivalent to applying noise to the state
+    rho = np.array([[1, 0], [0, 0]], dtype=complex)
+    output = noise_channel(rho)
+    expected_output = np.array([[0.93333333, 0.],
+                                [0., 0.06666667]], dtype=complex)
+    assert isinstance(output, DensityMatrix), "Noise channel should return a numpy array"
+    assert np.allclose(output, expected_output), "Noise channel is not applied correctly to state"
+
+def test_completely_dephasing_channe():
+    dephasing_channel = CompletelyDephasingChannel()
+    assert dephasing_channel.representation == "kraus"
+    assert dephasing_channel.shape == (2, 2, 2)
+    # Each Kruas operator is diagonal
+    for k in dephasing_channel:
+        assert np.allclose(k, np.diag(np.diag(k))), "Kraus operator is not diagonal"
+
+def test_amplitude_damping_channel():
+    gamma = 0.2
+    amplitude_damping_channel = AmplitudeDampingChannel(gamma)
+    
+    assert amplitude_damping_channel.representation == "kraus"
+    assert amplitude_damping_channel.shape == (2, 2, 2)
+
+def test_amplitude_damping_channel_gamma_out_of_range():
+    with pytest.raises(AssertionError, match="Gamma must be in range"):
+        AmplitudeDampingChannel(-0.1)
+        
+    with pytest.raises(AssertionError, match="Gamma must be in range"):
+        AmplitudeDampingChannel(1.1)

@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.linalg import sqrtm
 
+from skq.quantum_info.density import DensityMatrix
 from skq.quantum_info.superoperator import SuperOperator
 
 
@@ -48,7 +49,8 @@ class QuantumChannel(SuperOperator):
         return self.shape[0] == self.shape[1]
     
     def is_positive_semidefinite(self) -> bool:
-        """ All eigenvalues are non-negative. Requirement for choi matrix. """
+        """ Check if channel is positive semidefinite (i.e. all eigenvalues are non-negative). 
+        Requirement for choi matrices. """
         eigenvalues = np.linalg.eigvalsh(self)
         return np.all(eigenvalues >= 0)
     
@@ -60,8 +62,9 @@ class QuantumChannel(SuperOperator):
             return np.allclose(kraus_sum, np.eye(d))
         elif self.representation == "choi":
             d = int(np.sqrt(self.shape[0]))
-            partial_trace = np.trace(self.reshape(d, d, d, d), axis1=1, axis2=3)
-            return np.allclose(partial_trace, np.eye(d))
+            choi_reshaped = self.reshape(d, d, d, d)
+            partial_trace = np.trace(choi_reshaped, axis1=1, axis2=3)
+            return np.allclose(partial_trace, np.eye(d)) or np.isclose(np.trace(partial_trace), 1.0)
         else:
             raise ValueError(f"Trace-preserving check is not implemented for representation '{self.representation}'.")
         
@@ -111,13 +114,15 @@ class QuantumChannel(SuperOperator):
         assert isinstance(other, QuantumChannel), "The other object must be a QuantumChannel."
         choi_self = self.to_choi()
         choi_other = other.to_choi()
-        sqrt_choi_self = sqrtm(choi_self)
-        product_matrix = sqrt_choi_self @ choi_other @ sqrt_choi_self
+        norm_choi_self = choi_self / np.trace(choi_self)
+        norm_choi_other = choi_other / np.trace(choi_other)
+        sqrt_choi_self = sqrtm(norm_choi_self)
+        
+        product_matrix = sqrt_choi_self @ norm_choi_other @ sqrt_choi_self
         fidelity_value = np.trace(sqrtm(product_matrix)) ** 2
-        # Normalize fidelity
-        d = np.sqrt(choi_self.shape[0])
-        fidelity_value /= d ** 2
-        return np.real(fidelity_value)
+        fidelity_value = np.real(fidelity_value)
+        fidelity_value = min(max(fidelity_value, 0), 1)
+        return fidelity_value
     
     def to_choi(self):
         """ Convert the channel to the choi matrix representation. """
@@ -200,4 +205,57 @@ class QuantumChannel(SuperOperator):
         for i in range(num_kraus):
             kraus_operators.append(self[i * d:(i + 1) * d, :])
         return QuantumChannel(np.array(kraus_operators, dtype=complex), representation="kraus")
+    
+    def __call__(self, density_matrix: DensityMatrix) -> DensityMatrix:
+        rho_out = np.zeros_like(density_matrix, dtype=complex)
+        for K in self.to_kraus():
+            rho_out += K @ density_matrix @ K.conj().T
+        return DensityMatrix(rho_out)
+
+class QubitResetChannel(QuantumChannel):
+    """ 
+    Reset channel for a qubit system. 
+    Initialized in the Kraus representation.
+    """
+    def __new__(cls):
+        kraus_ops = np.array([[[1, 0], [0, 0]], 
+                              [[0, 1], [0, 0]]])
+        return super().__new__(cls, kraus_ops, representation="kraus")
+
+class NoiseChannel(QuantumChannel):
+    """ 
+    Depolarizing noise (qubit) channel as Kraus representation. 
+    :param p: Probability of depolarization.
+    """
+    def __new__(cls, p: float):
+        assert 0 <= p <= 1, "Depolarization probability must be in range [0...1]."
+        cls.p = p
+        kraus_ops = np.array([
+                np.sqrt(1 - p) * np.eye(2),
+                np.sqrt(p / 3) * np.array([[0, 1], [1, 0]]),
+                np.sqrt(p / 3) * np.array([[0, -1j], [1j, 0]]),
+                np.sqrt(p / 3) * np.array([[1, 0], [0, -1]])
+            ])
+        return super().__new__(cls, kraus_ops, representation="kraus")
+
+class CompletelyDephasingChannel(QuantumChannel):
+    """ 
+    Dephases a quantum (qubit) state in the computational basis. 
+    Initialized in the Kraus representation.
+    """
+    def __new__(cls):
+        kraus_ops = np.array([np.diag([1 if i == j else 0 for j in range(2)]) for i in range(2)])
+        return super().__new__(cls, kraus_ops, representation="kraus")
+    
+class AmplitudeDampingChannel(QuantumChannel):
+    """ 
+    Amplitude Damping Channel for a quantum (qubit) system.
+    :param gamma: Damping parameter in range [0...1].
+    """
+    def __new__(cls, gamma: float):
+        assert 0 <= gamma <= 1, "Gamma must be in range [0...1]."
+        cls.gamma = gamma
+        kraus_ops = np.array([[[1, 0], [0, np.sqrt(1 - gamma)]],
+                              [[0, np.sqrt(gamma)], [0, 0]]])
+        return super().__new__(cls, kraus_ops, representation="kraus")
     

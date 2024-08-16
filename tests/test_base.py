@@ -44,3 +44,21 @@ def test_operator():
         gate.to_pyquil()
     with pytest.raises(NotImplementedError):
         gate.from_pyquil(pyquil_operator=pyquil.gates.X(0))
+
+def test_invalid_operator():
+    # Empty array
+    with pytest.raises(AssertionError):
+        Operator(np.array([[], []]))
+    # Not square
+    with pytest.raises(AssertionError):
+        Operator(np.array([[1, 0, 0], 
+                           [0, 1, 0]]))
+    # Not 2D
+    with pytest.raises(AssertionError):
+        Operator(np.array([1, 0, 0]))
+    # Not power of 2 shape
+    with pytest.raises(AssertionError):
+        Operator(np.array([[1, 0], 
+                           [0, 1], 
+                           [0, 0], 
+                           [0, 0]]))

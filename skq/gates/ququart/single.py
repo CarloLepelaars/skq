@@ -20,7 +20,6 @@ class QuquartXGate(QuquartGate):
         ]))
         return obj
     
-    
 class QuquartZGate(QuquartGate):
     """ Z gate for ququarts. """
     def __new__(cls):
@@ -31,7 +30,6 @@ class QuquartZGate(QuquartGate):
             [0, 0, 0, -1j]
         ]))
         return obj
-
     
 class QuquartHGate(QuquartGate):
     """ Hadamard gate for ququarts. """

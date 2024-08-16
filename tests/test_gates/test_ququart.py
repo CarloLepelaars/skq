@@ -10,6 +10,18 @@ def test_base_ququart_gate():
     assert gate.num_ququarts() == 1, "Gate must involve 1 ququart."
     assert not gate.is_multi_ququart(), "Gate must not involve multiple ququarts."
 
+def test_ququart_i_gate():
+    gate = QuquartIGate()
+    zero_state = np.array([1, 0, 0, 0], dtype=complex)
+    one_state = np.array([0, 1, 0, 0], dtype=complex)
+    two_state = np.array([0, 0, 1, 0], dtype=complex)
+    three_state = np.array([0, 0, 0, 1], dtype=complex)
+
+    assert np.allclose(gate @ zero_state, zero_state), "I gate must not change |0>."
+    assert np.allclose(gate @ one_state, one_state), "I gate must not change |1>."
+    assert np.allclose(gate @ two_state, two_state), "I gate must not change |2>."
+    assert np.allclose(gate @ three_state, three_state), "I gate must not change |3>."
+
 def test_ququart_x_gate():
     gate = QuquartXGate()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
