@@ -152,11 +152,11 @@ def test_qubit_reset_channel():
     assert reset_channel.representation == "kraus"
     assert reset_channel.shape == (2, 2, 2)
 
-def test_noise_channel():
-    noise_channel = NoiseChannel(0.1)
+def test_depolarizing_channel():
+    noise_channel = DepolarizingChannel(0.1)
     assert noise_channel.representation == "kraus"
     assert noise_channel.shape == (4, 2, 2)
-    
+
     rho = np.array([[1, 0], 
                     [0, 0]], dtype=complex)
     output = noise_channel(rho)

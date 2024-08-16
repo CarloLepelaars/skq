@@ -223,9 +223,10 @@ class QubitResetChannel(QuantumChannel):
                               [[0, 1], [0, 0]]])
         return super().__new__(cls, kraus_ops, representation="kraus")
 
-class NoiseChannel(QuantumChannel):
+class DepolarizingChannel(QuantumChannel):
     """ 
     Depolarizing noise (qubit) channel as Kraus representation. 
+    Special case of PauliNoiseChannel for p_x = p_y = p_z.
     :param p: Probability of depolarization.
     """
     def __new__(cls, p: float):
