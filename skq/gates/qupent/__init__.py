@@ -1,3 +1,2 @@
-from skq.gates.qupent.base import QupentGate
-from skq.gates.qupent.single import *
-
+from .base import QupentGate
+from .single import *

@@ -1,3 +1,3 @@
-from skq.gates.qubit.base import *
-from skq.gates.qubit.single import *
-from skq.gates.qubit.multi import *
+from .base import *
+from .single import *
+from .multi import *

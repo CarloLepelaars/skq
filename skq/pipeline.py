@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.pipeline import _name_estimators, FeatureUnion
 
-from skq.gates import QubitGate, IGate
+from skq.gates.qubit import QubitGate, IGate
 from skq.utils import _check_quantum_state_array
 from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
 

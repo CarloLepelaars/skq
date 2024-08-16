@@ -1,9 +1,8 @@
 import pytest
 import numpy as np
 
+from skq.quantum_info.channel import *
 from skq.quantum_info.density import DensityMatrix
-from skq.quantum_info.channel import (QuantumChannel, NoiseChannel, QubitResetChannel,
-                                      CompletelyDephasingChannel, AmplitudeDampingChannel)
 
 
 def test_choi_validation():
@@ -187,3 +186,8 @@ def test_amplitude_damping_channel_gamma_out_of_range():
         
     with pytest.raises(AssertionError, match="Gamma must be in range"):
         AmplitudeDampingChannel(1.1)
+
+def test_phase_flip_channel():
+    phase_flip_channel = PhaseFlipChannel(0.2)
+    assert phase_flip_channel.representation == "kraus"
+    assert phase_flip_channel.shape == (2, 2, 2)

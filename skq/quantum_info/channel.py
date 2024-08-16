@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.linalg import sqrtm
 
+from skq.gates.qubit import IGate, ZGate
 from skq.quantum_info.density import DensityMatrix
 from skq.quantum_info.superoperator import SuperOperator
 
@@ -257,5 +258,17 @@ class AmplitudeDampingChannel(QuantumChannel):
         cls.gamma = gamma
         kraus_ops = np.array([[[1, 0], [0, np.sqrt(1 - gamma)]],
                               [[0, np.sqrt(gamma)], [0, 0]]])
+        return super().__new__(cls, kraus_ops, representation="kraus")
+    
+class PhaseFlipChannel(QuantumChannel):
+    """ 
+    Phase flip channel for a qubit system. 
+    Initialized in the Kraus representation.
+    :param p: Probability of phase flip.
+    """
+    def __new__(cls, p: float):
+        assert 0 <= p <= 1, "Depolarization probability must be in range [0...1]."
+        cls.p = p
+        kraus_ops = np.array([np.sqrt(1 - p) * IGate(), np.sqrt(p) * ZGate()])
         return super().__new__(cls, kraus_ops, representation="kraus")
     
