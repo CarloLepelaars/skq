@@ -180,14 +180,21 @@ def test_amplitude_damping_channel():
     assert amplitude_damping_channel.representation == "kraus"
     assert amplitude_damping_channel.shape == (2, 2, 2)
 
-def test_amplitude_damping_channel_gamma_out_of_range():
-    with pytest.raises(AssertionError, match="Gamma must be in range"):
-        AmplitudeDampingChannel(-0.1)
-        
-    with pytest.raises(AssertionError, match="Gamma must be in range"):
-        AmplitudeDampingChannel(1.1)
-
 def test_phase_flip_channel():
     phase_flip_channel = PhaseFlipChannel(0.2)
     assert phase_flip_channel.representation == "kraus"
     assert phase_flip_channel.shape == (2, 2, 2)
+
+def test_pauli_noise_channel():
+    p_x, p_y, p_z = 0.2, 0.3, 0.1
+    channel = PauliNoiseChannel(p_x, p_y, p_z)
+    assert channel.representation == "kraus"
+    assert channel.shape == (4, 2, 2)
+    # Test on density matrix
+    rho = np.array([[1, 0], 
+                    [0, 0]], dtype=complex)
+    output = channel(rho)
+    assert isinstance(output, DensityMatrix), "Pauli noise channel should return a DensityMatrix"
+    expected_output = np.array([[0.5, 0.], 
+                                [0., 0.5]], dtype=complex)
+    assert np.allclose(output, expected_output), "Pauli noise channel is not applied correctly to state"

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.linalg import sqrtm
 
-from skq.gates.qubit import IGate, ZGate
+from skq.gates.qubit import IGate, XGate, YGate, ZGate
 from skq.quantum_info.density import DensityMatrix
 from skq.quantum_info.superoperator import SuperOperator
 
@@ -232,11 +232,35 @@ class NoiseChannel(QuantumChannel):
         assert 0 <= p <= 1, "Depolarization probability must be in range [0...1]."
         cls.p = p
         kraus_ops = np.array([
-                np.sqrt(1 - p) * np.eye(2),
-                np.sqrt(p / 3) * np.array([[0, 1], [1, 0]]),
-                np.sqrt(p / 3) * np.array([[0, -1j], [1j, 0]]),
-                np.sqrt(p / 3) * np.array([[1, 0], [0, -1]])
+                np.sqrt(1 - p) * IGate(),
+                np.sqrt(p / 3) * XGate(),
+                np.sqrt(p / 3) * YGate(),
+                np.sqrt(p / 3) * ZGate()
             ])
+        return super().__new__(cls, kraus_ops, representation="kraus")
+    
+class PauliNoiseChannel(QuantumChannel):
+    """ 
+    Pauli noise channel as Kraus representation. 
+    :param p_x: Probability of X error.
+    :param p_y: Probability of Y error.
+    :param p_z: Probability of Z error.
+    """
+    def __new__(cls, p_x: float, p_y: float, p_z: float):
+        # Ensure the probabilities are within [0, 1] and the total does not exceed 1
+        assert 0 <= p_x <= 1, "Probability p_x must be in range [0...1]."
+        assert 0 <= p_y <= 1, "Probability p_y must be in range [0...1]."
+        assert 0 <= p_z <= 1, "Probability p_z must be in range [0...1]."
+        total_p = p_x + p_y + p_z
+        assert total_p <= 1, "The sum of probabilities p_x, p_y, and p_z must not exceed 1."
+        
+        p_i = 1 - total_p
+        kraus_ops = np.array([
+            np.sqrt(p_i) * IGate(),
+            np.sqrt(p_x) * XGate(),       
+            np.sqrt(p_y) * YGate(),
+            np.sqrt(p_z) * ZGate()
+        ])
         return super().__new__(cls, kraus_ops, representation="kraus")
 
 class CompletelyDephasingChannel(QuantumChannel):
