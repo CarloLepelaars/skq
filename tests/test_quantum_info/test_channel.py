@@ -156,14 +156,28 @@ def test_noise_channel():
     noise_channel = NoiseChannel(0.1)
     assert noise_channel.representation == "kraus"
     assert noise_channel.shape == (4, 2, 2)
-
-    # Check that channel on density matrix is equivalent to applying noise to the state
-    rho = np.array([[1, 0], [0, 0]], dtype=complex)
+    
+    rho = np.array([[1, 0], 
+                    [0, 0]], dtype=complex)
     output = noise_channel(rho)
     expected_output = np.array([[0.93333333, 0.],
                                 [0., 0.06666667]], dtype=complex)
     assert isinstance(output, DensityMatrix), "Noise channel should return a numpy array"
     assert np.allclose(output, expected_output), "Noise channel is not applied correctly to state"
+
+def test_pauli_noise_channel():
+    p_x, p_y, p_z = 0.2, 0.3, 0.1
+    channel = PauliNoiseChannel(p_x, p_y, p_z)
+    assert channel.representation == "kraus"
+    assert channel.shape == (4, 2, 2)
+
+    rho = np.array([[1, 0], 
+                    [0, 0]], dtype=complex)
+    output = channel(rho)
+    assert isinstance(output, DensityMatrix), "Pauli noise channel should return a DensityMatrix"
+    expected_output = np.array([[0.5, 0.], 
+                                [0., 0.5]], dtype=complex)
+    assert np.allclose(output, expected_output), "Pauli noise channel is not applied correctly to state"
 
 def test_completely_dephasing_channe():
     dephasing_channel = CompletelyDephasingChannel()
@@ -184,17 +198,3 @@ def test_phase_flip_channel():
     phase_flip_channel = PhaseFlipChannel(0.2)
     assert phase_flip_channel.representation == "kraus"
     assert phase_flip_channel.shape == (2, 2, 2)
-
-def test_pauli_noise_channel():
-    p_x, p_y, p_z = 0.2, 0.3, 0.1
-    channel = PauliNoiseChannel(p_x, p_y, p_z)
-    assert channel.representation == "kraus"
-    assert channel.shape == (4, 2, 2)
-    # Test on density matrix
-    rho = np.array([[1, 0], 
-                    [0, 0]], dtype=complex)
-    output = channel(rho)
-    assert isinstance(output, DensityMatrix), "Pauli noise channel should return a DensityMatrix"
-    expected_output = np.array([[0.5, 0.], 
-                                [0., 0.5]], dtype=complex)
-    assert np.allclose(output, expected_output), "Pauli noise channel is not applied correctly to state"
