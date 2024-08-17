@@ -227,7 +227,7 @@ class PsiMinusState(Statevector):
         return super().__new__(cls, [0, 1, -1, 0] / np.sqrt(2))
     
 class GHZState(Statevector):
-    """ GHZ state |000> + |111> """
+    """ GHZ state |0...0> + |1...1> """
     def __new__(cls, num_qubits: int):
         assert num_qubits >= 3, "GHZ state requires at least 3 qubits."
         state = np.zeros(2 ** num_qubits)
