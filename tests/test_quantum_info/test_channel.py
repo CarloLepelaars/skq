@@ -1,3 +1,4 @@
+import qiskit
 import pytest
 import numpy as np
 
@@ -146,6 +147,48 @@ def test_fidelity_channels():
     
     fidelity = channel1.fidelity(channel2)
     assert np.isclose(fidelity, 1.0), "Fidelity between two identical channels should be 1."
+
+def test_to_qiskit_from_qiskit_choi():
+    choi_matrix = np.array([[0.5, 0, 0, 0.5], 
+                            [0, 0, 0, 0], 
+                            [0, 0, 0, 0], 
+                            [0.5, 0, 0, 0.5]], dtype=complex)
+    channel = QuantumChannel(choi_matrix, representation="choi")
+    
+    qiskit_channel = channel.to_qiskit()
+    assert isinstance(qiskit_channel, qiskit.quantum_info.Choi), "Converted channel should be a Qiskit Choi object"
+    
+    converted_channel = QuantumChannel.from_qiskit(channel, qiskit_channel)
+    assert converted_channel.representation == "choi", "Representation should be 'choi'"
+    assert np.allclose(converted_channel, choi_matrix), "Choi matrix not correctly converted back from Qiskit"
+
+def test_to_qiskit_from_qiskit_kraus():
+    kraus_operators = np.array([
+        np.array([[1, 0], [0, 0]], dtype=complex),
+        np.array([[0, 0], [0, 1]], dtype=complex)
+    ])
+    channel = QuantumChannel(kraus_operators, representation="kraus")
+    
+    qiskit_channel = channel.to_qiskit()
+    assert isinstance(qiskit_channel, qiskit.quantum_info.Kraus), "Converted channel should be a Qiskit Kraus object"
+    
+    converted_channel = QuantumChannel.from_qiskit(channel, qiskit_channel)
+    assert converted_channel.representation == "kraus", "Representation should be 'kraus'"
+    assert np.allclose(converted_channel, kraus_operators), "Kraus operators not correctly converted back from Qiskit"
+
+def test_to_qiskit_from_qiskit_stinespring():
+    stinespring_matrix = np.array([[1, 0], 
+                                   [0, 1], 
+                                   [0, 0], 
+                                   [0, 0]], dtype=complex)
+    channel = QuantumChannel(stinespring_matrix, representation="stinespring")
+    
+    qiskit_channel = channel.to_qiskit()
+    assert isinstance(qiskit_channel, qiskit.quantum_info.Stinespring), "Converted channel should be a Qiskit Stinespring object"
+    
+    converted_channel = QuantumChannel.from_qiskit(channel, qiskit_channel)
+    assert converted_channel.representation == "stinespring", "Representation should be 'stinespring'"
+    assert np.allclose(converted_channel, stinespring_matrix), "Stinespring matrix not correctly converted back from Qiskit"
 
 def test_qubit_reset_channel():
     reset_channel = QubitResetChannel()

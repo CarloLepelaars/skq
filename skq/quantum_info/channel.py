@@ -1,3 +1,4 @@
+import qiskit
 import numpy as np
 from scipy.linalg import sqrtm
 
@@ -212,6 +213,28 @@ class QuantumChannel(SuperOperator):
         for K in self.to_kraus():
             rho_out += K @ density_matrix @ K.conj().T
         return DensityMatrix(rho_out)
+    
+    def to_qiskit(self) -> qiskit.quantum_info.operators.channel.quantum_channel.QuantumChannel:
+        """ Convert the channel to a Qiskit object. """
+        if self.representation == "kraus":
+            # Input must be a list of numpy arrays
+            kraus_list = [self[i] for i in range(self.shape[0])]
+            return qiskit.quantum_info.Kraus(kraus_list)
+        elif self.representation == "stinespring":
+            return qiskit.quantum_info.Stinespring(self)
+        elif self.representation == "choi":
+            return qiskit.quantum_info.Choi(self)
+        
+    def from_qiskit(self, channel: qiskit.quantum_info.operators.channel.quantum_channel.QuantumChannel) -> "QuantumChannel":
+        """ Convert a Qiskit channel to a QuantumChannel object. """
+        if isinstance(channel, qiskit.quantum_info.Kraus):
+            return QuantumChannel(channel.data, representation="kraus")
+        elif isinstance(channel, qiskit.quantum_info.Stinespring):
+            return QuantumChannel(channel.data, representation="stinespring")
+        elif isinstance(channel, qiskit.quantum_info.Choi):
+            return QuantumChannel(channel.data, representation="choi")
+        else:
+            raise ValueError(f"Invalid Qiskit channel type '{channel}'.")
 
 class QubitResetChannel(QuantumChannel):
     """ 
