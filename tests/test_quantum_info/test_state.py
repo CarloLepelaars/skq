@@ -5,6 +5,7 @@ import pennylane as qml
 
 from skq.quantum_info.state import *
 from skq.quantum_info import DensityMatrix
+from skq.gates.qubit import IGate, XGate, YGate, ZGate
 
 
 def test_statevector_initialization():
@@ -52,6 +53,49 @@ def test_conjugate_transpose():
     AB_conjugate = (state_vector @ state_vector).conjugate_transpose()
     BA_conjugate = state_vector.conjugate_transpose() @ state_vector.conjugate_transpose()
     np.testing.assert_array_almost_equal(AB_conjugate, BA_conjugate)
+
+def test_expectation():
+    # Pauli-Z on |0⟩
+    state1 = Statevector(np.array([1, 0], dtype=complex))
+    expectation1 = state1.expectation(ZGate())
+    assert np.isclose(expectation1, 1.0), "Expectation value should be 1 for Pauli-Z on |0⟩"
+
+    # Pauli-X on 1/√2(|0⟩ + |1⟩)
+    state2 = Statevector(np.array([1/np.sqrt(2), 1/np.sqrt(2)], dtype=complex))
+    expectation2 = state2.expectation(XGate())
+    assert np.isclose(expectation2, 1.0), "Expectation value should be 1 for Pauli-X on 1/√2(|0⟩ + |1⟩)"
+
+    # Pauli-Y on 1/√2(|0⟩ + i|1⟩)
+    state3 = Statevector(np.array([1/np.sqrt(2), 1j/np.sqrt(2)], dtype=complex))
+    expectation3 = state3.expectation(YGate())
+    assert np.isclose(expectation3, 1.0), "Expectation value should be 1 for Pauli-Y on 1/√2(|0⟩ + i|1⟩)"
+
+    # Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)
+    state4 = Statevector(np.array([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)], dtype=complex))
+    pauli_z_1st_qubit = np.kron(ZGate(), IGate())
+    expectation4 = state4.expectation(pauli_z_1st_qubit)
+    assert np.isclose(expectation4, 0.0), "Expectation value should be 0 for Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)"
+
+    # Random Hermitian observable on |ψ⟩ = 1/√2(|0⟩ + i|1⟩)
+    state4 = Statevector(np.array([1/np.sqrt(2), 1j/np.sqrt(2)], dtype=complex))
+    hermitian_observable = np.array([[2, 1-1j], [1+1j, 3]], dtype=complex)
+    expectation4 = state4.expectation(hermitian_observable)
+    assert np.isclose(expectation4, 3.5), f"Wrong expectation value for the given Hermitian observable"
+
+    # Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)
+    state5 = Statevector(np.array([1/np.sqrt(3), np.sqrt(2)/np.sqrt(3)], dtype=complex))
+    expectation5 = state5.expectation(ZGate())
+    assert np.isclose(expectation5, -1/3), f"Wrong expectation value for Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)"
+
+    # Non-Hermitian operator give an error
+    non_hermitian_operator = np.array([[0, 1], [0, 1]], dtype=complex)
+    with pytest.raises(AssertionError):
+        state1.expectation(non_hermitian_operator)
+
+    # Non 2D operators give an error
+    non_2d_operator = np.array([0, 1], dtype=complex)
+    with pytest.raises(AssertionError):
+        state1.expectation(non_2d_operator)
 
 def test_density_matrix():
     # |0><0|

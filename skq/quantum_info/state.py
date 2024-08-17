@@ -50,6 +50,17 @@ class Statevector(np.ndarray):
         """  Magnitude (or norm) of the state vector. sqrt(<ψ|ψ>) """
         np.linalg.norm(self)
 
+    def expectation(self, operator: np.array) -> float:
+        """
+        Expectation value of an observable with respect to the quantum state.
+        computes <ψ|O|ψ>
+        :param operator: The observable (Hermitian matrix) as a 2D numpy array.
+        :return: Expectation value.
+        """
+        assert len(operator.shape) == 2, "The operator must be a 2D matrix."
+        assert np.allclose(operator, operator.T.conj()), "The operator must be Hermitian."
+        return float(np.real(self.conjugate_transpose() @ operator @ self))
+
     def density_matrix(self) -> DensityMatrix:
         """ Return the density matrix representation of the state vector. """
         return DensityMatrix(np.outer(self, self.conj()))
@@ -94,7 +105,7 @@ class Statevector(np.ndarray):
     
     def conjugate_transpose(self) -> np.ndarray:
         """ Conjugate transpose (Hermitian adjoint) of the state vector. """
-        return self.conj().T
+        return self.T.conj()
     
     def orthonormal_basis(self) -> np.ndarray:
         """ 
