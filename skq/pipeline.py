@@ -19,11 +19,13 @@ class QuantumLayer(FeatureUnion):
         super().__init__(transformer_list, **kwargs)
 
     def fit(self, X, y=None):
+        X = np.atleast_2d(X)
         _check_quantum_state_array(X)
         self._validate_transformers()
         return self
 
     def transform(self, X) -> np.array:
+        X = np.atleast_2d(X)
         _check_quantum_state_array(X)
         self._validate_transformers()
         combined_gate = np.eye(2**self.n_qubits, dtype=complex)

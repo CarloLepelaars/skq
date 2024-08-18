@@ -2,9 +2,9 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.quantum_info import Statevector
 from skq.gates.qubit.base import QubitGate
 from skq.gates.qubit.single import XGate, YGate, ZGate
+from skq.quantum_info.state import Statevector
 
 class PhaseOracleGate(QubitGate):
     """
@@ -16,9 +16,6 @@ class PhaseOracleGate(QubitGate):
         state = Statevector(target_state)
         n_qubits = state.num_qubits()
         identity = MIGate(n_qubits)
-        target_index = np.argmax(target_state)
-        phase_inversion = MIGate(n_qubits)
-        phase_inversion[target_index, target_index] = -1
         oracle_matrix = identity - 2 * np.outer(target_state, target_state.conj())
         return super().__new__(cls, oracle_matrix)
     
@@ -55,7 +52,11 @@ class GroverDiffusionGate(QubitGate):
     """
     def __new__(cls, n_qubits: int):
         assert n_qubits >= 1, "GroverDiffusionGate must have at least one qubit."
-        diffusion_matrix = 2 * EqualSuperpositionGate(n_qubits) - MIGate(n_qubits)
+        # Equal superposition state vector
+        size = 2 ** n_qubits
+        equal_superposition = np.ones(size) / np.sqrt(size)
+        # Grover diffusion operator: 2|ψ⟩⟨ψ| - I
+        diffusion_matrix = 2 * np.outer(equal_superposition, equal_superposition) - np.eye(size)
         return super().__new__(cls, diffusion_matrix)
     
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
