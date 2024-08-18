@@ -92,7 +92,7 @@ class Operator(np.ndarray):
     
     def commute(self, other: 'Operator') -> bool:
         """
-        Check if operator commute. Two gates U and V commute if UV = VU.
+        Check if operator commute. U and V commute if UV = VU.
         :param other: Operator to check commutation with.
         """
         assert isinstance(other, Operator), "Other object must be a valid Operator."
