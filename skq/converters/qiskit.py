@@ -4,7 +4,7 @@ from sklearn.pipeline import Pipeline, FeatureUnion
 
 from skq.transformers import SingleQubitTransformer, MultiQubitTransformer, MeasurementTransformer
 
-def pipeline_to_qiskit_circuit(pipeline: Pipeline, num_qubits: int) -> QuantumCircuit:
+def pipeline_to_qiskit_circuit(pipeline: Pipeline, num_qubits: int, measure_all=False) -> QuantumCircuit:
     circuit = QuantumCircuit(num_qubits)
     def append_gate(transformer, circuit):
         if isinstance(transformer, ColumnTransformer):
@@ -37,5 +37,8 @@ def pipeline_to_qiskit_circuit(pipeline: Pipeline, num_qubits: int) -> QuantumCi
         # Recursively add gates to Qiskit circuit
         else:
             append_gate(step, circuit)
+
+    if measure_all:
+        circuit.measure_all()
 
     return circuit

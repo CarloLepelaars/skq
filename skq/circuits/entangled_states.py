@@ -1,6 +1,6 @@
 from sklearn.pipeline import Pipeline, make_pipeline
 
-from skq.pipeline import QuantumLayer
+from skq.layers import QuantumLayer
 from skq.transformers import XTransformer, HTransformer, ZTransformer, CXTransformer
 
 class BellStates:

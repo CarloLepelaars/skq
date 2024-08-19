@@ -20,14 +20,12 @@ class PhaseOracleTransformer(MultiQubitTransformer):
     """ Phase Oracle """
     def __init__(self, *, qubits: list[int], target_state: np.ndarray):
         self.target_state = Statevector(target_state)
-        self.oracle_gate = PhaseOracleGate(self.target_state)
-        super().__init__(gate=self.oracle_gate, qubits=qubits)
+        super().__init__(PhaseOracleGate(self.target_state), qubits=qubits)
 
 class GroverDiffusionTransformer(MultiQubitTransformer):
     """ Grover Diffusion"""
     def __init__(self, *, qubits: list[int]):
-        self.diffusion_gate = GroverDiffusionGate(len(qubits))
-        super().__init__(gate=self.diffusion_gate, qubits=qubits)
+        super().__init__(GroverDiffusionGate(len(qubits)), qubits=qubits)
 
 class CXTransformer(MultiQubitTransformer):
     """ Controlled-X (CNOT) gate """

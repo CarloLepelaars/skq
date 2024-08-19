@@ -3,7 +3,7 @@ from sklearn.pipeline import _name_estimators, FeatureUnion
 
 from skq.gates.qubit import QubitGate, IGate
 from skq.utils import _check_quantum_state_array
-from skq.transformers import SingleQubitTransformer, MultiQubitTransformer
+from skq.transformers import SingleQubitTransformer, MultiQubitTransformer, HTransformer
 
 
 class QuantumLayer(FeatureUnion):
@@ -99,3 +99,10 @@ def make_quantum_union(*transformers, n_qubits: int , n_jobs=None, verbose=False
     :return: QuantumFeatureUnion object
     """
     return QuantumLayer(_name_estimators(transformers), n_qubits=n_qubits, n_jobs=n_jobs, verbose=verbose)
+
+
+class SuperpositionLayer(QuantumLayer):
+    """ Put all qubits in equal superposition (i.e. Hadamard on all qubits). """
+    def __init__(self, n_qubits: int):
+        transformer_list = [(f"H{i}", HTransformer(qubits=[i])) for i in range(n_qubits)]
+        super().__init__(transformer_list=transformer_list, n_qubits=n_qubits)
