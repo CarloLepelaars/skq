@@ -26,24 +26,6 @@ class PhaseOracleGate(QubitGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.QubitUnitary:
         return super().to_pennylane(wires)
     
-class EqualSuperpositionGate(QubitGate):
-    """
-    Equal Superposition Matrix Gate used in Grover's diffusion operator.
-    :param n_qubits: The number of qubits in the system.
-    """
-    def __new__(cls, n_qubits: int):
-        assert n_qubits >= 1, "EqualSuperpositionGate must have at least one qubit."
-        size = 2 ** n_qubits
-        H = np.ones((size, size)) / size
-        return super().__new__(cls, H)
-    
-    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
-        # Reverse the order of qubits for Qiskit's little-endian convention
-        return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label='EqualSuperposition')
-    
-    def to_pennylane(self, wires: list[int] | int) -> qml.QubitUnitary:
-        return super().to_pennylane(wires)
-    
 class GroverDiffusionGate(QubitGate):
     """
     Grover Diffusion Operator Gate as used in Grover's search algorithm.
