@@ -1,1 +1,2 @@
-from skq.converters.qiskit import *
+from .qiskit import *
+from .openqasm import *
