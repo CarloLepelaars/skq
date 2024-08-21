@@ -114,7 +114,6 @@ class QubitGate(BaseGate):
         permutation = np.arange(2**num_qubits).reshape([2]*num_qubits).transpose().flatten()
         return self[permutation][:, permutation]
 
-
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         """ 
         Convert gate to a Qiskit Gate object. 
@@ -177,6 +176,25 @@ class QubitGate(BaseGate):
         """
         assert isinstance(gate, pyquil.quil.DefGate), "Input must be a PyQuil DefGate object"
         return CustomQubitGate(gate.matrix).convert_endianness()
+    
+    def to_qasm(self) -> str:
+        """ 
+        Convert gate to a OpenQASM string. 
+        More information on OpenQASM (2.0): https://arxiv.org/pdf/1707.03429
+        OpenQASM specification: https://openqasm.com/intro.html
+        Gates should be part of the standard library.
+        OpenQASM 2.0 -> qelib1.inc
+        OpenQASM 3 -> stdgates.inc
+        :return: OpenQASM string representation of the gate
+        String representation should define gate, qubits it acts on and ;.
+        Example for Hadamard in 1st qubit -> "h q[0];"
+        """
+        raise NotImplementedError("Conversion to OpenQASM is not implemented.")
+    
+    @staticmethod
+    def from_qasm(qasm_string: str) -> 'QubitGate':
+        """ Convert a OpenQASM string to scikit-q gate. """
+        raise NotImplementedError("Conversion from OpenQASM is not implemented.")
 
 
 class CustomQubitGate(QubitGate):

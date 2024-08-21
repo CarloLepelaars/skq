@@ -20,6 +20,9 @@ class IGate(QubitGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.I:
         return qml.I(wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"id q[{qubits[0]}];"
+    
 class XGate(QubitGate):
     """ Pauli X (NOT) Gate. """
     def __new__(cls):
@@ -31,6 +34,9 @@ class XGate(QubitGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.X:
         return qml.X(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"x q[{qubits[0]}];"
 
 class YGate(QubitGate):
     """ Pauli Y gate. """
@@ -43,6 +49,9 @@ class YGate(QubitGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.Y:
         return qml.Y(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"y q[{qubits[0]}];"
     
 class ZGate(QubitGate):
     """ Pauli Z gate. 
@@ -57,6 +66,9 @@ class ZGate(QubitGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.Z:
         return qml.Z(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"z q[{qubits[0]}];"
 
 class HGate(QubitGate):
     """ 
@@ -73,6 +85,9 @@ class HGate(QubitGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.Hadamard:
         return qml.Hadamard(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"h q[{qubits[0]}];"
     
 class PhaseGate(QubitGate):
     """ General phase shift gate. 
@@ -93,6 +108,9 @@ class PhaseGate(QubitGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.PhaseShift:
         return qml.PhaseShift(phi=self.phi, wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"U(0, 0, {self.phi}) q[{qubits[0]}];"
+    
 class TGate(PhaseGate):
     """ T gate: phase shift gate with phi = pi / 4. """
     def __new__(cls):
@@ -105,6 +123,9 @@ class TGate(PhaseGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.PhaseShift:
         return qml.T(wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"t q[{qubits[0]}];"
+    
 class SGate(PhaseGate):
     """ S gate: phase shift gate with phi = pi / 2. """
     def __new__(cls):
@@ -116,6 +137,9 @@ class SGate(PhaseGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.S:
         return qml.S(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"s q[{qubits[0]}];"
     
 class RXGate(QubitGate):
     """ Generalized X rotation gate. """
@@ -131,6 +155,9 @@ class RXGate(QubitGate):
     def to_pennylane(self, wires: list[int] | int = None) -> qml.RX:
         return qml.RX(phi=self.phi, wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"rx({self.phi}) q[{qubits[0]}];"
+    
 class RYGate(QubitGate):
     """ Generalized Y rotation gate. """
     def __new__(cls, phi):
@@ -145,6 +172,9 @@ class RYGate(QubitGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.RY:
         return qml.RY(phi=self.phi, wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"ry({self.phi}) q[{qubits[0]}];"
+    
 class RZGate(QubitGate):
     """ Generalized Z rotation gate. """
     def __new__(cls, phi):
@@ -158,6 +188,9 @@ class RZGate(QubitGate):
     
     def to_pennylane(self, wires: list[int] | int) -> qml.RZ:
         return qml.RZ(phi=self.phi, wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"rz({self.phi}) q[{qubits[0]}];"
 
 class U3Gate(QubitGate):
     """ 
@@ -185,4 +218,5 @@ class U3Gate(QubitGate):
     def to_pennylane(self, wires: list[int] | int) -> qml.U3:
         return qml.U3(theta=self.theta, phi=self.phi, delta=self.delta, wires=wires)
     
-
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"rx({self.theta}) q[{qubits[0]}];\nry({self.phi}) q[{qubits[0]}];\nrz({self.delta}) q[{qubits[0]}];"
