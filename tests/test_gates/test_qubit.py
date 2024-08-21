@@ -358,8 +358,29 @@ def test_from_pyquil():
     assert gate.num_qubits() == 2
 
 def test_to_qasm_single():
+    # Simple H gate example
     gate = HGate()
     qasm = gate.to_qasm([2])
     expected_qasm = "h q[2];"
+    assert qasm == expected_qasm
+
+    # U3
+    gate = U3Gate(np.pi / 2, np.pi / 2, np.pi / 2)
+    qasm = gate.to_qasm([0])
+    expected_qasm = """rx(1.5707963267948966) q[0];\nry(1.5707963267948966) q[0];\nrz(1.5707963267948966) q[0];"""
+    assert qasm == expected_qasm
+
+def test_to_qasm_multi():
+    # CCX
+    gate = CCXGate()
+    qasm = gate.to_qasm([0, 1, 2])
+    expected_qasm = "ccx q[0], q[1], q[2];"
+    assert qasm == expected_qasm
+
+    # CCZ custom spec
+    gate = CCZGate()
+    qasm = gate.to_qasm([0, 1, 2])
+    # H, CCX, H
+    expected_qasm = """h q[2];\nccx q[0], q[1], q[2];\nh q[2];"""
     assert qasm == expected_qasm
     

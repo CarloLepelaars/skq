@@ -177,7 +177,7 @@ class QubitGate(BaseGate):
         assert isinstance(gate, pyquil.quil.DefGate), "Input must be a PyQuil DefGate object"
         return CustomQubitGate(gate.matrix).convert_endianness()
     
-    def to_qasm(self) -> str:
+    def to_qasm(self, qubits: list[int]) -> str:
         """ 
         Convert gate to a OpenQASM string. 
         More information on OpenQASM (2.0): https://arxiv.org/pdf/1707.03429
@@ -185,6 +185,7 @@ class QubitGate(BaseGate):
         Gates should be part of the standard library.
         OpenQASM 2.0 -> qelib1.inc
         OpenQASM 3 -> stdgates.inc
+        :param qubits: List of qubit indices the gate acts on
         :return: OpenQASM string representation of the gate
         String representation should define gate, qubits it acts on and ;.
         Example for Hadamard in 1st qubit -> "h q[0];"
@@ -195,7 +196,7 @@ class QubitGate(BaseGate):
     def from_qasm(qasm_string: str) -> 'QubitGate':
         """ Convert a OpenQASM string to scikit-q gate. """
         raise NotImplementedError("Conversion from OpenQASM is not implemented.")
-
+    
 
 class CustomQubitGate(QubitGate):
     """ Bespoke Qubit gate. """

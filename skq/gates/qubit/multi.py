@@ -15,16 +15,13 @@ class PhaseOracleGate(QubitGate):
     def __new__(cls, target_state: np.ndarray):
         state = Statevector(target_state)
         n_qubits = state.num_qubits()
-        identity = MIGate(n_qubits)
+        identity = np.eye(2 ** n_qubits)
         oracle_matrix = identity - 2 * np.outer(target_state, target_state.conj())
         return super().__new__(cls, oracle_matrix)
     
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         # Reverse the order of qubits for Qiskit's little-endian convention
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label='PhaseOracle')
-    
-    def to_pennylane(self, wires: list[int] | int) -> qml.QubitUnitary:
-        return super().to_pennylane(wires)
     
 class GroverDiffusionGate(QubitGate):
     """
@@ -44,25 +41,6 @@ class GroverDiffusionGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         # Reverse the order of qubits for Qiskit's little-endian convention
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label='GroverDiffusion')
-    
-    def to_pennylane(self, wires: list[int] | int) -> qml.QubitUnitary:
-        return super().to_pennylane(wires)
-    
-class MIGate(QubitGate):
-    """ 
-    Multi-qubit identity gate. 
-    :param num_qubits: Number of qubits in the system.
-    """
-    def __new__(cls, num_qubits: int):
-        assert num_qubits >= 1, "MultiIGate must have at least one qubit."
-        return super().__new__(cls, np.eye(2 ** num_qubits))
-    
-    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
-        # No endianness conversion needed for the identity gate
-        return qiskit.circuit.library.UnitaryGate(self, label=f'I_{self.num_qubits()}q')
-    
-    def to_pennylane(self, wires: list[int]) -> qml.I:
-        return qml.I(wires=wires)
 
 class CXGate(QubitGate):
     """ 
@@ -80,7 +58,12 @@ class CXGate(QubitGate):
         return qiskit.circuit.library.CXGate()
     
     def to_pennylane(self, wires: list[int]) -> qml.CNOT:
+        assert len(wires) == 2, "PennyLane CX gate requires 2 wires."
         return qml.CNOT(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM CX gate requires 2 qubits."
+        return f"cx q[{qubits[0]}], q[{qubits[1]}];"
 
 class CYGate(QubitGate):
     """ Controlled-Y gate. """
@@ -94,7 +77,12 @@ class CYGate(QubitGate):
         return qiskit.circuit.library.CYGate()
     
     def to_pennylane(self, wires: list[int]) -> qml.CY:
+        assert len(wires) == 2, "PennyLane CY gate requires 2 wires."
         return qml.CY(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM CY gate requires 2 qubits."
+        return f"cy q[{qubits[0]}], q[{qubits[1]}];"
     
 class CZGate(QubitGate):
     """ Controlled-Z gate. """
@@ -108,7 +96,12 @@ class CZGate(QubitGate):
         return qiskit.circuit.library.CZGate()
     
     def to_pennylane(self, wires: list[int]) -> qml.CZ:
+        assert len(wires) == 2, "PennyLane CZ gate requires 2 wires."
         return qml.CZ(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM CZ gate requires 2 qubits."
+        return f"cz q[{qubits[0]}], q[{qubits[1]}];"
     
 class CHGate(QubitGate):
     """ Controlled-Hadamard gate. """
@@ -122,7 +115,12 @@ class CHGate(QubitGate):
         return qiskit.circuit.library.CHGate()
     
     def to_pennylane(self, wires: list[int]) -> qml.CH:
+        assert len(wires) == 2, "PennyLane CH gate requires 2 wires."
         return qml.CH(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM CH gate requires 2 qubits."
+        return f"ch q[{qubits[0]}], q[{qubits[1]}];"
 
 class CPhaseGate(QubitGate):
     """ General controlled phase shift gate. 
@@ -140,7 +138,12 @@ class CPhaseGate(QubitGate):
         return qiskit.circuit.library.CPhaseGate(self.phi)
     
     def to_pennylane(self, wires: list[int]) -> qml.CPhase:
+        assert len(wires) == 2, "PennyLane CPhase gate requires 2 wires."
         return qml.CPhase(phi=self.phi, wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM CPhase gate requires 2 qubits."
+        return f"cp({self.phi}) q[{qubits[0]}], q[{qubits[1]}];"
     
 class CSGate(CPhaseGate):
     """ Controlled-S gate. """
@@ -151,9 +154,6 @@ class CSGate(CPhaseGate):
     def to_qiskit(self) -> qiskit.circuit.library.CSGate:
         return qiskit.circuit.library.CSGate()
     
-    def to_pennylane(self, wires: list[int]) -> qml.CPhase:
-        return qml.CPhase(phi=self.phi, wires=wires)
-    
 class CTGate(CPhaseGate):
     """ Controlled-T gate. """
     def __new__(cls):
@@ -162,9 +162,6 @@ class CTGate(CPhaseGate):
     
     def to_qiskit(self) -> qiskit.circuit.library.TGate:
         return qiskit.circuit.library.TGate().control(1)
-    
-    def to_pennylane(self, wires: list[int]) -> qml.CPhase:
-        return qml.CPhase(phi=self.phi, wires=wires)
     
 class SWAPGate(QubitGate):
     """ Swap gate. Swaps the states of two qubits. """
@@ -178,7 +175,12 @@ class SWAPGate(QubitGate):
         return qiskit.circuit.library.SwapGate()
     
     def to_pennylane(self, wires: list[int]) -> qml.SWAP:
+        assert len(wires) == 2, "PennyLane SWAP gate requires 2 wires."
         return qml.SWAP(wires=wires)
+    
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 2, "OpenQASM SWAP gate requires 2 qubits."
+        return f"swap q[{qubits[0]}], q[{qubits[1]}];"
     
 class CSwapGate(QubitGate):
     """ A controlled-SWAP gate. Also known as the Fredkin gate. """
@@ -198,6 +200,10 @@ class CSwapGate(QubitGate):
     def to_pennylane(self, wires: list[int]) -> qml.CSWAP:
         return qml.CSWAP(wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 3, "OpenQASM CSWAP gate requires 3 qubits."
+        return f"cswap q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];"
+    
 class CCXGate(QubitGate):
     """ A 3-qubit controlled-controlled-X (CCX) gate. Also known as the Toffoli gate. """
     def __new__(cls):
@@ -216,6 +222,10 @@ class CCXGate(QubitGate):
     def to_pennylane(self, wires: list[int]) -> qml.Toffoli:
         return qml.Toffoli(wires=wires)
     
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 3, "OpenQASM CCX (Toffoli) gate requires 3 qubits."
+        return f"ccx q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];"
+    
 class CCYGate(QubitGate):
     """ A 3-qubit controlled-controlled-Y (CCY) gate. """
     def __new__(cls):
@@ -232,8 +242,11 @@ class CCYGate(QubitGate):
         # There is no native CCY gate in Qiskit so we construct it.
         return qiskit.circuit.library.YGate().control(2)
     
-    def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
-        return super().to_pennylane(wires)
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 3, "OpenQASM CCY gate requires 3 qubits."
+        # Custom OpenQASM implementation
+        # sdg is an inverse s gate
+        return f"""sdg q[{qubits[2]}];\ncx q[{qubits[1]}], q[{qubits[2]}];\ns q[{qubits[2]}];\ncx q[{qubits[0]}], q[{qubits[2]}];\nsdg q[{qubits[2]}];\ncx q[{qubits[1]}], q[{qubits[2]}];\ns q[{qubits[2]}];\ny q[{qubits[2]}];"""
     
 class CCZGate(QubitGate):
     """ A 3-qubit controlled-controlled-Z (CCZ) gate. """
@@ -250,8 +263,10 @@ class CCZGate(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.CCZGate:
         return qiskit.circuit.library.CCZGate()
     
-    def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
-        return super().to_pennylane(wires)
+    def to_qasm(self, qubits: list[int]) -> str:
+        assert len(qubits) == 3, "OpenQASM CCZ gate requires 3 qubits."
+        # CCZ = CCX sandwiched between two H gates on last qubit.
+        return f"""h q[{qubits[2]}];\nccx q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];\nh q[{qubits[2]}];"""
     
 class MCXGate(QubitGate):
     """ 
