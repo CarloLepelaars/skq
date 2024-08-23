@@ -336,7 +336,23 @@ class MCZGate(QubitGate):
             return qml.CZ(wires=wires)
         else:
             return super().to_pennylane(wires)
+        
+class CRGate(QubitGate):
+    """ Simple Cross-Resonance gate. """
+    def __new__(cls, theta: float):
+        return super().__new__(cls, [[1, 0, 0, 0], 
+                                     [0, np.cos(theta), 0, -1j * np.sin(theta)], 
+                                     [0, 0, 1, 0], 
+                                     [0, -1j * np.sin(theta), 0, np.cos(theta)]])
     
-# Aliases for gates
-ToffoliGate = CCXGate
-FredkinGate = CSwapGate
+class SymmetricECRGate(QubitGate):
+    """ Symmetric Echoed Cross-Resonance gate. """
+    def __new__(cls, theta: float):
+        return super().__new__(cls, CRGate(theta) @ CRGate(-theta))
+
+class AsymmetricECRGate(QubitGate):
+    """ Asymmetric Echoed Cross-Resonance gate. """
+    def __new__(cls, theta1: float, theta2: float):
+        return super().__new__(cls, CRGate(theta1) @ CRGate(theta2))
+    
+

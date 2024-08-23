@@ -91,14 +91,31 @@ def test_u3gate():
                 assert np.allclose(gate @ eigenvectors[:, 1], eigenvalues[1] * eigenvectors[:, 1]), "Eigenvector calculation is incorrect"
 
 def test_standard_multi_qubit_gates():
-    for GateClass in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate,
-                      ToffoliGate, FredkinGate]:
-        gate = GateClass()
+    for gate_class in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate]:
+        gate = gate_class()
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2
         assert gate.is_multi_qubit()
         if gate.num_qubits() == 2 and not isinstance(gate, CTGate):
-            assert gate.is_clifford(), f"{GateClass.__name__} should be a two-qubit Clifford gate"
+            assert gate.is_clifford(), f"{gate_class.__name__} should be a two-qubit Clifford gate"
+
+        cr_gate = CRGate(np.pi / 2)
+        assert cr_gate.is_unitary()
+        assert cr_gate.num_qubits() == 2
+        assert cr_gate.is_multi_qubit()
+        np.testing.assert_array_equal(CRGate(np.pi) @ CRGate(-np.pi), IGate().kron(IGate()))
+        sym_ecr_gate = SymmetricECRGate(np.pi / 2)
+        assert sym_ecr_gate.is_unitary()
+        assert sym_ecr_gate.num_qubits() == 2
+        assert sym_ecr_gate.is_multi_qubit()
+        np.testing.assert_array_equal(sym_ecr_gate @ sym_ecr_gate, IGate().kron(IGate()))
+        # ECR is its own inverse
+        np.testing.assert_array_equal(np.linalg.inv(sym_ecr_gate), sym_ecr_gate)
+        asym_ecr_gate = AsymmetricECRGate(np.pi / 2, np.pi / 3)
+        assert asym_ecr_gate.is_unitary()
+        assert asym_ecr_gate.num_qubits() == 2
+        assert asym_ecr_gate.is_multi_qubit()
+        np.testing.assert_array_almost_equal(abs(np.linalg.inv(asym_ecr_gate)), abs(asym_ecr_gate))
 
 def test_multi_pauli_gates():
     XX, YY, ZZ, II = XGate().kron(XGate()), YGate().kron(YGate()), ZGate().kron(ZGate()), IGate().kron(IGate())
