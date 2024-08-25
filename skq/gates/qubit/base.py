@@ -114,40 +114,6 @@ class QubitGate(BaseGate):
         permutation = np.arange(2**num_qubits).reshape([2]*num_qubits).transpose().flatten()
         return self[permutation][:, permutation]
     
-    def givens_rotation_decomposition(self) -> tuple[np.array, np.array]:
-        """ 
-        QR decomposition using Givens rotations.
-        :return: Q, R where Q is the product of Givens rotations and R is the upper triangular matrix
-        """
-        m, n = self.shape
-        Q = np.eye(m) 
-        R = self.copy()
-
-        def givens_rotation(a: complex, b: complex) -> tuple[float, float]:
-            """ Compute parameters for Givens rotation. """
-            r = np.sqrt(np.abs(a)**2 + np.abs(b)**2)
-            if r == 0:
-                c = 1.0
-                s = 0.0
-            else:
-                c = np.conj(a) / r 
-                s = -np.conj(b) / r
-            return c, s
-
-        for j in range(n):
-            for i in range(m-1, j, -1):
-                # Construct Givens rotation matrix
-                c, s = givens_rotation(R[i-1, j], R[i, j])
-                G = np.eye(m, dtype=complex)
-                G[i-1, i-1] = c
-                G[i, i] = c
-                G[i, i-1] = s
-                G[i-1, i] = -np.conj(s)
-                # Apply Givens rotation to R and Q
-                R = G @ R
-                Q = Q @ G.T.conj()
-        return Q, R
-
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         """ 
         Convert gate to a Qiskit Gate object. 

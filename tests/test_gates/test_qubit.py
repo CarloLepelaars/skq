@@ -284,22 +284,6 @@ def test_convert_endianness():
                                 [0, 1, 0, 0]])
     np.testing.assert_array_almost_equal(little_endian_gate, expected_matrix)
 
-def test_givens_rotation_decomposition():
-    H = HGate()
-    Q, R = H.givens_rotation_decomposition()
-    assert np.allclose(Q @ R, H), "QR decomposition failed for HGate."
-    assert QubitGate(Q).is_unitary(), "Q is not unitary for HGate."
-
-    CX = CXGate()
-    Q, R = CX.givens_rotation_decomposition()
-    assert np.allclose(Q @ R, CX), "QR decomposition failed for CXGate."
-    assert QubitGate(Q).is_unitary(), "Q is not unitary for CXGate."
-
-    CCY = CCYGate()
-    Q, R = CCY.givens_rotation_decomposition()
-    assert np.allclose(Q @ R, CCY), "QR decomposition failed for CCYGate."
-    assert QubitGate(Q).is_unitary(), "Q is not unitary for CCYGate."
-
 def test_to_qiskit():
     # Hadamard
     gate = HGate()
