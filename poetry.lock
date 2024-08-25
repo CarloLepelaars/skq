@@ -1837,29 +1837,29 @@ quil = ">=0.11.2"
 
 [[package]]
 name = "qiskit"
-version = "1.1.1"
+version = "1.2.0"
 description = "An open-source SDK for working with quantum computers at the level of extended quantum circuits, operators, and primitives."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "qiskit-1.1.1-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:98f1cc5ad460ef8815eab7fa8405daaacc262a4fc18f042ebfc09690b5b6c717"},
-    {file = "qiskit-1.1.1-cp38-abi3-macosx_10_9_x86_64.whl", hash = "sha256:dcb1f719beb9b01c5cd73173708c3743723c447f5396c2bb87e727926bcdf685"},
-    {file = "qiskit-1.1.1-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:540cb61230aca537b2b748e99001e7b7a9f49449f28f9514c3544395c54fbbe0"},
-    {file = "qiskit-1.1.1-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c7c2b26aa70d20aa95dbb28772a1735718603b6cb8e2c6b460679c1e0faffde6"},
-    {file = "qiskit-1.1.1-cp38-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:95177938035da0d88e68ab2cdc144953518fdfce2d657b1c89442b7580776b13"},
-    {file = "qiskit-1.1.1-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0d01aff14b0480de9232b358aebd4c48bb4d460fc776c90de224d38bd08455af"},
-    {file = "qiskit-1.1.1-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:c88ee6afa941eeb34577668e60c78ee053612b66b8c9e6315b62c310054ec597"},
-    {file = "qiskit-1.1.1-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aac52542651867f301a6cd1c6c55a02de494f915b4c9f5885dc7549058b6bc35"},
-    {file = "qiskit-1.1.1-cp38-abi3-win32.whl", hash = "sha256:e3ae6399174b7931a0c6b41f6650ab732436f41afbb5625563857047087ee4d3"},
-    {file = "qiskit-1.1.1-cp38-abi3-win_amd64.whl", hash = "sha256:88c98fbd3314f1961ebd10901df262251dbe12c512ed6152d2f578bac33e2d72"},
-    {file = "qiskit-1.1.1.tar.gz", hash = "sha256:5f1af6a1d94b92aa8c15007b626b76aeb5873a59ff53cb40d1f3662abd50c2cc"},
+    {file = "qiskit-1.2.0-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:b215440035a984abbd58edbb47d52b1f1dc54ea170d214173fd93ad41ce5e78d"},
+    {file = "qiskit-1.2.0-cp38-abi3-macosx_10_9_x86_64.whl", hash = "sha256:61e22e1cc8f62b3a2194efd86ea488d85576c0886e237f907311c8dcdaaacc3c"},
+    {file = "qiskit-1.2.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:41f6efc94efe27d1e8357a1be5c281cd96df0e098c2ec7fd74956f6d79cf49be"},
+    {file = "qiskit-1.2.0-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9ee32ce8507aa9ac13ecbe879a75627df29421f1376e1232a1ffea96c3156c3d"},
+    {file = "qiskit-1.2.0-cp38-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e1506535ff910dee94a9008a11ff4807806cfea1271f29a793d4bb203a750e1d"},
+    {file = "qiskit-1.2.0-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:6e07272e924e8bfa5d944f5ca0aefb7736ebe555caa9eb3c4adc13862fd87b57"},
+    {file = "qiskit-1.2.0-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:de46724088851ae1f414a5a6d68a58ba1eac8374d45ee2669de1c3e90d04e912"},
+    {file = "qiskit-1.2.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1ad1658bbaf147a44e555ba87f7e139ae3b2ded1284e5073ec2a32dc08b32d41"},
+    {file = "qiskit-1.2.0-cp38-abi3-win32.whl", hash = "sha256:15446250d26e7576fac56b424c4388eff3695f7c5e258c9b3437f71f65b2835f"},
+    {file = "qiskit-1.2.0-cp38-abi3-win_amd64.whl", hash = "sha256:d4e13da68adb8fccc884896c5dfbab20e3f98e4cdb8740f4ac632f4b3674de6f"},
+    {file = "qiskit-1.2.0.tar.gz", hash = "sha256:7d95413c833033425a392377f562a7f3b5b6cd8284e978dddd9b23db1093ded0"},
 ]
 
 [package.dependencies]
 dill = ">=0.3"
 numpy = ">=1.17,<3"
 python-dateutil = ">=2.8.0"
-rustworkx = ">=0.14.0"
+rustworkx = ">=0.15.0"
 scipy = ">=1.5"
 stevedore = ">=3.0.0"
 symengine = ">=0.11"
@@ -2579,4 +2579,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "8ba9d42c019a2617df44afb84e5890d1d27adb304926e62ed5c3134221225bdc"
+content-hash = "47614500f2c5e3385cc1a089b59d7862a6cb84e3fb82607cae9f2aa51971df01"
