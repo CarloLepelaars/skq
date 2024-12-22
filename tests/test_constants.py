@@ -1,6 +1,6 @@
 import numpy as np
 
-from skq.constants import *
+from src.constants import *
 
 
 def photon_energy(frequency):

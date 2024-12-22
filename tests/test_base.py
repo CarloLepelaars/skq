@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import pennylane as qml
 
-from skq.base import Operator
+from src.base import Operator
 
 
 def test_operator():

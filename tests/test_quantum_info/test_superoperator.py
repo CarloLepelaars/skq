@@ -1,6 +1,6 @@
 import numpy as np
 
-from skq.quantum_info.superoperator import SuperOperator
+from src.quantum_info.superoperator import SuperOperator
 
 
 def test_superoperator():

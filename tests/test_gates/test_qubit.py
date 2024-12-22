@@ -3,7 +3,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.gates.qubit import *
+from src.gates.qubit import *
 
 
 def test_base_gate():
@@ -83,8 +83,8 @@ def test_u3gate():
             for theta_z in thetas:
                 gate = U3Gate(theta_x, theta_y, theta_z)
                 assert gate.is_unitary(), f"U3Gate with thetas=({theta_x}, {theta_y}, {theta_z}) should be unitary"
-                assert gate.num_qubits() == 1, f"U3Gate should operate on 1 qubit"
-                assert not gate.is_multi_qubit(), f"U3Gate should not be a multi-qubit gate"
+                assert gate.num_qubits() == 1, "U3Gate should operate on 1 qubit"
+                assert not gate.is_multi_qubit(), "U3Gate should not be a multi-qubit gate"
                 assert gate.frobenius_norm() == pytest.approx(np.sqrt(2)), "U3Gate Frobenius norm should be sqrt(2)"
                 eigenvalues, eigenvectors = np.linalg.eig(gate)
                 assert np.allclose(gate @ eigenvectors[:, 0], eigenvalues[0] * eigenvectors[:, 0]), "Eigenvector calculation is incorrect"

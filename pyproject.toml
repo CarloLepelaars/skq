@@ -1,29 +1,49 @@
-[tool.poetry]
+[project]
 name = "skq"
 version = "0.1.0"
-description = "Convenient Quantum Components"
-authors = ["Carlo Lepelaars"]
+description = "Quantum Components"
 readme = "README.md"
+authors = [
+    {name = "Carlo Lepelaars", email = "info@carlolepelaars.nl"},
+]
+license = {text = "MIT License"}
+requires-python = ">=3.11,<4"
+dependencies = [
+    "scikit-learn>=1.5.1",
+    "numpy>=1.21,<2.0",
+    "plotly>=5.22.0",
+    "nbformat>=5.10.4",
+    "qiskit>=1.2.0",
+    "matplotlib>=3.9.1",
+    "pylatexenc>=2.10",
+    "scipy>=1.14.0",
+    "pennylane>=0.37.0",
+    "pyquil==4.14.0",
+    "fastcore>=1.7.27",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-scikit-learn = "^1.5.1"
-numpy = ">=1.21,<2.0"
-plotly = "^5.22.0"
-nbformat = "^5.10.4"
-qiskit = "^1.2.0"
-matplotlib = "^3.9.1"
-pylatexenc = "^2.10"
-scipy = "^1.14.0"
-pennylane = "^0.37.0"
-pyquil = "^4.14.0"
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.2",
+    "ruff>=0.1.0",
+    "coverage>=7.6.0",
+    "pytest-cov>=5.0.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-mkdocs = "^1.6.0"
-pytest = "^8.2.2"
-coverage = "^7.6.0"
-pytest-cov = "^5.0.0"
+[tool.ruff]
+line-length = 300
+
+[tool.ruff.lint]
+ignore = ["I001", "E741", "F403", "F405", "F811"] 
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

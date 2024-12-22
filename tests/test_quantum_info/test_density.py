@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from skq.quantum_info import Statevector, DensityMatrix, GibbsState
+from src.quantum_info import Statevector, DensityMatrix, GibbsState
 
 
 def test_zero_and_one_density_matrix():
@@ -12,7 +12,7 @@ def test_zero_and_one_density_matrix():
     assert isinstance(zero_density_matrix, DensityMatrix)
     assert zero_density_matrix.is_pure()
     assert zero_density_matrix.num_qubits() == 1
-    assert zero_density_matrix.is_multi_qubit() == False
+    assert not zero_density_matrix.is_multi_qubit()
     assert zero_density_matrix.is_hermitian()
     assert zero_density_matrix.is_positive_semidefinite()
     assert zero_density_matrix.trace_equal_to_one()

@@ -1,6 +1,6 @@
 import numpy as np
 
-from skq.encoders import AmplitudeEncoder
+from src.encoders import AmplitudeEncoder
 
 
 def test_amplitude_encoder():

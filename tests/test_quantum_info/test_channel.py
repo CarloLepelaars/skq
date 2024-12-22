@@ -2,8 +2,8 @@ import qiskit
 import pytest
 import numpy as np
 
-from skq.quantum_info.channel import *
-from skq.quantum_info.density import DensityMatrix
+from src.quantum_info.channel import *
+from src.quantum_info.density import DensityMatrix
 
 
 def test_choi_validation():

@@ -1,5 +1,5 @@
 import numpy as np
-from skq.gates.qutrit import *
+from src.gates.qutrit import *
 
 def test_base_qutrit_gate():
     # QutritXGate

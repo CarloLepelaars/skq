@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.linalg import expm
 
-from skq.quantum_info import Hamiltonian, IsingHamiltonian, HeisenbergHamiltonian
+from src.quantum_info import Hamiltonian, IsingHamiltonian, HeisenbergHamiltonian
 
 
 def test_hamiltonian_properties():
