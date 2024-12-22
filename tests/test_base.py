@@ -9,8 +9,7 @@ from src.base import Operator
 
 def test_operator():
     # Pauli X Gate
-    gate = Operator([[0, 1], 
-                     [1, 0]])
+    gate = Operator([[0, 1], [1, 0]])
     assert gate.dtype == complex, "Gate should be complex"
     assert gate.num_levels() == 2, "Gate should have 2 levels"
     assert gate.is_square(), "Gate should be square"
@@ -21,16 +20,14 @@ def test_operator():
     assert gate.is_hermitian(), "X Gate should be Hermitian"
     assert not gate.is_identity(), "X Gate should not be the identity"
     assert gate.is_equal(gate), "Gate should be equal to itself"
-    assert gate.is_equal(Operator([[0, 1], 
-                                   [1, 0]])), "is_equal with itself should be True"
+    assert gate.is_equal(Operator([[0, 1], [1, 0]])), "is_equal with itself should be True"
     trace = gate.trace()
     assert trace == 0, "Trace of X Gate should be 0"
     assert isinstance(trace, complex), "Trace should be a complex number"
     assert gate.frobenius_norm() == np.sqrt(2), "Frobenius norm of X Gate should be sqrt(2)"
     # Hermitian -> Eigenvalues are real
-    np.testing.assert_array_almost_equal(gate.eigenvalues(), [-1., 1.])
-    np.testing.assert_array_almost_equal(gate.eigenvectors(), [[-1, 1], 
-                                                               [1, 1]] / np.sqrt(2))
+    np.testing.assert_array_almost_equal(gate.eigenvalues(), [-1.0, 1.0])
+    np.testing.assert_array_almost_equal(gate.eigenvectors(), [[-1, 1], [1, 1]] / np.sqrt(2))
 
     with pytest.raises(NotImplementedError):
         gate.to_qiskit()
@@ -45,20 +42,17 @@ def test_operator():
     with pytest.raises(NotImplementedError):
         gate.from_pyquil(pyquil_operator=pyquil.gates.X(0))
 
+
 def test_invalid_operator():
     # Empty array
     with pytest.raises(AssertionError):
         Operator(np.array([[], []]))
     # Not square
     with pytest.raises(AssertionError):
-        Operator(np.array([[1, 0, 0], 
-                           [0, 1, 0]]))
+        Operator(np.array([[1, 0, 0], [0, 1, 0]]))
     # Not 2D
     with pytest.raises(AssertionError):
         Operator(np.array([1, 0, 0]))
     # Not power of 2 shape
     with pytest.raises(AssertionError):
-        Operator(np.array([[1, 0], 
-                           [0, 1], 
-                           [0, 0], 
-                           [0, 0]]))
+        Operator(np.array([[1, 0], [0, 1], [0, 0], [0, 0]]))

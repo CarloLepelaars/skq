@@ -2,6 +2,7 @@ import numpy as np
 
 from src.gates.qupent import *
 
+
 def test_base_qupent_gate():
     gate = QupentGate(np.eye(5, dtype=complex))
     assert gate.dtype == complex, "Gate must have complex dtype."
@@ -9,10 +10,12 @@ def test_base_qupent_gate():
     assert gate.num_qupents() == 1, "Gate must involve 1 qupent."
     assert not gate.is_multi_qupent(), "Gate must not involve multiple qupents."
 
+
 def test_qupent_i_gate():
     gate = QupentIGate()
     state = np.array([1, 0, 0, 0, 0], dtype=complex)
     assert np.allclose(gate @ state, state), "I gate must not change the state."
+
 
 def test_qupent_x_gate():
     gate = QupentXGate()
@@ -28,6 +31,7 @@ def test_qupent_x_gate():
     assert np.allclose(gate @ three_state, four_state), "X gate must transform |3> to |4>."
     assert np.allclose(gate @ four_state, zero_state), "X gate must transform |4> to |0>."
 
+
 def test_qupent_z_gate():
     gate = QupentZGate()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
@@ -41,6 +45,7 @@ def test_qupent_z_gate():
     assert np.allclose(gate @ two_state, two_state * np.exp(4j * np.pi / 5)), "Z gate must correctly phase shift the |2> state."
     assert np.allclose(gate @ three_state, three_state * np.exp(6j * np.pi / 5)), "Z gate must correctly phase shift the |3> state."
     assert np.allclose(gate @ four_state, four_state * np.exp(8j * np.pi / 5)), "Z gate must correctly phase shift the |4> state."
+
 
 def test_qupent_h_gate():
     gate = QupentHGate()
@@ -63,6 +68,7 @@ def test_qupent_h_gate():
     assert np.allclose(gate @ three_state, expected_three), "H gate transformation on |3> is incorrect."
     assert np.allclose(gate @ four_state, expected_four), "H gate transformation on |4> is incorrect."
 
+
 def test_qupent_t_gate():
     gate = QupentTGate()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
@@ -76,4 +82,3 @@ def test_qupent_t_gate():
     assert np.allclose(gate @ two_state, two_state * np.exp(2j * np.pi / 10)), "T gate must correctly phase shift the |2> state."
     assert np.allclose(gate @ three_state, three_state * np.exp(3j * np.pi / 10)), "T gate must correctly phase shift the |3> state."
     assert np.allclose(gate @ four_state, four_state * np.exp(4j * np.pi / 10)), "T gate must correctly phase shift the |4> state."
-    

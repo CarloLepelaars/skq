@@ -5,10 +5,7 @@ from src.quantum_info.superoperator import SuperOperator
 
 def test_superoperator():
     # Example Choi matrix
-    arr = np.array([[1, 0, 0, 0], 
-                    [0, 1, 0, 0],
-                    [0, 0, 1, 0],
-                    [0, 0, 0, 1]], dtype=complex) / 2
+    arr = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], dtype=complex) / 2
     matrix = SuperOperator(arr)
 
     assert matrix.dtype == complex, "Superoperator should be complex"

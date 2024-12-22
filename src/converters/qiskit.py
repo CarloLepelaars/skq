@@ -9,11 +9,11 @@ class QiskitCircuitConverter(QuantumCircuitConverter):
         super().__init__(pipeline)
         self.circuit = qiskit.QuantumCircuit(num_qubits)
         self.measure_all = measure_all
-    
+
     def handle_gate(self, transformer, *args, **kwargs):
         qiskit_gate = transformer.gate.to_qiskit()
         self.circuit.append(qiskit_gate, transformer.qubits)
-    
+
     def handle_measurement(self, *args, **kwargs):
         self.circuit.measure_all()
 
@@ -23,6 +23,7 @@ class QiskitCircuitConverter(QuantumCircuitConverter):
 
     def get_circuit(self):
         return self.circuit
+
 
 def pipeline_to_qiskit_circuit(pipeline: Pipeline, num_qubits: int, measure_all=False) -> qiskit.QuantumCircuit:
     converter = QiskitCircuitConverter(pipeline, num_qubits, measure_all)

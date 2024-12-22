@@ -1,5 +1,3 @@
-from qiskit import QuantumCircuit
-
 # from src.circuits.entangled_states import BellStates
 # from src.converters.qiskit import pipeline_to_qiskit_circuit
 # from src.converters.openqasm import pipeline_to_qasm

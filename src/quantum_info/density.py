@@ -9,103 +9,104 @@ from src.gates.qubit import XGate, YGate, ZGate
 
 
 class DensityMatrix(HermitianOperator):
-    """ Density matrix representation of a qubit state. """
+    """Density matrix representation of a qubit state."""
+
     def __new__(cls, input_array):
         obj = super().__new__(cls, input_array)
         assert obj.is_positive_semidefinite(), "Density matrix must be positive semidefinite (All eigenvalues >= 0)."
         assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one. Normalize to unit trace if you want to use this matrix as a DensityMatrix."
         return obj
-    
+
     def is_positive_semidefinite(self):
-        """ Matrix is positive semidefinite. """
+        """Matrix is positive semidefinite."""
         eigenvalues = np.linalg.eigvalsh(self)
         return np.all(eigenvalues >= 0)
-    
+
     def is_pure(self) -> bool:
-        """ Check if density matrix is pure. """
+        """Check if density matrix is pure."""
         return np.isclose(np.trace(self @ self), 1)
-    
+
     def is_mixed(self) -> bool:
-        """ Check if density matrix is mixed. """
+        """Check if density matrix is mixed."""
         return not self.is_pure()
-    
+
     def trace_equal_to_one(self) -> bool:
-        """ Trace of density matrix is equal to one. """
+        """Trace of density matrix is equal to one."""
         return np.isclose(np.trace(self), 1)
-    
+
     def probabilities(self) -> float:
-        """ Probabilities of all possible state measurements. """
+        """Probabilities of all possible state measurements."""
         return np.diag(self).real
 
     def num_qubits(self) -> int:
-        """ Number of qubits in the density matrix. """
+        """Number of qubits in the density matrix."""
         return int(np.log2(len(self)))
-    
+
     def is_multi_qubit(self) -> bool:
-        """ Check if the density matrix represents a multi-qubit state. """
+        """Check if the density matrix represents a multi-qubit state."""
         return self.num_qubits() > 1
-    
+
     def trace_norm(self) -> float:
-        """ Trace norm of the density matrix. """
+        """Trace norm of the density matrix."""
         return np.trace(np.sqrt(self.conjugate_transpose() @ self))
-    
-    def distance(self, other: 'DensityMatrix') -> float:
-        """ Trace norm distance between two density matrices. """
+
+    def distance(self, other: "DensityMatrix") -> float:
+        """Trace norm distance between two density matrices."""
         assert isinstance(other, DensityMatrix), "'other' argument must be a valid DensityMatrix object."
         return self.trace_norm(self - other)
-    
+
     def bloch_vector(self) -> np.ndarray:
-        """ Bloch vector of the density matrix. """
+        """Bloch vector of the density matrix."""
         if self.num_qubits() > 1:
             raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
-        
+
         # Bloch vector components
         bx = np.trace(np.dot(self, XGate())).real
         by = np.trace(np.dot(self, YGate())).real
         bz = np.trace(np.dot(self, ZGate())).real
         return np.array([bx, by, bz])
-    
-    def kron(self, other: 'DensityMatrix') -> 'DensityMatrix':
+
+    def kron(self, other: "DensityMatrix") -> "DensityMatrix":
         """
         Kronecker (tensor) product of two density matrices.
-        This can be used to create so-called "product states" that represent 
+        This can be used to create so-called "product states" that represent
         the independence between two quantum systems.
         :param other: DensityMatrix object
         :return: Kronecker product of the two density matrices
         """
         return DensityMatrix(np.kron(self, other))
-    
+
     def entropy(self):
-        """ von Neumann entropy. """
+        """von Neumann entropy."""
         eigenvals = self.eigenvalues()
         # Only consider non-zero eigenvalues
         nonzero_eigenvalues = eigenvals[eigenvals > 0]
         return -np.sum(nonzero_eigenvalues * np.log(nonzero_eigenvalues))
-    
+
     def internal_energy(self, hamiltonian: np.array) -> float:
-        """ 
-        Expected value of the Hamiltonian. 
+        """
+        Expected value of the Hamiltonian.
         :param hamiltonian: Hamiltonian matrix
         :return: Expected value of the Hamiltonian
         """
         return np.trace(self @ hamiltonian)
-    
+
     def to_qiskit(self) -> qiskit.quantum_info.DensityMatrix:
         """
         Convert the density matrix to a Qiskit DensityMatrix object.
         :return: Qiskit DensityMatrix object
         """
         return qiskit.quantum_info.DensityMatrix(self)
-    
+
     @staticmethod
-    def from_qiskit(density_matrix: qiskit.quantum_info.DensityMatrix) -> 'DensityMatrix':
+    def from_qiskit(density_matrix: qiskit.quantum_info.DensityMatrix) -> "DensityMatrix":
         """
         Create a DensityMatrix object from a Qiskit DensityMatrix object.
         :param density_matrix: Qiskit DensityMatrix object
         :return: DensityMatrix object
         """
         return DensityMatrix(density_matrix.data)
-    
+
     def to_pennylane(self, wires: list[int] | int = None) -> qml.QubitDensityMatrix:
         """
         Convert the density matrix to a PennyLane QubitDensityMatrix.
@@ -114,7 +115,7 @@ class DensityMatrix(HermitianOperator):
         """
         wires = wires if wires is not None else range(self.num_qubits())
         return qml.QubitDensityMatrix(self, wires=wires)
-    
+
     @staticmethod
     def from_pennylane(density_matrix: qml.QubitDensityMatrix) -> "DensityMatrix":
         """
@@ -123,9 +124,9 @@ class DensityMatrix(HermitianOperator):
         :return: scikit-q StateVector object
         """
         return DensityMatrix(density_matrix.data[0])
-    
+
     @staticmethod
-    def from_probabilities(probabilities: np.array) -> 'DensityMatrix':
+    def from_probabilities(probabilities: np.array) -> "DensityMatrix":
         """
         Create a density matrix from a list of probabilities.
         :param probabilities: A 1D array of probabilities
@@ -134,7 +135,7 @@ class DensityMatrix(HermitianOperator):
         assert np.isclose(np.sum(probabilities), 1), f"Probabilities must sum to one. Got sum: {np.sum(probabilities)}"
         assert len(probabilities.shape) == 1, f"Probabilities must be a 1D array. Got shape: {probabilities.shape}"
         return DensityMatrix(np.diag(probabilities))
-    
+
 
 class GibbsState(DensityMatrix):
     """
@@ -142,6 +143,7 @@ class GibbsState(DensityMatrix):
     :param hamiltonian: Hamiltonian matrix of the system
     :param temperature: Temperature of the system in Kelvin
     """
+
     def __new__(cls, hamiltonian: np.array, temperature: float):
         cls.hamiltonian = hamiltonian
         cls.temperature = temperature
@@ -152,12 +154,12 @@ class GibbsState(DensityMatrix):
         return super().__new__(cls, density_matrix)
 
     def free_energy(self) -> float:
-        """ Helmholtz free energy. """
+        """Helmholtz free energy."""
         return -BOLTZMANN_CONSTANT * self.temperature * np.log(self.partition_function)
-    
+
     def heat_capacity(self) -> float:
-        """ Calculate the heat capacity. """
+        """Calculate the heat capacity."""
         beta = 1 / (BOLTZMANN_CONSTANT * self.temperature)
         energy_squared = np.trace(self @ self.hamiltonian @ self.hamiltonian)
         energy_mean = self.internal_energy(self.hamiltonian) ** 2
-        return beta ** 2 * (energy_squared - energy_mean)
+        return beta**2 * (energy_squared - energy_mean)

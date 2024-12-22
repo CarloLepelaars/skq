@@ -10,6 +10,7 @@ def test_base_attrs():
     import src.gates.qutrit as all_qutrit_gates
     import src.gates.ququart as all_ququart_gates
     import src.gates.qupent as all_qupent_gates
+
     for module in [all_qubit_gates, all_qutrit_gates, all_ququart_gates, all_qupent_gates]:
         all_objs = [obj for _, obj in inspect.getmembers(module)]
         for obj in all_objs:
@@ -21,9 +22,10 @@ def test_base_attrs():
                 assert hasattr(obj, "to_pyquil"), f"{obj} does not have to_pyquil method."
                 assert hasattr(obj, "from_pyquil"), f"{obj} does not have from_pyquil method."
 
+
 def test_base_gate():
     # Z Gate
-    gate = BaseGate([[1, 0], [0, -1]]) # Identity gate
+    gate = BaseGate([[1, 0], [0, -1]])  # Identity gate
     assert gate.dtype == complex, "Gate should be complex"
     assert gate.is_unitary(), "Gate should be unitary"
     assert gate.is_hermitian(), "Z Gate should be Hermitian"
@@ -40,8 +42,7 @@ def test_base_gate():
     assert trace == 0, "Trace of Z Gate should be 0"
     assert isinstance(trace, complex), "Trace should be a complex number"
     np.testing.assert_array_equal(gate.eigenvalues(), [-1, 1])
-    np.testing.assert_array_equal(gate.eigenvectors(), [[0, 1], 
-                                                        [1, 0]])
+    np.testing.assert_array_equal(gate.eigenvectors(), [[0, 1], [1, 0]])
 
     # Identity commutes with any gate
     identity = IGate()

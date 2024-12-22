@@ -7,9 +7,9 @@ from src.transformers import SingleQubitTransformer, MultiQubitTransformer, Meas
 class QuantumCircuitConverter:
     def __init__(self, pipeline: Pipeline):
         self.pipeline = pipeline
-    
+
     def process_transformer(self, transformer, *args, **kwargs):
-        """ Recursive setup to convert skq circuit to a target framework. """
+        """Recursive setup to convert skq circuit to a target framework."""
         if isinstance(transformer, ColumnTransformer):
             raise NotImplementedError("The usage of ColumnTransformer for converting circuits is not supported yet.")
         elif isinstance(transformer, Pipeline):
@@ -26,13 +26,13 @@ class QuantumCircuitConverter:
             self.handle_measurement(*args, **kwargs)
         else:
             return
-    
+
     def handle_gate(self, transformer, *args, **kwargs):
-        """ Convert and add skq gates to the target framework. """
+        """Convert and add skq gates to the target framework."""
         raise NotImplementedError("handle_gate must be implemented by converter.")
 
     def handle_measurement(self, *args, **kwargs):
-        """ Convert and add skq measurements to the target framework. """
+        """Convert and add skq measurements to the target framework."""
         raise NotImplementedError("handle_measurement must be implemented by converter.")
 
     def convert(self, *args, **kwargs):

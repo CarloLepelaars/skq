@@ -20,7 +20,7 @@ def test_statevector_initialization():
     assert isinstance(state_vector, Statevector)
     assert state_vector.dtype == complex
     assert state_vector.is_normalized()
-    
+
     # Non-normalized state vector
     with pytest.raises(AssertionError):
         Statevector([1, 1])
@@ -32,6 +32,7 @@ def test_statevector_initialization():
     # State vector not 1D (like a matrix)
     with pytest.raises(AssertionError):
         Statevector([[1, 0], [0, 1]])
+
 
 def test_conjugate_transpose():
     # Bell state (|00> + |11>) / sqrt(2)
@@ -54,6 +55,7 @@ def test_conjugate_transpose():
     BA_conjugate = state_vector.conjugate_transpose() @ state_vector.conjugate_transpose()
     np.testing.assert_array_almost_equal(AB_conjugate, BA_conjugate)
 
+
 def test_expectation():
     # Pauli-Z on |0⟩
     state1 = Statevector(np.array([1, 0], dtype=complex))
@@ -61,31 +63,31 @@ def test_expectation():
     assert np.isclose(expectation1, 1.0), "Expectation value should be 1 for Pauli-Z on |0⟩"
 
     # Pauli-X on 1/√2(|0⟩ + |1⟩)
-    state2 = Statevector(np.array([1/np.sqrt(2), 1/np.sqrt(2)], dtype=complex))
+    state2 = Statevector(np.array([1 / np.sqrt(2), 1 / np.sqrt(2)], dtype=complex))
     expectation2 = state2.expectation(XGate())
     assert np.isclose(expectation2, 1.0), "Expectation value should be 1 for Pauli-X on 1/√2(|0⟩ + |1⟩)"
 
     # Pauli-Y on 1/√2(|0⟩ + i|1⟩)
-    state3 = Statevector(np.array([1/np.sqrt(2), 1j/np.sqrt(2)], dtype=complex))
+    state3 = Statevector(np.array([1 / np.sqrt(2), 1j / np.sqrt(2)], dtype=complex))
     expectation3 = state3.expectation(YGate())
     assert np.isclose(expectation3, 1.0), "Expectation value should be 1 for Pauli-Y on 1/√2(|0⟩ + i|1⟩)"
 
     # Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)
-    state4 = Statevector(np.array([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)], dtype=complex))
+    state4 = Statevector(np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)], dtype=complex))
     pauli_z_1st_qubit = np.kron(ZGate(), IGate())
     expectation4 = state4.expectation(pauli_z_1st_qubit)
     assert np.isclose(expectation4, 0.0), "Expectation value should be 0 for Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)"
 
     # Random Hermitian observable on |ψ⟩ = 1/√2(|0⟩ + i|1⟩)
-    state4 = Statevector(np.array([1/np.sqrt(2), 1j/np.sqrt(2)], dtype=complex))
-    hermitian_observable = np.array([[2, 1-1j], [1+1j, 3]], dtype=complex)
+    state4 = Statevector(np.array([1 / np.sqrt(2), 1j / np.sqrt(2)], dtype=complex))
+    hermitian_observable = np.array([[2, 1 - 1j], [1 + 1j, 3]], dtype=complex)
     expectation4 = state4.expectation(hermitian_observable)
     assert np.isclose(expectation4, 3.5), "Wrong expectation value for the given Hermitian observable"
 
     # Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)
-    state5 = Statevector(np.array([1/np.sqrt(3), np.sqrt(2)/np.sqrt(3)], dtype=complex))
+    state5 = Statevector(np.array([1 / np.sqrt(3), np.sqrt(2) / np.sqrt(3)], dtype=complex))
     expectation5 = state5.expectation(ZGate())
-    assert np.isclose(expectation5, -1/3), "Wrong expectation value for Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)"
+    assert np.isclose(expectation5, -1 / 3), "Wrong expectation value for Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)"
 
     # Non-Hermitian operator give an error
     non_hermitian_operator = np.array([[0, 1], [0, 1]], dtype=complex)
@@ -97,6 +99,7 @@ def test_expectation():
     with pytest.raises(AssertionError):
         state1.expectation(non_2d_operator)
 
+
 def test_density_matrix():
     # |0><0|
     state_vector = Statevector([1, 0])
@@ -104,6 +107,7 @@ def test_density_matrix():
     assert isinstance(density_matrix, DensityMatrix)
     expected_density_matrix = np.array([[1, 0], [0, 0]])
     np.testing.assert_array_almost_equal(density_matrix, expected_density_matrix)
+
 
 def test_measure():
     # |00>
@@ -120,23 +124,25 @@ def test_measure():
     bitstring = state_vector.measure_bitstring()
     assert bitstring in ["00", "11"]
 
+
 def test_orthonormal_basis():
     # Single qubit states
-    state_vector = Statevector([1/np.sqrt(2), 1/np.sqrt(2)])
+    state_vector = Statevector([1 / np.sqrt(2), 1 / np.sqrt(2)])
     basis = state_vector.orthonormal_basis()
-    expected_basis = np.array([[1/np.sqrt(2)], [1/np.sqrt(2)]])
+    expected_basis = np.array([[1 / np.sqrt(2)], [1 / np.sqrt(2)]])
     np.testing.assert_array_almost_equal(basis, expected_basis)
 
-    state_vector = Statevector([1/2, np.sqrt(3)/2])
+    state_vector = Statevector([1 / 2, np.sqrt(3) / 2])
     basis = state_vector.orthonormal_basis()
-    expected_basis = np.array([[1/2], [np.sqrt(3)/2]])
+    expected_basis = np.array([[1 / 2], [np.sqrt(3) / 2]])
     np.testing.assert_array_almost_equal(basis, expected_basis)
 
     # Multi-qubit state
-    state_vector = Statevector([1/2, 1/2, 1/2, 1/2])
+    state_vector = Statevector([1 / 2, 1 / 2, 1 / 2, 1 / 2])
     basis = state_vector.orthonormal_basis()
-    expected_basis = np.array([[1/2], [1/2], [1/2], [1/2]])
+    expected_basis = np.array([[1 / 2], [1 / 2], [1 / 2], [1 / 2]])
     np.testing.assert_array_almost_equal(basis, expected_basis)
+
 
 def test_schmidt_decomposition():
     # Basis state |00>
@@ -147,38 +153,33 @@ def test_schmidt_decomposition():
     assert np.allclose(basis_B[:, 0], [1, 0])
 
     # Bell state |ψ⟩ = (|00⟩ + |11⟩) / sqrt(2)
-    bell_state = Statevector([1/np.sqrt(2), 0, 0, 1/np.sqrt(2)])
+    bell_state = Statevector([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)])
     coeffs, basis_A, basis_B = bell_state.schmidt_decomposition()
-    assert np.allclose(coeffs, [1/np.sqrt(2), 1/np.sqrt(2)])
+    assert np.allclose(coeffs, [1 / np.sqrt(2), 1 / np.sqrt(2)])
     assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
     assert np.allclose(basis_B[:, 0], [1, 0]) or np.allclose(basis_B[:, 0], [0, 1])
 
     # State |ψ⟩ = (|00⟩ + |01⟩ + |10⟩ + |11⟩) / 2
-    intricate_state = Statevector([1/2, 1/2, 1/2, 1/2])
+    intricate_state = Statevector([1 / 2, 1 / 2, 1 / 2, 1 / 2])
     coeffs, basis_A, basis_B = intricate_state.schmidt_decomposition()
     assert np.allclose(coeffs, [1, 0])
-    assert (np.allclose(basis_A[:, 0], [1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [1/np.sqrt(2), -1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [-1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_A[:, 0], [-1/np.sqrt(2), -1/np.sqrt(2)]))
-    assert (np.allclose(basis_B[:, 0], [1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [1/np.sqrt(2), -1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [-1/np.sqrt(2), 1/np.sqrt(2)]) or
-            np.allclose(basis_B[:, 0], [-1/np.sqrt(2), -1/np.sqrt(2)]))
+    assert np.allclose(basis_A[:, 0], [1 / np.sqrt(2), 1 / np.sqrt(2)]) or np.allclose(basis_A[:, 0], [1 / np.sqrt(2), -1 / np.sqrt(2)]) or np.allclose(basis_A[:, 0], [-1 / np.sqrt(2), 1 / np.sqrt(2)]) or np.allclose(basis_A[:, 0], [-1 / np.sqrt(2), -1 / np.sqrt(2)])
+    assert np.allclose(basis_B[:, 0], [1 / np.sqrt(2), 1 / np.sqrt(2)]) or np.allclose(basis_B[:, 0], [1 / np.sqrt(2), -1 / np.sqrt(2)]) or np.allclose(basis_B[:, 0], [-1 / np.sqrt(2), 1 / np.sqrt(2)]) or np.allclose(basis_B[:, 0], [-1 / np.sqrt(2), -1 / np.sqrt(2)])
 
     # State |ψ⟩ = (sqrt(3)/2 |00⟩ + 1/2 |11⟩)
-    intricate_state_2 = Statevector([np.sqrt(3)/2, 0, 0, 1/2])
+    intricate_state_2 = Statevector([np.sqrt(3) / 2, 0, 0, 1 / 2])
     coeffs, basis_A, basis_B = intricate_state_2.schmidt_decomposition()
-    assert np.allclose(coeffs, [np.sqrt(3)/2, 1/2])
+    assert np.allclose(coeffs, [np.sqrt(3) / 2, 1 / 2])
     assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
     assert np.allclose(basis_B[:, 0], [1, 0]) or np.allclose(basis_B[:, 0], [0, 1])
 
     # Three-qubit GHZ state (i.e. maximum entanglement across 3 qubits) |ψ⟩ = (|000⟩ + |111⟩) / sqrt(2)
-    ghz_state = Statevector([1/np.sqrt(2), 0, 0, 0, 0, 0, 0, 1/np.sqrt(2)])
+    ghz_state = Statevector([1 / np.sqrt(2), 0, 0, 0, 0, 0, 0, 1 / np.sqrt(2)])
     coeffs, basis_A, basis_B = ghz_state.schmidt_decomposition()
-    assert np.allclose(coeffs, [1/np.sqrt(2), 1/np.sqrt(2)])
+    assert np.allclose(coeffs, [1 / np.sqrt(2), 1 / np.sqrt(2)])
     assert np.allclose(basis_A[:, 0], [1, 0]) or np.allclose(basis_A[:, 0], [0, 1])
-    assert (np.allclose(basis_B[:, 0], [1, 0, 0, 0]) or np.allclose(basis_B[:, 0], [0, 0, 0, 1]))
+    assert np.allclose(basis_B[:, 0], [1, 0, 0, 0]) or np.allclose(basis_B[:, 0], [0, 0, 0, 1])
+
 
 def test_to_qiskit():
     # |00> in big-endian
@@ -187,12 +188,14 @@ def test_to_qiskit():
     assert isinstance(qiskit_sv, qiskit.quantum_info.Statevector)
     np.testing.assert_array_almost_equal(qiskit_sv.data, state_vector[::-1])
 
+
 def test_from_qiskit():
     # |00> in little-endian
     qiskit_sv = qiskit.quantum_info.Statevector([0, 0, 0, 1])
     state_vector = Statevector.from_qiskit(qiskit_sv)
     assert isinstance(state_vector, Statevector)
     np.testing.assert_array_almost_equal(state_vector, qiskit_sv.data[::-1])
+
 
 def test_to_pennylane():
     # |00> in big-endian
@@ -201,6 +204,7 @@ def test_to_pennylane():
     assert isinstance(pennylane_sv, qml.QubitStateVector)
     np.testing.assert_array_almost_equal(pennylane_sv.data[0], state_vector)
 
+
 def test_from_pennylane():
     # |00> in big-endian
     pennylane_sv = qml.QubitStateVector([1, 0, 0, 0], wires=range(2))
@@ -208,30 +212,32 @@ def test_from_pennylane():
     assert isinstance(state_vector, Statevector)
     np.testing.assert_array_almost_equal(state_vector, pennylane_sv.data[0])
 
+
 def test_bell_states_initialization():
     # Bell state |Φ+>
     # (|00> + |11>) / sqrt(2)
     phi_plus = PhiPlusState()
     assert isinstance(phi_plus, Statevector)
     np.testing.assert_array_almost_equal(phi_plus, [1, 0, 0, 1] / np.sqrt(2))
-    
+
     # Bell state |Φ->
     # (|00> - |11>) / sqrt(2)
     phi_minus = PhiMinusState()
     assert isinstance(phi_minus, Statevector)
     np.testing.assert_array_almost_equal(phi_minus, [1, 0, 0, -1] / np.sqrt(2))
-    
+
     # Bell state |Ψ+>
     # (|01> + |10>) / sqrt(2)
     psi_plus = PsiPlusState()
     assert isinstance(psi_plus, Statevector)
     np.testing.assert_array_almost_equal(psi_plus, [0, 1, 1, 0] / np.sqrt(2))
-    
+
     # Bell state |Ψ->
     # (|01> - |10>) / sqrt(2)
     psi_minus = PsiMinusState()
     assert isinstance(psi_minus, Statevector)
     np.testing.assert_array_almost_equal(psi_minus, [0, 1, -1, 0] / np.sqrt(2))
+
 
 def test_ghz_state_initialization():
     # GHZ state |000> + |111> for 3 qubits
@@ -242,7 +248,8 @@ def test_ghz_state_initialization():
     expected_state[0] = 1 / np.sqrt(2)
     expected_state[-1] = 1 / np.sqrt(2)
     np.testing.assert_array_almost_equal(ghz_state, expected_state)
-    
+
+
 def test_w_state_initialization():
     # W state |001> + |010> + |100> for 3 qubits
     w_state = WState(3)
@@ -252,6 +259,7 @@ def test_w_state_initialization():
     for i in range(3):
         expected_state[2**i] = 1 / np.sqrt(3)
     np.testing.assert_array_almost_equal(w_state, expected_state)
+
 
 def test_specific_state_density_matrix():
     # PhiPlusState
@@ -268,6 +276,7 @@ def test_specific_state_density_matrix():
     expected_state[-1] = 1 / np.sqrt(2)
     expected_density_matrix = np.outer(expected_state, expected_state.conj())
     np.testing.assert_array_almost_equal(density_matrix, expected_density_matrix)
+
 
 def test_specific_state_measurement():
     # GHZState for 3 qubits
