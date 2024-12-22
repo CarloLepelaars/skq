@@ -35,11 +35,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install 'setuptools[pkg_resources]'
-          uv pip install -e ".[test]"
+          uv pip install -e ".[dev]"
 
       - name: Run tests
         run: |
-          uv run pytest -s --cov=skq --cov-report term-missing --cov-report=xml
+          uv run pytest -s
 
       - name: Build wheel
         run: |
