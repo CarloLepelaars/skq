@@ -1,6 +1,6 @@
 # skq
 
-Classical Quantum Components.
+Quantum Components
 
 ## Why SKQ?
 
