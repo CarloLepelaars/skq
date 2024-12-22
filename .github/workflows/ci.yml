@@ -39,7 +39,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -s --cov=skq --cov-report term-missing --cov-report=xml
+          uv run pytest -s --cov=skq --cov-report term-missing --cov-report=xml
 
       - name: Build wheel
         run: |
