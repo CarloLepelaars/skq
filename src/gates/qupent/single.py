@@ -3,7 +3,7 @@ import numpy as np
 from src.gates.qupent.base import QupentGate
 
 
-class QupentIGate(QupentGate):
+class QupentI(QupentGate):
     """Identity gate for qupents."""
 
     def __new__(cls):
@@ -11,7 +11,7 @@ class QupentIGate(QupentGate):
         return obj
 
 
-class QupentXGate(QupentGate):
+class QupentX(QupentGate):
     """X gate for qupents."""
 
     def __new__(cls):
@@ -19,7 +19,7 @@ class QupentXGate(QupentGate):
         return obj
 
 
-class QupentZGate(QupentGate):
+class QupentZ(QupentGate):
     """Z gate for qupents."""
 
     def __new__(cls):
@@ -30,7 +30,7 @@ class QupentZGate(QupentGate):
         return obj
 
 
-class QupentHGate(QupentGate):
+class QupentH(QupentGate):
     """Hadamard gate for qupents."""
 
     def __new__(cls):
@@ -50,7 +50,7 @@ class QupentHGate(QupentGate):
         return obj
 
 
-class QupentTGate(QupentGate):
+class QupentT(QupentGate):
     """T gate for qupents."""
 
     def __new__(cls):

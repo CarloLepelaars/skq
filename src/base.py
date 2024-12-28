@@ -20,6 +20,14 @@ class Operator(np.ndarray):
         assert obj.is_at_least_nxn(n=1), "Gate must be at least a 1x1 matrix."
         return obj
 
+    def encodes(self, other: np.ndarray) -> bool:
+        """Progress quantum state"""
+        return np.array(self @ other, dtype=complex)
+
+    def decodes(self, other: np.ndarray) -> bool:
+        """Reverse quantum state"""
+        return np.array(self.conjugate_transpose() @ other, dtype=complex)
+
     def is_square(self) -> bool:
         """Operator is a square matrix."""
         return self.shape[0] == self.shape[1]
@@ -136,6 +144,10 @@ class Operator(np.ndarray):
         :return: scikit-q Operator
         """
         raise NotImplementedError(f"Conversion from PyQuil is not implemented for {self.__class__.__name__}.")
+
+    def __call__(self, other: np.ndarray) -> np.ndarray:
+        """Call the operator on a quantum state."""
+        return self.encodes(other)
 
 
 class HermitianOperator(Operator):

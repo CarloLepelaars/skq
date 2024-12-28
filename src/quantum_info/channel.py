@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 from scipy.linalg import sqrtm
 
-from src.gates.qubit import IGate, XGate, YGate, ZGate
+from src.gates.qubit import I, X, Y, Z
 from src.quantum_info.density import DensityMatrix
 from src.quantum_info.superoperator import SuperOperator
 
@@ -259,7 +259,7 @@ class DepolarizingChannel(QuantumChannel):
     def __new__(cls, p: float):
         assert 0 <= p <= 1, "Depolarization probability must be in range [0...1]."
         cls.p = p
-        kraus_ops = np.array([np.sqrt(1 - p) * IGate(), np.sqrt(p / 3) * XGate(), np.sqrt(p / 3) * YGate(), np.sqrt(p / 3) * ZGate()])
+        kraus_ops = np.array([np.sqrt(1 - p) * I(), np.sqrt(p / 3) * X(), np.sqrt(p / 3) * Y(), np.sqrt(p / 3) * Z()])
         return super().__new__(cls, kraus_ops, representation="kraus")
 
 
@@ -280,7 +280,7 @@ class PauliNoiseChannel(QuantumChannel):
         assert total_p <= 1, "The sum of probabilities p_x, p_y, and p_z must not exceed 1."
 
         p_i = 1 - total_p
-        kraus_ops = np.array([np.sqrt(p_i) * IGate(), np.sqrt(p_x) * XGate(), np.sqrt(p_y) * YGate(), np.sqrt(p_z) * ZGate()])
+        kraus_ops = np.array([np.sqrt(p_i) * I(), np.sqrt(p_x) * X(), np.sqrt(p_y) * Y(), np.sqrt(p_z) * Z()])
         return super().__new__(cls, kraus_ops, representation="kraus")
 
 
@@ -318,5 +318,5 @@ class PhaseFlipChannel(QuantumChannel):
     def __new__(cls, p: float):
         assert 0 <= p <= 1, "Depolarization probability must be in range [0...1]."
         cls.p = p
-        kraus_ops = np.array([np.sqrt(1 - p) * IGate(), np.sqrt(p) * ZGate()])
+        kraus_ops = np.array([np.sqrt(1 - p) * I(), np.sqrt(p) * Z()])
         return super().__new__(cls, kraus_ops, representation="kraus")

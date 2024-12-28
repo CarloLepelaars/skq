@@ -4,7 +4,7 @@ import scipy.linalg
 import pennylane as qml
 
 from src.base import HermitianOperator
-from src.gates.qubit import XGate, ZGate, IGate
+from src.gates.qubit import X, Z, I
 
 
 class Hamiltonian(HermitianOperator):
@@ -118,9 +118,9 @@ class IsingHamiltonian(Hamiltonian):
             term = np.eye(1)
             for j in range(num_qubits):
                 if j == i or j == i + 1:
-                    term = np.kron(term, ZGate())
+                    term = np.kron(term, Z())
                 else:
-                    term = np.kron(term, IGate())
+                    term = np.kron(term, I())
             H -= J * term
 
         # Transverse field term: -h * sum(X_i)
@@ -128,9 +128,9 @@ class IsingHamiltonian(Hamiltonian):
             term = np.eye(1)
             for j in range(num_qubits):
                 if j == i:
-                    term = np.kron(term, XGate())
+                    term = np.kron(term, X())
                 else:
-                    term = np.kron(term, IGate())
+                    term = np.kron(term, I())
             H -= h * term
 
         return super().__new__(cls, H, hbar)

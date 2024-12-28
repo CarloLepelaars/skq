@@ -3,7 +3,7 @@ import numpy as np
 from src.gates.qutrit.base import QutritGate
 
 
-class QutritMIGate(QutritGate):
+class QutritMI(QutritGate):
     """
     Multi-qutrit Identity gate.
     :param num_qutrits: Number of qutrits in the gate.
@@ -14,7 +14,7 @@ class QutritMIGate(QutritGate):
         return super().__new__(cls, np.eye(3**num_qutrits))
 
 
-class QutritCXAGate(QutritGate):
+class QutritCXA(QutritGate):
     """
     CNOT gate for qutrits.
     More information on Qutrit CNOT: https://www.iosrjournals.org/iosr-jap/papers/Vol10-issue6/Version-2/D1006021619.pdf
@@ -27,7 +27,7 @@ class QutritCXAGate(QutritGate):
         )
 
 
-class QutritCXBGate(QutritGate):
+class QutritCXB(QutritGate):
     """
     CNOT gate for qutrits.
     More information on Qutrit CNOT: https://www.iosrjournals.org/iosr-jap/papers/Vol10-issue6/Version-2/D1006021619.pdf
@@ -40,7 +40,7 @@ class QutritCXBGate(QutritGate):
         )
 
 
-class QutritCXCGate(QutritGate):
+class QutritCXC(QutritGate):
     """
     CNOT gate for qutrits.
     More information on Qutrit CNOT: https://www.iosrjournals.org/iosr-jap/papers/Vol10-issue6/Version-2/D1006021619.pdf
@@ -53,7 +53,7 @@ class QutritCXCGate(QutritGate):
         )
 
 
-class QutritSWAPGate(QutritGate):
+class QutritSWAP(QutritGate):
     """
     SWAP gate for qutrits.
     |01> -> |10>

@@ -3,11 +3,11 @@ import numpy as np
 import pennylane as qml
 
 from src.gates.qubit.base import QubitGate
-from src.gates.qubit.single import XGate, YGate, ZGate
+from src.gates.qubit.single import X, Y, Z
 from src.quantum_info.state import Statevector
 
 
-class PhaseOracleGate(QubitGate):
+class PhaseOracle(QubitGate):
     """
     Phase Oracle as used in Grover's search algorithm.
     :param target_state: The target state to mark.
@@ -26,7 +26,7 @@ class PhaseOracleGate(QubitGate):
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="PhaseOracle")
 
 
-class GroverDiffusionGate(QubitGate):
+class GroverDiffusion(QubitGate):
     """
     Grover Diffusion Operator Gate as used in Grover's search algorithm.
     This gate amplifies the amplitude of the marked state.
@@ -47,7 +47,7 @@ class GroverDiffusionGate(QubitGate):
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="GroverDiffusion")
 
 
-class CXGate(QubitGate):
+class CX(QubitGate):
     """
     Controlled-X (CNOT) gate.
     Used to entangle two qubits.
@@ -69,7 +69,7 @@ class CXGate(QubitGate):
         return f"cx q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CYGate(QubitGate):
+class CY(QubitGate):
     """Controlled-Y gate."""
 
     def __new__(cls):
@@ -87,7 +87,7 @@ class CYGate(QubitGate):
         return f"cy q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CZGate(QubitGate):
+class CZ(QubitGate):
     """Controlled-Z gate."""
 
     def __new__(cls):
@@ -105,7 +105,7 @@ class CZGate(QubitGate):
         return f"cz q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CHGate(QubitGate):
+class CH(QubitGate):
     """Controlled-Hadamard gate."""
 
     def __new__(cls):
@@ -123,7 +123,7 @@ class CHGate(QubitGate):
         return f"ch q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CPhaseGate(QubitGate):
+class CPhase(QubitGate):
     """General controlled phase shift gate.
     :param phi: The phase shift angle in radians.
     """
@@ -145,7 +145,7 @@ class CPhaseGate(QubitGate):
         return f"cp({self.phi}) q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CSGate(CPhaseGate):
+class CS(CPhase):
     """Controlled-S gate."""
 
     def __new__(cls):
@@ -156,7 +156,7 @@ class CSGate(CPhaseGate):
         return qiskit.circuit.library.CSGate()
 
 
-class CTGate(CPhaseGate):
+class CT(CPhase):
     """Controlled-T gate."""
 
     def __new__(cls):
@@ -167,7 +167,7 @@ class CTGate(CPhaseGate):
         return qiskit.circuit.library.TGate().control(1)
 
 
-class SWAPGate(QubitGate):
+class SWAP(QubitGate):
     """Swap gate. Swaps the states of two qubits."""
 
     def __new__(cls):
@@ -185,7 +185,7 @@ class SWAPGate(QubitGate):
         return f"swap q[{qubits[0]}], q[{qubits[1]}];"
 
 
-class CSwapGate(QubitGate):
+class CSwap(QubitGate):
     """A controlled-SWAP gate. Also known as the Fredkin gate."""
 
     def __new__(cls):
@@ -202,7 +202,7 @@ class CSwapGate(QubitGate):
         return f"cswap q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];"
 
 
-class CCXGate(QubitGate):
+class CCX(QubitGate):
     """A 3-qubit controlled-controlled-X (CCX) gate. Also known as the Toffoli gate."""
 
     def __new__(cls):
@@ -219,7 +219,7 @@ class CCXGate(QubitGate):
         return f"ccx q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];"
 
 
-class CCYGate(QubitGate):
+class CCY(QubitGate):
     """A 3-qubit controlled-controlled-Y (CCY) gate."""
 
     def __new__(cls):
@@ -236,7 +236,7 @@ class CCYGate(QubitGate):
         return f"""sdg q[{qubits[2]}];\ncx q[{qubits[1]}], q[{qubits[2]}];\ns q[{qubits[2]}];\ncx q[{qubits[0]}], q[{qubits[2]}];\nsdg q[{qubits[2]}];\ncx q[{qubits[1]}], q[{qubits[2]}];\ns q[{qubits[2]}];\ny q[{qubits[2]}];"""
 
 
-class CCZGate(QubitGate):
+class CCZ(QubitGate):
     """A 3-qubit controlled-controlled-Z (CCZ) gate."""
 
     def __new__(cls):
@@ -251,7 +251,7 @@ class CCZGate(QubitGate):
         return f"""h q[{qubits[2]}];\nccx q[{qubits[0]}], q[{qubits[1]}], q[{qubits[2]}];\nh q[{qubits[2]}];"""
 
 
-class MCXGate(QubitGate):
+class MCX(QubitGate):
     """
     Multi controlled-X (MCX) gate.
     :param num_ctrl_qubits: Number of control qubits.
@@ -262,7 +262,7 @@ class MCXGate(QubitGate):
         cls.num_ctrl_qubits = num_ctrl_qubits
         levels = 2 ** (num_ctrl_qubits + 1)
         gate = np.identity(levels)
-        gate[-2:, -2:] = XGate()
+        gate[-2:, -2:] = X()
         return super().__new__(cls, gate)
 
     def to_qiskit(self) -> qiskit.circuit.library.CXGate | qiskit.circuit.library.CCXGate | qiskit.circuit.library.C3XGate | qiskit.circuit.library.C4XGate | qiskit.circuit.library.MCXGate:
@@ -284,7 +284,7 @@ class MCXGate(QubitGate):
             return super().to_pennylane(wires)
 
 
-class MCYGate(QubitGate):
+class MCY(QubitGate):
     """Multi controlled-Y (MCY) gate."""
 
     def __new__(cls, num_ctrl_qubits: int):
@@ -292,7 +292,7 @@ class MCYGate(QubitGate):
         cls.num_ctrl_qubits = num_ctrl_qubits
         levels = 2 ** (num_ctrl_qubits + 1)
         gate = np.identity(levels)
-        gate[-2:, -2:] = YGate()
+        gate[-2:, -2:] = Y()
         return super().__new__(cls, gate)
 
     def to_qiskit(self) -> qiskit.circuit.library.YGate:
@@ -305,7 +305,7 @@ class MCYGate(QubitGate):
             return super().to_pennylane(wires)
 
 
-class MCZGate(QubitGate):
+class MCZ(QubitGate):
     """Multi controlled-Z (MCZ) gate."""
 
     def __new__(cls, num_ctrl_qubits: int):
@@ -313,7 +313,7 @@ class MCZGate(QubitGate):
         cls.num_ctrl_qubits = num_ctrl_qubits
         levels = 2 ** (num_ctrl_qubits + 1)
         gate = np.identity(levels)
-        gate[-2:, -2:] = ZGate()
+        gate[-2:, -2:] = Z()
         return super().__new__(cls, gate)
 
     def to_qiskit(self) -> qiskit.circuit.library.ZGate:
@@ -326,22 +326,22 @@ class MCZGate(QubitGate):
             return super().to_pennylane(wires)
 
 
-class CRGate(QubitGate):
+class CR(QubitGate):
     """Simple Cross-Resonance gate."""
 
     def __new__(cls, theta: float):
         return super().__new__(cls, [[1, 0, 0, 0], [0, np.cos(theta), 0, -1j * np.sin(theta)], [0, 0, 1, 0], [0, -1j * np.sin(theta), 0, np.cos(theta)]])
 
 
-class SymmetricECRGate(QubitGate):
+class SymmetricECR(QubitGate):
     """Symmetric Echoed Cross-Resonance gate."""
 
     def __new__(cls, theta: float):
-        return super().__new__(cls, CRGate(theta) @ CRGate(-theta))
+        return super().__new__(cls, CR(theta) @ CR(-theta))
 
 
-class AsymmetricECRGate(QubitGate):
+class AsymmetricECR(QubitGate):
     """Asymmetric Echoed Cross-Resonance gate."""
 
     def __new__(cls, theta1: float, theta2: float):
-        return super().__new__(cls, CRGate(theta1) @ CRGate(theta2))
+        return super().__new__(cls, CR(theta1) @ CR(theta2))

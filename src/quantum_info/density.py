@@ -5,7 +5,7 @@ from scipy.linalg import expm
 
 from src.base import HermitianOperator
 from src.constants import BOLTZMANN_CONSTANT
-from src.gates.qubit import XGate, YGate, ZGate
+from src.gates.qubit import X, Y, Z
 
 
 class DensityMatrix(HermitianOperator):
@@ -61,9 +61,9 @@ class DensityMatrix(HermitianOperator):
             raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
 
         # Bloch vector components
-        bx = np.trace(np.dot(self, XGate())).real
-        by = np.trace(np.dot(self, YGate())).real
-        bz = np.trace(np.dot(self, ZGate())).real
+        bx = np.trace(np.dot(self, X())).real
+        by = np.trace(np.dot(self, Y())).real
+        bz = np.trace(np.dot(self, Z())).real
         return np.array([bx, by, bz])
 
     def kron(self, other: "DensityMatrix") -> "DensityMatrix":

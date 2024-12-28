@@ -29,6 +29,11 @@ def test_operator():
     np.testing.assert_array_almost_equal(gate.eigenvalues(), [-1.0, 1.0])
     np.testing.assert_array_almost_equal(gate.eigenvectors(), [[-1, 1], [1, 1]] / np.sqrt(2))
 
+    zero_state = np.array([1, 0])
+    assert np.allclose(gate(zero_state), np.array([0, 1])), "X Gate should encode the zero state into the one state"
+    assert np.allclose(gate.encodes(zero_state), np.array([0, 1])), "X Gate should encode the zero state into the one state"
+    assert np.allclose(gate.decodes(np.array([0, 1])), zero_state), "X Gate should decode the one state into the zero state"
+
     with pytest.raises(NotImplementedError):
         gate.to_qiskit()
     with pytest.raises(NotImplementedError):

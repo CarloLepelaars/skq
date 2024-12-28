@@ -3,7 +3,7 @@ import numpy as np
 from src.gates.qutrit.base import QutritGate
 
 
-class QutritIGate(QutritGate):
+class QutritI(QutritGate):
     """
     Identity gate for a qutrit.
     [[1, 0, 0]
@@ -15,7 +15,7 @@ class QutritIGate(QutritGate):
         return super().__new__(cls, np.eye(3))
 
 
-class QutritXGate(QutritGate):
+class QutritX(QutritGate):
     """
     X gate for a qutrit.
     |0> -> |1>
@@ -27,7 +27,7 @@ class QutritXGate(QutritGate):
         return super().__new__(cls, np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]]))
 
 
-class QutritYGate(QutritGate):
+class QutritY(QutritGate):
     """
     Y gate for a qutrit.
     |0> -> -i|1>
@@ -39,7 +39,7 @@ class QutritYGate(QutritGate):
         return super().__new__(cls, np.array([[0, 0, -1j], [-1j, 0, 0], [0, -1j, 0]]))
 
 
-class QutritZGate(QutritGate):
+class QutritZ(QutritGate):
     """
     Z gate for a qutrit.
     |0> -> |0>
@@ -51,7 +51,7 @@ class QutritZGate(QutritGate):
         return super().__new__(cls, np.array([[1, 0, 0], [0, np.exp(2 * np.pi * 1j / 3), 0], [0, 0, np.exp(-2 * np.pi * 1j / 3)]]))
 
 
-class QutritHGate(QutritGate):
+class QutritH(QutritGate):
     """
     Hadamard gate for a qutrit.
     |0> -> (|0> + |1> + |2>)/sqrt(3)
@@ -64,7 +64,7 @@ class QutritHGate(QutritGate):
         return super().__new__(cls, np.array([[1, 1, 1], [1, omega, omega**2], [1, omega**2, omega]]) / np.sqrt(3))
 
 
-class QutritTGate(QutritGate):
+class QutritT(QutritGate):
     """
     T gate for a qutrit.
     |0> -> |0>
@@ -76,14 +76,14 @@ class QutritTGate(QutritGate):
         return super().__new__(cls, np.array([[1, 0, 0], [0, np.exp(2 * np.pi * 1j / 9), 0], [0, 0, np.exp(-2 * np.pi * 1j / 9)]]))
 
 
-class QutritRGate(QutritGate):
+class QutritR(QutritGate):
     """R gate for a qutrit (non-Clifford gate)."""
 
     def __new__(cls):
         return super().__new__(cls, np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]]))
 
 
-class QutritPhaseGate(QutritGate):
+class QutritPhase(QutritGate):
     """
     General phase gate for qutrits.
     Applies phase shifts to the qutrit basis states.
@@ -93,7 +93,7 @@ class QutritPhaseGate(QutritGate):
         return super().__new__(cls, np.array([[np.exp(1j * phi_0), 0, 0], [0, np.exp(1j * phi_1), 0], [0, 0, np.exp(1j * phi_2)]]))
 
 
-class QutritSGate(QutritPhaseGate):
+class QutritS(QutritPhase):
     """
     S gate for qutrits.
     |0> -> |0>

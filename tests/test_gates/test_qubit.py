@@ -19,7 +19,7 @@ def test_base_gate():
 
 def test_single_qubit_pauli_gates():
     """Single qubit Pauli gates"""
-    for GateClass in [XGate, YGate, ZGate]:
+    for GateClass in [X, Y, Z]:
         gate = GateClass()
         assert gate.is_unitary(), f"{GateClass.__name__} should be unitary"
         assert gate.is_pauli(), f"{GateClass.__name__} should be a single-qubit Pauli gate"
@@ -28,7 +28,7 @@ def test_single_qubit_pauli_gates():
 
 def test_single_qubit_clifford_gates():
     """Single qubit Clifford gates"""
-    for GateClass in [IGate, XGate, YGate, ZGate, HGate, SGate]:
+    for GateClass in [I, X, Y, Z, H, S]:
         gate = GateClass()
         assert gate.is_unitary(), f"{GateClass.__name__} should be unitary"
         assert gate.num_qubits() == 1, f"{GateClass.__name__} should operate on 1 qubit"
@@ -37,20 +37,20 @@ def test_single_qubit_clifford_gates():
 
     # Algebraic equivalences
     # S = T^2 = P(pi/2)
-    np.testing.assert_almost_equal(SGate(), TGate() ** 2)
-    np.testing.assert_almost_equal(SGate(), PhaseGate(np.pi / 2))
+    np.testing.assert_almost_equal(S(), T() ** 2)
+    np.testing.assert_almost_equal(S(), Phase(np.pi / 2))
     # H = (X + Z) / sqrt(2)
-    np.testing.assert_almost_equal(HGate(), (XGate() + ZGate()) / np.sqrt(2))
+    np.testing.assert_almost_equal(H(), (X() + Z()) / np.sqrt(2))
     # Z = HXH = P(pi)
-    np.testing.assert_almost_equal(ZGate(), HGate() @ XGate() @ HGate())
-    np.testing.assert_almost_equal(ZGate(), PhaseGate(np.pi))
+    np.testing.assert_almost_equal(Z(), H() @ X() @ H())
+    np.testing.assert_almost_equal(Z(), Phase(np.pi))
     # X = HZH
-    np.testing.assert_almost_equal(XGate(), HGate() @ ZGate() @ HGate())
+    np.testing.assert_almost_equal(X(), H() @ Z() @ H())
 
 
 def test_t_gate():
-    t_gate = TGate()
-    assert isinstance(t_gate, PhaseGate), "TGate should be an instance of PhaseGate"
+    t_gate = T()
+    assert isinstance(t_gate, Phase), "TGate should be an instance of PhaseGate"
     assert t_gate.is_unitary(), "TGate should be unitary"
     assert t_gate.num_qubits() == 1, "TGate should operate on 1 qubit"
     assert not t_gate.is_multi_qubit(), "TGate should not be a multi-qubit gate"
@@ -58,13 +58,13 @@ def test_t_gate():
     assert not t_gate.is_clifford(), "TGate should not be a Clifford gate"
     assert hasattr(t_gate, "phi"), "TGate should have a phi attribute"
     # T = P(pi/4)
-    np.testing.assert_almost_equal(t_gate, PhaseGate(np.pi / 4))
+    np.testing.assert_almost_equal(t_gate, Phase(np.pi / 4))
 
 
 def test_rotation_gates():
     thetas = [0, np.pi / 2, np.pi, 2 * np.pi]
     for theta in thetas:
-        for GateClass in [RXGate, RYGate, RZGate]:
+        for GateClass in [RX, RY, RZ]:
             gate = GateClass(theta)
             assert gate.is_unitary(), f"{GateClass.__name__} with theta={theta} should be unitary"
             assert gate.num_qubits() == 1, f"{GateClass.__name__} should operate on 1 qubit"
@@ -75,7 +75,7 @@ def test_rotation_gates():
 
 def test_rotation_eigenvalues():
     theta = np.pi / 2
-    for GateClass in [RXGate, RYGate, RZGate]:
+    for GateClass in [RX, RY, RZ]:
         gate = GateClass(theta)
         eigenvalues = gate.eigenvalues()
         expected_eigenvalues = np.exp([1j * theta / 2, -1j * theta / 2])
@@ -87,7 +87,7 @@ def test_u3gate():
     for theta_x in thetas:
         for theta_y in thetas:
             for theta_z in thetas:
-                gate = U3Gate(theta_x, theta_y, theta_z)
+                gate = U3(theta_x, theta_y, theta_z)
                 assert gate.is_unitary(), f"U3Gate with thetas=({theta_x}, {theta_y}, {theta_z}) should be unitary"
                 assert gate.num_qubits() == 1, "U3Gate should operate on 1 qubit"
                 assert not gate.is_multi_qubit(), "U3Gate should not be a multi-qubit gate"
@@ -98,27 +98,27 @@ def test_u3gate():
 
 
 def test_standard_multi_qubit_gates():
-    for gate_class in [CXGate, CYGate, CZGate, CHGate, CSGate, CTGate, SWAPGate, CCXGate, CSwapGate]:
+    for gate_class in [CX, CY, CZ, CH, CS, CT, SWAP, CCX, CSwap]:
         gate = gate_class()
         assert gate.is_unitary()
         assert gate.num_qubits() >= 2
         assert gate.is_multi_qubit()
-        if gate.num_qubits() == 2 and not isinstance(gate, CTGate):
+        if gate.num_qubits() == 2 and not isinstance(gate, CT):
             assert gate.is_clifford(), f"{gate_class.__name__} should be a two-qubit Clifford gate"
 
-        cr_gate = CRGate(np.pi / 2)
+        cr_gate = CR(np.pi / 2)
         assert cr_gate.is_unitary()
         assert cr_gate.num_qubits() == 2
         assert cr_gate.is_multi_qubit()
-        np.testing.assert_array_equal(CRGate(np.pi) @ CRGate(-np.pi), IGate().kron(IGate()))
-        sym_ecr_gate = SymmetricECRGate(np.pi / 2)
+        np.testing.assert_array_equal(CR(np.pi) @ CR(-np.pi), I().kron(I()))
+        sym_ecr_gate = SymmetricECR(np.pi / 2)
         assert sym_ecr_gate.is_unitary()
         assert sym_ecr_gate.num_qubits() == 2
         assert sym_ecr_gate.is_multi_qubit()
-        np.testing.assert_array_equal(sym_ecr_gate @ sym_ecr_gate, IGate().kron(IGate()))
+        np.testing.assert_array_equal(sym_ecr_gate @ sym_ecr_gate, I().kron(I()))
         # ECR is its own inverse
         np.testing.assert_array_equal(np.linalg.inv(sym_ecr_gate), sym_ecr_gate)
-        asym_ecr_gate = AsymmetricECRGate(np.pi / 2, np.pi / 3)
+        asym_ecr_gate = AsymmetricECR(np.pi / 2, np.pi / 3)
         assert asym_ecr_gate.is_unitary()
         assert asym_ecr_gate.num_qubits() == 2
         assert asym_ecr_gate.is_multi_qubit()
@@ -126,11 +126,11 @@ def test_standard_multi_qubit_gates():
 
 
 def test_multi_pauli_gates():
-    XX, YY, ZZ, II = XGate().kron(XGate()), YGate().kron(YGate()), ZGate().kron(ZGate()), IGate().kron(IGate())
-    IX, IY, IZ = IGate().kron(XGate()), IGate().kron(YGate()), IGate().kron(ZGate())
-    XI, XY, XZ = XGate().kron(IGate()), XGate().kron(YGate()), XGate().kron(ZGate())
-    YX, YI, YZ = YGate().kron(XGate()), YGate().kron(IGate()), YGate().kron(ZGate())
-    ZX, ZY, ZI = ZGate().kron(XGate()), ZGate().kron(YGate()), ZGate().kron(IGate())
+    XX, YY, ZZ, II = X().kron(X()), Y().kron(Y()), Z().kron(Z()), I().kron(I())
+    IX, IY, IZ = I().kron(X()), I().kron(Y()), I().kron(Z())
+    XI, XY, XZ = X().kron(I()), X().kron(Y()), X().kron(Z())
+    YX, YI, YZ = Y().kron(X()), Y().kron(I()), Y().kron(Z())
+    ZX, ZY, ZI = Z().kron(X()), Z().kron(Y()), Z().kron(I())
     for gate in [XX, YY, ZZ, II, IX, IY, IZ, XI, XY, XZ, YX, YI, YZ, ZX, ZY, ZI]:
         assert gate.is_unitary(), f"{gate.__class__.__name__} should be unitary"
         assert gate.is_pauli(), f"{gate.__class__.__name__} should be a multi-qubit Pauli gate"
@@ -139,10 +139,10 @@ def test_multi_pauli_gates():
 
 def test_cphase_gate():
     theta = np.pi / 2
-    cphase = CPhaseGate(theta)
-    assert cphase.is_unitary(), "CPhaseGate should be unitary"
-    assert cphase.num_qubits() == 2, "CPhaseGate should operate on 2 qubits"
-    assert cphase.is_multi_qubit(), "CPhaseGate should be a multi-qubit gate"
+    cphase = CPhase(theta)
+    assert cphase.is_unitary(), "CPhase should be unitary"
+    assert cphase.num_qubits() == 2, "CPhase should operate on 2 qubits"
+    assert cphase.is_multi_qubit(), "CPhase should be a multi-qubit gate"
     eigenvalues, eigenvectors = np.linalg.eig(cphase)
     assert np.allclose(cphase @ eigenvectors[:, 0], eigenvalues[0] * eigenvectors[:, 0]), "Eigenvector calculation is incorrect"
     assert np.allclose(cphase @ eigenvectors[:, 1], eigenvalues[1] * eigenvectors[:, 1]), "Eigenvector calculation is incorrect"
@@ -150,15 +150,15 @@ def test_cphase_gate():
 
 def test_gate_commutation():
     theta = np.pi / 2
-    rx = RXGate(theta)
-    rz = RZGate(theta)
+    rx = RX(theta)
+    rz = RZ(theta)
     assert not np.allclose(rx @ rz, rz @ rx), "Rx and Rz should not commute"
 
 
 def test_inverse_gate():
     theta = np.pi / 2
-    rx = RXGate(theta)
-    rx_inv = RXGate(-theta)
+    rx = RX(theta)
+    rx_inv = RX(-theta)
     identity = rx @ rx_inv
     assert np.allclose(identity, np.eye(identity.shape[0])), "Rx and its inverse should result in the identity matrix"
 
@@ -188,20 +188,20 @@ def test_custom_gate_composition():
 
 
 def test_hermitian_gates():
-    hermitian_gates = [XGate(), YGate(), ZGate(), HGate(), CXGate(), CZGate(), SWAPGate(), CCXGate(), CSwapGate()]
+    hermitian_gates = [X(), Y(), Z(), H(), CX(), CZ(), SWAP(), CCX(), CSwap()]
     for gate in hermitian_gates:
         assert gate.is_unitary(), f"{gate.__class__.__name__} should be unitary"
         assert gate.is_hermitian(), f"{gate.__class__.__name__} should be Hermitian"
 
 
 def test_non_hermitian_gates():
-    non_hermitian_gates = [TGate(), SGate(), CPhaseGate(np.pi / 4), RXGate(np.pi / 2), RYGate(np.pi / 2), RZGate(np.pi / 2), U3Gate(np.pi / 2, np.pi / 2, np.pi / 2)]
+    non_hermitian_gates = [T(), S(), CPhase(np.pi / 4), RX(np.pi / 2), RY(np.pi / 2), RZ(np.pi / 2), U3(np.pi / 2, np.pi / 2, np.pi / 2)]
     for gate in non_hermitian_gates:
         assert not gate.is_hermitian(), f"{gate.__class__.__name__} should not be Hermitian"
 
 
 def test_sqrt():
-    gate = XGate()
+    gate = X()
     # Construct Sqrt(X) gate
     sqrt_x = gate.sqrt()
     assert sqrt_x.is_unitary()
@@ -214,8 +214,8 @@ def test_sqrt():
 
 
 def test_kron():
-    hgate = HGate()
-    igate = IGate()
+    hgate = H()
+    igate = I()
     h_i = hgate.kron(igate)
     np.testing.assert_array_almost_equal(h_i, 1 / np.sqrt(2) * np.array([[1, 0, 1, 0], [0, 1, 0, 1], [1, 0, -1, 0], [0, 1, 0, -1]]))
     np.testing.assert_array_almost_equal(h_i, np.kron(hgate, igate))
@@ -232,58 +232,50 @@ def test_kron():
 
 
 def test_kernel_density():
-    X = XGate()
-    Z = ZGate()
-
     # Orthogonal gates should have a zero kernel density
-    xz_kernel_density = X.kernel_density(Z)
+    xz_kernel_density = X().kernel_density(Z())
     assert isinstance(xz_kernel_density, complex)
     assert xz_kernel_density == 0j
 
     # I with I should have kernel density of 2
-    I = IGate()
-    ii_kernel_density = I.kernel_density(I)
+    ii_kernel_density = I().kernel_density(I())
     assert isinstance(ii_kernel_density, complex)
     assert ii_kernel_density == 2 + 0j
 
     # T with Z should have a kernel density of 0.2929-0.7071j
-    T = TGate()
-    tz_kernel_density = T.kernel_density(Z)
+    tz_kernel_density = T().kernel_density(Z())
     assert isinstance(tz_kernel_density, complex)
     assert np.isclose(tz_kernel_density, 0.2928932188134524 - 0.7071067811865475j)
 
 
 def test_hilbert_schmidt_inner_product():
     # Orthogonal gates should have a zero inner product
-    X = XGate()
-    Z = ZGate()
-    xz_inner_product = X.hilbert_schmidt_inner_product(Z)
+    xz_inner_product = X().hilbert_schmidt_inner_product(Z())
     assert isinstance(xz_inner_product, complex)
     assert xz_inner_product == 0j
 
     # I with I should have Hilbert-Schmidt inner product of 2
-    I = IGate()
-    ii_inner_product = I.hilbert_schmidt_inner_product(I)
+
+    ii_inner_product = I().hilbert_schmidt_inner_product(I())
     assert isinstance(ii_inner_product, complex)
     assert ii_inner_product == 2 + 0j
 
     # T with Z should have a Hilbert-Schmidt inner product of 0.2929+0.7071j
-    T = TGate()
-    tz_inner_product = T.hilbert_schmidt_inner_product(Z)
+    tz_inner_product = T().hilbert_schmidt_inner_product(Z())
     assert isinstance(tz_inner_product, complex)
     assert tz_inner_product == 0.2928932188134524 + 0.7071067811865475j
 
 
 def test_convert_endianness():
     # Hadamard
-    gate = HGate()
+    gate = H()
     little_endian_gate = gate.convert_endianness()
     # Little endian is the same as big endian
     expected_matrix = np.array([[1, 1], [1, -1]]) / np.sqrt(2)
     np.testing.assert_array_almost_equal(little_endian_gate, expected_matrix)
 
     # CNOT
-    gate = CXGate()
+    gate = CX()
     little_endian_gate = gate.convert_endianness()
     # Permuted matrix for little endian
     expected_matrix = np.array([[1, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0]])
@@ -292,13 +284,13 @@ def test_convert_endianness():
 
 def test_to_qiskit():
     # Hadamard
-    gate = HGate()
+    gate = H()
     qiskit_gate = gate.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.HGate)
     np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
 
     # CNOT
-    gate = CXGate()
+    gate = CX()
     qiskit_gate = gate.to_qiskit()
     assert isinstance(qiskit_gate, qiskit.circuit.library.CXGate)
     np.testing.assert_array_equal(gate.convert_endianness(), qiskit_gate.to_matrix())
@@ -325,12 +317,12 @@ def test_from_qiskit():
 
 
 def test_to_pennylane():
-    gate = XGate()
+    gate = X()
     pennylane_gate = gate.to_pennylane(wires=0)
     assert isinstance(pennylane_gate, qml.operation.Operation)
     np.testing.assert_array_equal(pennylane_gate.matrix(), gate)
 
-    gate = IGate()
+    gate = I()
     pennylane_gate = gate.to_pennylane(wires=0)
     assert isinstance(pennylane_gate, qml.operation.Operation)
     np.testing.assert_array_equal(pennylane_gate.matrix(), gate)
@@ -382,13 +374,13 @@ def test_from_pyquil():
 
 def test_to_qasm_single():
     # Simple H gate example
-    gate = HGate()
+    gate = H()
     qasm = gate.to_qasm([2])
     expected_qasm = "h q[2];"
     assert qasm == expected_qasm
 
     # U3
-    gate = U3Gate(np.pi / 2, np.pi / 2, np.pi / 2)
+    gate = U3(np.pi / 2, np.pi / 2, np.pi / 2)
     qasm = gate.to_qasm([0])
     expected_qasm = """rx(1.5707963267948966) q[0];\nry(1.5707963267948966) q[0];\nrz(1.5707963267948966) q[0];"""
     assert qasm == expected_qasm
@@ -396,13 +388,13 @@ def test_to_qasm_single():
 
 def test_to_qasm_multi():
     # CCX
-    gate = CCXGate()
+    gate = CCX()
     qasm = gate.to_qasm([0, 1, 2])
     expected_qasm = "ccx q[0], q[1], q[2];"
     assert qasm == expected_qasm
 
     # CCZ custom spec
-    gate = CCZGate()
+    gate = CCZ()
     qasm = gate.to_qasm([0, 1, 2])
     # H, CCX, H
     expected_qasm = """h q[2];\nccx q[0], q[1], q[2];\nh q[2];"""

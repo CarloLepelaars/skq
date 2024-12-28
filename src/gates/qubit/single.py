@@ -5,7 +5,7 @@ import pennylane as qml
 from src.gates.qubit.base import QubitGate
 
 
-class IGate(QubitGate):
+class I(QubitGate):
     """
     Identity gate:
     [[1, 0]
@@ -25,7 +25,7 @@ class IGate(QubitGate):
         return f"id q[{qubits[0]}];"
 
 
-class XGate(QubitGate):
+class X(QubitGate):
     """Pauli X (NOT) Gate."""
 
     def __new__(cls):
@@ -41,7 +41,7 @@ class XGate(QubitGate):
         return f"x q[{qubits[0]}];"
 
 
-class YGate(QubitGate):
+class Y(QubitGate):
     """Pauli Y gate."""
 
     def __new__(cls):
@@ -57,7 +57,7 @@ class YGate(QubitGate):
         return f"y q[{qubits[0]}];"
 
 
-class ZGate(QubitGate):
+class Z(QubitGate):
     """Pauli Z gate.
     Special case of a phase shift gate with phi = pi.
     """
@@ -75,7 +75,7 @@ class ZGate(QubitGate):
         return f"z q[{qubits[0]}];"
 
 
-class HGate(QubitGate):
+class H(QubitGate):
     """
     Hadamard gate. Used to create superposition.
     |0> -> (|0> + |1>) / sqrt(2)
@@ -95,7 +95,7 @@ class HGate(QubitGate):
         return f"h q[{qubits[0]}];"
 
 
-class PhaseGate(QubitGate):
+class Phase(QubitGate):
     """General phase shift gate.
     Special cases of phase gates:
     - S gate: phi = pi / 2
@@ -118,7 +118,7 @@ class PhaseGate(QubitGate):
         return f"U(0, 0, {self.phi}) q[{qubits[0]}];"
 
 
-class TGate(PhaseGate):
+class T(Phase):
     """T gate: phase shift gate with phi = pi / 4."""
 
     def __new__(cls):
@@ -135,7 +135,7 @@ class TGate(PhaseGate):
         return f"t q[{qubits[0]}];"
 
 
-class SGate(PhaseGate):
+class S(Phase):
     """S gate: phase shift gate with phi = pi / 2."""
 
     def __new__(cls):
@@ -152,7 +152,7 @@ class SGate(PhaseGate):
         return f"s q[{qubits[0]}];"
 
 
-class RXGate(QubitGate):
+class RX(QubitGate):
     """Generalized X rotation gate."""
 
     def __new__(cls, phi):
@@ -170,7 +170,7 @@ class RXGate(QubitGate):
         return f"rx({self.phi}) q[{qubits[0]}];"
 
 
-class RYGate(QubitGate):
+class RY(QubitGate):
     """Generalized Y rotation gate."""
 
     def __new__(cls, phi):
@@ -188,7 +188,7 @@ class RYGate(QubitGate):
         return f"ry({self.phi}) q[{qubits[0]}];"
 
 
-class RZGate(QubitGate):
+class RZ(QubitGate):
     """Generalized Z rotation gate."""
 
     def __new__(cls, phi):
@@ -206,7 +206,7 @@ class RZGate(QubitGate):
         return f"rz({self.phi}) q[{qubits[0]}];"
 
 
-class U3Gate(QubitGate):
+class U3(QubitGate):
     """
     Rotation around 3-axes. Single qubit gate.
     :param theta: Rotation angle around X-axis
@@ -216,9 +216,9 @@ class U3Gate(QubitGate):
 
     def __new__(cls, theta: float, phi: float, delta: float):
         # Rotation matrices
-        Rx = RXGate(theta)
-        Ry = RYGate(phi)
-        Rz = RZGate(delta)
+        Rx = RX(theta)
+        Ry = RY(phi)
+        Rz = RZ(delta)
         combined_matrix = Rz @ Ry @ Rx
 
         obj = super().__new__(cls, combined_matrix)

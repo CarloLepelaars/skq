@@ -12,13 +12,13 @@ def test_base_qupent_gate():
 
 
 def test_qupent_i_gate():
-    gate = QupentIGate()
+    gate = QupentI()
     state = np.array([1, 0, 0, 0, 0], dtype=complex)
     assert np.allclose(gate @ state, state), "I gate must not change the state."
 
 
 def test_qupent_x_gate():
-    gate = QupentXGate()
+    gate = QupentX()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0, 0], dtype=complex)
@@ -33,7 +33,7 @@ def test_qupent_x_gate():
 
 
 def test_qupent_z_gate():
-    gate = QupentZGate()
+    gate = QupentZ()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0, 0], dtype=complex)
@@ -48,7 +48,7 @@ def test_qupent_z_gate():
 
 
 def test_qupent_h_gate():
-    gate = QupentHGate()
+    gate = QupentH()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0, 0], dtype=complex)
@@ -70,7 +70,7 @@ def test_qupent_h_gate():
 
 
 def test_qupent_t_gate():
-    gate = QupentTGate()
+    gate = QupentT()
     zero_state = np.array([1, 0, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0, 0], dtype=complex)

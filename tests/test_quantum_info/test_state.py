@@ -5,7 +5,7 @@ import pennylane as qml
 
 from src.quantum_info.state import *
 from src.quantum_info import DensityMatrix
-from src.gates.qubit import IGate, XGate, YGate, ZGate
+from src.gates.qubit import I, X, Y, Z
 
 
 def test_statevector_initialization():
@@ -59,22 +59,22 @@ def test_conjugate_transpose():
 def test_expectation():
     # Pauli-Z on |0⟩
     state1 = Statevector(np.array([1, 0], dtype=complex))
-    expectation1 = state1.expectation(ZGate())
+    expectation1 = state1.expectation(Z())
     assert np.isclose(expectation1, 1.0), "Expectation value should be 1 for Pauli-Z on |0⟩"
 
     # Pauli-X on 1/√2(|0⟩ + |1⟩)
     state2 = Statevector(np.array([1 / np.sqrt(2), 1 / np.sqrt(2)], dtype=complex))
-    expectation2 = state2.expectation(XGate())
+    expectation2 = state2.expectation(X())
     assert np.isclose(expectation2, 1.0), "Expectation value should be 1 for Pauli-X on 1/√2(|0⟩ + |1⟩)"
 
     # Pauli-Y on 1/√2(|0⟩ + i|1⟩)
     state3 = Statevector(np.array([1 / np.sqrt(2), 1j / np.sqrt(2)], dtype=complex))
-    expectation3 = state3.expectation(YGate())
+    expectation3 = state3.expectation(Y())
     assert np.isclose(expectation3, 1.0), "Expectation value should be 1 for Pauli-Y on 1/√2(|0⟩ + i|1⟩)"
 
     # Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)
     state4 = Statevector(np.array([1 / np.sqrt(2), 0, 0, 1 / np.sqrt(2)], dtype=complex))
-    pauli_z_1st_qubit = np.kron(ZGate(), IGate())
+    pauli_z_1st_qubit = np.kron(Z(), I())
     expectation4 = state4.expectation(pauli_z_1st_qubit)
     assert np.isclose(expectation4, 0.0), "Expectation value should be 0 for Pauli-Z on the first qubit of 1/√2(|00⟩ + |11⟩)"
 
@@ -86,7 +86,7 @@ def test_expectation():
 
     # Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)
     state5 = Statevector(np.array([1 / np.sqrt(3), np.sqrt(2) / np.sqrt(3)], dtype=complex))
-    expectation5 = state5.expectation(ZGate())
+    expectation5 = state5.expectation(Z())
     assert np.isclose(expectation5, -1 / 3), "Wrong expectation value for Pauli-Z on |ψ⟩ = 1/√3(|0⟩ + √2|1⟩)"
 
     # Non-Hermitian operator give an error

@@ -1,18 +1,18 @@
 import numpy as np
 
-from src.gates.ququart.single import *
+from src.gates.qudit.single import *
 
 
-def test_base_ququart_gate():
-    gate = QuquartGate(np.eye(4, dtype=complex))
+def test_base_qudit_gate():
+    gate = QuditGate(np.eye(4, dtype=complex))
     assert gate.dtype == complex, "Gate must have complex dtype."
     assert gate.is_unitary(), "Gate must be unitary."
-    assert gate.num_ququarts() == 1, "Gate must involve 1 ququart."
-    assert not gate.is_multi_ququart(), "Gate must not involve multiple ququarts."
+    assert gate.num_qudits() == 1, "Gate must involve 1 qudit."
+    assert not gate.is_multi_qudit(), "Gate must not involve multiple qudits."
 
 
-def test_ququart_i_gate():
-    gate = QuquartIGate()
+def test_qudit_i_gate():
+    gate = QuditI()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0], dtype=complex)
@@ -24,8 +24,8 @@ def test_ququart_i_gate():
     assert np.allclose(gate @ three_state, three_state), "I gate must not change |3>."
 
 
-def test_ququart_x_gate():
-    gate = QuquartXGate()
+def test_qudit_x_gate():
+    gate = QuditX()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0], dtype=complex)
@@ -37,8 +37,8 @@ def test_ququart_x_gate():
     assert np.allclose(gate @ three_state, zero_state), "X gate must transform |3> to |0>."
 
 
-def test_ququart_z_gate():
-    gate = QuquartZGate()
+def test_qudit_z_gate():
+    gate = QuditZ()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0], dtype=complex)
@@ -50,8 +50,8 @@ def test_ququart_z_gate():
     assert np.allclose(gate @ three_state, [0, 0, 0, 0 - 1j])
 
 
-def test_ququart_h_gate():
-    gate = QuquartHGate()
+def test_qudit_h_gate():
+    gate = QuditH()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0], dtype=complex)
@@ -69,8 +69,8 @@ def test_ququart_h_gate():
     assert np.allclose(gate @ three_state, expected_three), "H gate transformation on |3> is incorrect."
 
 
-def test_ququart_t_gate():
-    gate = QuquartTGate()
+def test_qudit_t_gate():
+    gate = QuditT()
     zero_state = np.array([1, 0, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0, 0], dtype=complex)
     two_state = np.array([0, 0, 1, 0], dtype=complex)

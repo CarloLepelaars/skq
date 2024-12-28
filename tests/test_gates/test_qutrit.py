@@ -12,7 +12,7 @@ def test_base_qutrit_gate():
 
 
 def test_qutritxgate():
-    gate = QutritXGate()
+    gate = QutritX()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -23,7 +23,7 @@ def test_qutritxgate():
 
 
 def test_qutritygate():
-    gate = QutritYGate()
+    gate = QutritY()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -34,7 +34,7 @@ def test_qutritygate():
 
 
 def test_qutritzgate():
-    gate = QutritZGate()
+    gate = QutritZ()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -45,7 +45,7 @@ def test_qutritzgate():
 
 
 def test_qutrithgate():
-    gate = QutritHGate()
+    gate = QutritH()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -55,13 +55,13 @@ def test_qutrithgate():
     expected_one = np.array([1, np.exp(2j * np.pi / 3), np.exp(4j * np.pi / 3)]) / np.sqrt(3)
     expected_two = np.array([1, np.exp(4j * np.pi / 3), np.exp(2j * np.pi / 3)]) / np.sqrt(3)
 
-    assert np.allclose(gate @ zero_state, expected_zero), "QutritHGate transformation on |0> is incorrect."
-    assert np.allclose(gate @ one_state, expected_one), "QutritHGate transformation on |1> is incorrect."
-    assert np.allclose(gate @ two_state, expected_two), "QutritHGate transformation on |2> is incorrect."
+    assert np.allclose(gate @ zero_state, expected_zero), "QutritH transformation on |0> is incorrect."
+    assert np.allclose(gate @ one_state, expected_one), "QutritH transformation on |1> is incorrect."
+    assert np.allclose(gate @ two_state, expected_two), "QutritH transformation on |2> is incorrect."
 
 
 def test_qutrittgate():
-    gate = QutritTGate()
+    gate = QutritT()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -72,7 +72,7 @@ def test_qutrittgate():
 
 
 def test_qutritrgate():
-    gate = QutritRGate()
+    gate = QutritR()
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
     two_state = np.array([0, 0, 1], dtype=complex)
@@ -84,7 +84,7 @@ def test_qutritrgate():
 
 def test_qutrit_phase_gate():
     phi_0, phi_1, phi_2 = np.pi / 3, np.pi / 2, np.pi
-    gate = QutritPhaseGate(phi_0, phi_1, phi_2)
+    gate = QutritPhase(phi_0, phi_1, phi_2)
 
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
@@ -102,7 +102,7 @@ def test_qutrit_phase_gate():
 
 def test_qutrit_s_gate():
     # Special case of phase gate with phi_0=0, phi_1=2pi/3, phi_2=4pi/3
-    gate = QutritSGate()
+    gate = QutritS()
 
     zero_state = np.array([1, 0, 0], dtype=complex)
     one_state = np.array([0, 1, 0], dtype=complex)
@@ -119,7 +119,7 @@ def test_qutrit_s_gate():
 
 
 def test_qutrit_swap_gate():
-    swap_gate = QutritSWAPGate()
+    swap_gate = QutritSWAP()
     # |01>
     initial_state = np.zeros((9,), dtype=complex)
     initial_state[1] = 1
