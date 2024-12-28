@@ -5,8 +5,7 @@ from src.gates.base import Operator
 
 class Circuit(list):
     """Run multiple gates in sequence."""
-
-    def __call__(self, x):
+    def encodes(self, x):
         for gate in self:
             x = gate.encodes(x)
         return x
@@ -15,6 +14,9 @@ class Circuit(list):
         for gate in reversed(self):
             x = gate.decodes(x)
         return x
+    
+    def __call__(self, x):
+        return self.encodes(x)
 
 
 class Concat:
