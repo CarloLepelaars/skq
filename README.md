@@ -1,6 +1,6 @@
 # skq
 
-Quantum Components
+Scientific Toolkit for Quantum Computing
 
 ## Why SKQ?
 
