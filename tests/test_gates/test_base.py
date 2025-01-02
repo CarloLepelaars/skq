@@ -8,7 +8,7 @@ from src.gates.qubit import *
 def test_base_attrs():
     import src.gates.qubit as all_qubit_gates
     import src.gates.qutrit as all_qutrit_gates
-    import src.gates.qudit as all_ququart_gates
+    import src.gates.ququart as all_ququart_gates
     import src.gates.qupent as all_qupent_gates
 
     for module in [all_qubit_gates, all_qutrit_gates, all_ququart_gates, all_qupent_gates]:

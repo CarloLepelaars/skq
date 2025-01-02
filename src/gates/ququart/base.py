@@ -2,11 +2,11 @@ import numpy as np
 from src.gates.base import BaseGate
 
 
-class QuditGate(BaseGate):
+class QuquartGate(BaseGate):
     """
-    Base class for Qudit gates.
-    These are quantum systems with a basis of d states. |0>, |1>, |2>, ..., |d-1>.
-    Models spin-d/2 particles like baryons.
+    Base class for Ququart gates.
+    These are quantum systems with a basis of 4 states. |0>, |1>, |2>, |3>.
+    Models spin-1/2 particles like electrons.
     """
 
     def __new__(cls, input_array):

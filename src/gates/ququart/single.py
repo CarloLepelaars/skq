@@ -1,42 +1,42 @@
 import numpy as np
 
-from src.gates.qudit.base import QuditGate
+from src.gates.ququart.base import QuquartGate
 
 
-class QuditI(QuditGate):
-    """Identity gate for qudits."""
+class QuquartI(QuquartGate):
+    """Identity gate for ququarts."""
 
     def __new__(cls):
         obj = super().__new__(cls, np.eye(4))
         return obj
 
 
-class QuditX(QuditGate):
-    """X gate for qudits."""
+class QuquartX(QuquartGate):
+    """X gate for ququarts."""
 
     def __new__(cls):
         obj = super().__new__(cls, np.array([[0, 0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]]))
         return obj
 
 
-class QuditZ(QuditGate):
-    """Z gate for qudits."""
+class QuquartZ(QuquartGate):
+    """Z gate for ququarts."""
 
     def __new__(cls):
         obj = super().__new__(cls, np.array([[1, 0, 0, 0], [0, 1j, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1j]]))
         return obj
 
 
-class QuditH(QuditGate):
-    """Hadamard gate for qudits."""
+class QuquartH(QuquartGate):
+    """Hadamard gate for ququarts."""
 
     def __new__(cls):
         obj = super().__new__(cls, np.array([[1, 1, 1, 1], [1, 1j, -1, -1j], [1, -1, 1, -1], [1, -1j, -1, 1j]]) / 2)
         return obj
 
 
-class QuditT(QuditGate):
-    """T gate for qudits."""
+class QuquartT(QuquartGate):
+    """T gate for ququarts."""
 
     def __new__(cls):
         obj = super().__new__(cls, np.diag([1, np.exp(1j * np.pi / 4), 1, 1]))
