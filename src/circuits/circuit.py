@@ -29,6 +29,8 @@ class Concat:
         assert len(gates) > 1, "Concat must have at least 2 gates."
         assert all(isinstance(g, Operator) for g in gates), "All gates must be instances of Operator."
         self.gates = gates
+        self.encoding_matrix = np.kron(*[g for g in gates])
+        self.decoding_matrix = self.encoding_matrix.conj().T
 
     # Concatenate 2 or more gates
     def encodes(self, x: np.ndarray) -> np.ndarray:
@@ -38,7 +40,7 @@ class Concat:
         :param x: Quantum state to encode.
         :return: Quantum state after encoding.
         """
-        return x @ np.kron(*[g for g in self.gates])
+        return x @ self.encoding_matrix
 
     def decodes(self, x: np.ndarray) -> np.ndarray:
         """
@@ -47,9 +49,7 @@ class Concat:
         :param x: Quantum state to decode.
         :return: Quantum state after decoding.
         """
-        for g in reversed(self.gates):
-            x = x @ np.kron(g.conj().T, np.eye(len(x) // g.shape[0]))
-        return x
+        return x @ self.decoding_matrix
 
     def __call__(self, x):
         return self.encodes(x)
