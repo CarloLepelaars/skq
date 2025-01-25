@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.gates.ququart.single import *
+from skq.gates.ququart.single import *
 
 
 def test_base_ququart_gate():

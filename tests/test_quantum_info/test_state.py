@@ -3,9 +3,9 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.quantum_info.state import *
-from src.quantum_info import DensityMatrix
-from src.gates.qubit import I, X, Y, Z
+from skq.quantum_info.state import *
+from skq.quantum_info import DensityMatrix
+from skq.gates.qubit import I, X, Y, Z
 
 
 def test_statevector_initialization():

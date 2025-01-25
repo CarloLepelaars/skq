@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.gates.qutrit.base import QutritGate
+from .base import QutritGate
 
 
 class QutritI(QutritGate):
