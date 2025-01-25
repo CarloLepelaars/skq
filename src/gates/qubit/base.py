@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 import pennylane as qml
 
-from src.gates.base import BaseGate
+from ..base import BaseGate
 
 
 # I, X, Y, Z Pauli matrices

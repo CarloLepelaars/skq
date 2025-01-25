@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.gates.qubit.base import QubitGate
+from .base import QubitGate
 
 
 class I(QubitGate):
