@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.gates.qupent.base import QupentGate
+from .base import QupentGate
 
 
 class QupentI(QupentGate):

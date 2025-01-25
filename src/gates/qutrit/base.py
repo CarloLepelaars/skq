@@ -2,8 +2,8 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.gates.base import BaseGate
-from src.gates.qubit.base import CustomQubitGate
+from ..base import BaseGate
+from ..qubit.base import CustomQubitGate
 
 
 class QutritGate(BaseGate):

@@ -1,9 +1,10 @@
 import pytest
 import qiskit
+import pyquil
 import numpy as np
 import pennylane as qml
 
-from skq.gates.qubit import *
+from src.gates.qubit import *
 
 
 def test_base_gate():

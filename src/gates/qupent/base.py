@@ -1,5 +1,5 @@
 import numpy as np
-from src.gates.base import BaseGate
+from ..base import BaseGate
 
 
 class QupentGate(BaseGate):

@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.gates.ququart.base import QuquartGate
+from .base import QuquartGate
 
 
 class QuquartI(QuquartGate):

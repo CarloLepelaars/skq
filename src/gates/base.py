@@ -1,6 +1,5 @@
 import numpy as np
-
-from src.base import Operator
+from ..base import Operator
 
 
 class BaseGate(Operator):

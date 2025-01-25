@@ -1,6 +1,5 @@
 import numpy as np
-
-from skq.gates.qupent import *
+from src.gates.qupent import *
 
 
 def test_base_qupent_gate():
