@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from src.quantum_info import HadamardMatrix, generate_hadamard_matrix
+
+from skq.quantum_info import HadamardMatrix, generate_hadamard_matrix
 
 
 def test_hadamard_basic_properties():

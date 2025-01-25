@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.gates.base import Operator
+from ..base import Operator
 
 
 class Circuit(list):

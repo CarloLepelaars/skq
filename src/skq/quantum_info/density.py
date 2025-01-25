@@ -3,9 +3,9 @@ import numpy as np
 import pennylane as qml
 from scipy.linalg import expm
 
-from src.base import HermitianOperator
-from src.constants import BOLTZMANN_CONSTANT
-from src.gates.qubit import X, Y, Z
+from ..base import HermitianOperator
+from ..constants import BOLTZMANN_CONSTANT
+from ..gates.qubit import X, Y, Z
 
 
 class DensityMatrix(HermitianOperator):

@@ -3,7 +3,7 @@ import numpy as np
 import pennylane as qml
 from scipy.linalg import svd
 
-from src.quantum_info.density import DensityMatrix
+from ..quantum_info.density import DensityMatrix
 
 
 class Statevector(np.ndarray):

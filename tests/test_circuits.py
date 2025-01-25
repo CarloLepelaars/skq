@@ -1,8 +1,8 @@
 import numpy as np
 
-from src.circuits.circuit import Circuit, Concat
-from src.circuits.entangled_states import BellStates
-from src.gates.qubit import H, I
+from skq.circuits.circuit import Circuit, Concat
+from skq.circuits.entangled_states import BellStates
+from skq.gates.qubit import H, I
 
 
 def test_circuit_basic_operation():

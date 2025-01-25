@@ -1,5 +1,5 @@
-from src.gates.qubit import X, H, Z, CX, I
-from src.circuits.circuit import Circuit, Concat
+from ..gates.qubit import X, H, Z, CX, I
+from .circuit import Circuit, Concat
 
 
 class BellStates:

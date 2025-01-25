@@ -1,7 +1,7 @@
 import numpy as np
 from itertools import permutations, product
 
-from src.base import Operator
+from ..base import Operator
 
 
 class HadamardMatrix(Operator):

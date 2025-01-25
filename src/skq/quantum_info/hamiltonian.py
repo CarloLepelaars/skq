@@ -3,8 +3,8 @@ import numpy as np
 import scipy.linalg
 import pennylane as qml
 
-from src.base import HermitianOperator
-from src.gates.qubit import X, Z, I
+from ..base import HermitianOperator
+from ..gates.qubit import X, Z, I
 
 
 class Hamiltonian(HermitianOperator):

@@ -2,9 +2,9 @@ import qiskit
 import numpy as np
 from scipy.linalg import sqrtm
 
-from src.gates.qubit import I, X, Y, Z
-from src.quantum_info.density import DensityMatrix
-from src.quantum_info.superoperator import SuperOperator
+from skq.gates.qubit import I, X, Y, Z
+from skq.quantum_info.density import DensityMatrix
+from skq.quantum_info.superoperator import SuperOperator
 
 
 class QuantumChannel(SuperOperator):

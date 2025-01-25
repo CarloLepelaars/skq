@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.gates.base import BaseGate
+from .base import BaseGate
 
 
 class GlobalPhase(BaseGate):

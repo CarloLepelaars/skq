@@ -2,15 +2,15 @@ import inspect
 import pytest
 import numpy as np
 
-from src.gates.base import BaseGate
-from src.gates.qubit import *
+from skq.gates.base import BaseGate
+from skq.gates.qubit import *
 
 
 def test_base_attrs():
-    import src.gates.qubit as all_qubit_gates
-    import src.gates.qutrit as all_qutrit_gates
-    import src.gates.ququart as all_ququart_gates
-    import src.gates.qupent as all_qupent_gates
+    import skq.gates.qubit as all_qubit_gates
+    import skq.gates.qutrit as all_qutrit_gates
+    import skq.gates.ququart as all_ququart_gates
+    import skq.gates.qupent as all_qupent_gates
 
     for module in [all_qubit_gates, all_qutrit_gates, all_ququart_gates, all_qupent_gates]:
         all_objs = [obj for _, obj in inspect.getmembers(module)]

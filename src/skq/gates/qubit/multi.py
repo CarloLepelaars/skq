@@ -2,9 +2,9 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.gates.qubit.base import QubitGate
-from src.gates.qubit.single import X, Y, Z
-from src.quantum_info.state import Statevector
+from .base import QubitGate
+from .single import X, Y, Z
+from ...quantum_info.state import Statevector
 
 
 class PhaseOracle(QubitGate):

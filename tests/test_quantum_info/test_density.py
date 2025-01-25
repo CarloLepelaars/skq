@@ -2,7 +2,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.quantum_info import Statevector, DensityMatrix, GibbsState
+from skq.quantum_info import Statevector, DensityMatrix, GibbsState
 
 
 def test_zero_and_one_density_matrix():

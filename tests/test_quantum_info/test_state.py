@@ -3,10 +3,10 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.quantum_info import Statevector
-from src.quantum_info.density import DensityMatrix
-from src.quantum_info.state import PhiPlusState, PhiMinusState, PsiPlusState, PsiMinusState, GHZState, WState
-from src.gates.qubit import I, X, Y, Z
+from skq.quantum_info import Statevector
+from skq.quantum_info.density import DensityMatrix
+from skq.quantum_info.state import PhiPlusState, PhiMinusState, PsiPlusState, PsiMinusState, GHZState, WState
+from skq.gates.qubit import I, X, Y, Z
 
 
 def test_statevector_initialization():

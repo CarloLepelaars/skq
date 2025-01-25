@@ -3,7 +3,7 @@ import qiskit
 import numpy as np
 import pennylane as qml
 
-from src.gates.global_phase import *
+from skq.gates.global_phase import *
 
 
 def test_base_gate():
