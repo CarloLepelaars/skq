@@ -1,7 +1,6 @@
 import pytest
 import qiskit
 import numpy as np
-import pennylane as qml
 
 from skq.quantum_info import Statevector
 from skq.quantum_info.density import DensityMatrix

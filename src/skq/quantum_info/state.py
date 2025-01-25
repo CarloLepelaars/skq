@@ -1,6 +1,5 @@
 import qiskit
 import numpy as np
-import pennylane as qml
 from scipy.linalg import svd
 
 from ..quantum_info.density import DensityMatrix
