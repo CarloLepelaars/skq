@@ -2,7 +2,7 @@
 name = "skq"
 version = "0.1.1"
 description = "Scientific Toolkit for Quantum Computing"
-license = {text = "Apache-2.0"}
+license = {file = "LICENSE"}
 readme = "README.md"
 authors = [
     {name = "Carlo Lepelaars", email = "info@carlolepelaars.nl"},
@@ -39,7 +39,3 @@ select = ["E", "F", "I"]
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = ["skq"]
-package-dir = {"skq" = "src"}
