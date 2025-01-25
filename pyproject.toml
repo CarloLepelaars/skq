@@ -1,6 +1,6 @@
 [project]
 name = "skq"
-version = "0.1.1"
+version = "0.1.2"
 description = "Scientific Toolkit for Quantum Computing"
 license = {text = "Apache-2.0"}
 readme = "README.md"
@@ -39,7 +39,3 @@ select = ["E", "F", "I"]
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = ["skq"]
