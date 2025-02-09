@@ -48,4 +48,5 @@ jobs:
 
       - name: Install built wheel
         run: |
-          uv pip install dist/*.whl[all]
+          WHEEL_FILE=$(ls dist/*.whl)
+          uv pip install "$WHEEL_FILE[all]"
