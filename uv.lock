@@ -1194,7 +1194,7 @@ wheels = [
 
 [[package]]
 name = "skq"
-version = "0.1.2"
+version = "0.1.4"
 source = { editable = "." }
 dependencies = [
     { name = "matplotlib" },
@@ -1218,7 +1218,7 @@ dev = [
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.9.1" },
     { name = "nbformat", specifier = ">=5.10.4" },
-    { name = "numpy", specifier = ">=1.21,<2.0" },
+    { name = "numpy", specifier = "<=2.0.2" },
     { name = "pennylane", specifier = ">=0.37.0" },
     { name = "plotly", specifier = ">=5.22.0" },
     { name = "pylatexenc", specifier = ">=2.10" },
