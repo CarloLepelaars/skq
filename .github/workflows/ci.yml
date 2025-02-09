@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install 'setuptools[pkg_resources]'
-          uv pip install -e ".[dev]"
+          uv pip install -e ".[dev,all]"
 
       - name: Run tests
         run: |
@@ -48,4 +48,4 @@ jobs:
 
       - name: Install built wheel
         run: |
-          uv pip install dist/*.whl
+          uv pip install dist/*.whl[all]
