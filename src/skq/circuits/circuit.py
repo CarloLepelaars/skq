@@ -20,9 +20,9 @@ class Circuit(list):
 
     def __call__(self, x):
         return self.encodes(x)
-    
+
     def convert(self, total_qubits: int, framework="qiskit"):
-        """ Convert the circuit to a given framework.
+        """Convert the circuit to a given framework.
         :param framework: Framework to convert to.
         :param total_qubits: Total number of qubits in the circuit.
         :return: Converted circuit.
@@ -31,6 +31,7 @@ class Circuit(list):
             return QiskitConverter().convert(self, total_qubits)
         else:
             raise NotImplementedError(f"Conversion to framework '{framework}' is not supported.")
+
 
 class Concat:
     """
@@ -69,7 +70,8 @@ class Concat:
 
 
 class QiskitConverter:
-    """ Convert a skq Circuit into a Qiskit QuantumCircuit. """
+    """Convert a skq Circuit into a Qiskit QuantumCircuit."""
+
     def convert(self, circuit: Circuit, total_qubits: int) -> QuantumCircuit:
         qc = QuantumCircuit(total_qubits)
         for gate in circuit:

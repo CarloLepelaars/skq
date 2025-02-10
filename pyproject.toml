@@ -1,6 +1,6 @@
 [project]
 name = "skq"
-version = "0.1.7"
+version = "0.1.8"
 description = "Scientific Toolkit for Quantum Computing"
 readme = "README.md"
 authors = [
