@@ -26,7 +26,7 @@ NOTE: This library is developed for educational purposes. While we strive for co
 pip install skq
 ```
 
-The default `skq` installation contains conversion to `qiskit`. PennyLane and PyQuil support can be installed as optional dependencies.
+The default `skq` installation contains conversion to `qiskit`. PennyLane support can be installed as an optional dependency.
 
 ### All backends
 ```bash
@@ -36,9 +36,4 @@ pip install skq[all]
 ### PennyLane
 ```bash
 pip install skq[pennylane]
-```
-
-### PyQuil
-```bash
-pip install skq[pyquil]
 ```

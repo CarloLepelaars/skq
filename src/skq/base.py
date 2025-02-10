@@ -1,4 +1,3 @@
-import pyquil
 import qiskit
 import numpy as np
 import pennylane as qml
@@ -132,18 +131,6 @@ class Operator(np.ndarray):
         :return: scikit-q Operator
         """
         raise NotImplementedError(f"Conversion from PennyLane is not implemented for {self.__class__.__name__}.")
-
-    def to_pyquil(self) -> pyquil.gates.Gate:
-        """Convert operator to a PyQuil gate."""
-        raise NotImplementedError(f"Conversion to PyQuil is not implemented for {self.__class__.__name__}.")
-
-    def from_pyquil(self, pyquil_operator: pyquil.gates.Gate) -> "Operator":
-        """
-        Convert a PyQuil gate to scikit-q Operator.
-        :param pyquil_operator: PyQuil object.
-        :return: scikit-q Operator
-        """
-        raise NotImplementedError(f"Conversion from PyQuil is not implemented for {self.__class__.__name__}.")
 
     def __call__(self, other: np.ndarray) -> np.ndarray:
         """Call the operator on a quantum state."""

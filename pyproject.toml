@@ -25,12 +25,8 @@ dev = [
 pennylane = [
     "pennylane>=0.37.0",
 ]
-pyquil = [
-    "pyquil>=4.14.0",
-]
 all = [
     "pennylane>=0.37.0",
-    "pyquil>=4.14.0",
 ]
 
 [tool.ruff]
