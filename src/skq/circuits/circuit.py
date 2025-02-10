@@ -5,6 +5,7 @@ from ..base import Operator
 
 class Circuit(list):
     """Run multiple gates in sequence."""
+
     def encodes(self, x):
         for gate in self:
             x = gate.encodes(x)
@@ -14,7 +15,7 @@ class Circuit(list):
         for gate in reversed(self):
             x = gate.decodes(x)
         return x
-    
+
     def __call__(self, x):
         return self.encodes(x)
 

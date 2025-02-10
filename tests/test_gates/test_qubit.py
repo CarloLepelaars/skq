@@ -337,6 +337,7 @@ def test_from_pennylane():
     assert gate.is_pauli()
     assert gate.is_clifford()
 
+
 def test_to_qasm_single():
     # Simple H gate example
     gate = H()
