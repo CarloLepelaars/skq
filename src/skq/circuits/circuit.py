@@ -1,4 +1,6 @@
 import numpy as np
+from qiskit import QuantumCircuit
+
 
 from ..base import Operator
 
@@ -18,7 +20,17 @@ class Circuit(list):
 
     def __call__(self, x):
         return self.encodes(x)
-
+    
+    def convert(self, total_qubits: int, framework="qiskit"):
+        """ Convert the circuit to a given framework.
+        :param framework: Framework to convert to.
+        :param total_qubits: Total number of qubits in the circuit.
+        :return: Converted circuit.
+        """
+        if framework == "qiskit":
+            return QiskitConverter().convert(self, total_qubits)
+        else:
+            raise NotImplementedError(f"Conversion to framework '{framework}' is not supported.")
 
 class Concat:
     """
@@ -54,3 +66,28 @@ class Concat:
 
     def __call__(self, x):
         return self.encodes(x)
+
+
+class QiskitConverter:
+    """ Convert a skq Circuit into a Qiskit QuantumCircuit. """
+    def convert(self, circuit: Circuit, total_qubits: int) -> QuantumCircuit:
+        qc = QuantumCircuit(total_qubits)
+        for gate in circuit:
+            if isinstance(gate, Concat):
+                for i, sub_gate in enumerate(gate.gates):
+                    if hasattr(sub_gate, "to_qiskit"):
+                        qgate = sub_gate.to_qiskit()
+                        qc.append(qgate, [i])
+                    else:
+                        raise ValueError(f"Gate {sub_gate.__class__.__name__} does not implement to_qiskit().")
+            else:
+                if hasattr(gate, "to_qiskit"):
+                    qgate = gate.to_qiskit()
+                    n = gate.num_qubits() if hasattr(gate, "num_qubits") else 1
+                    if n == 1:
+                        qc.append(qgate, [0])
+                    else:
+                        qc.append(qgate, list(range(n)))
+                else:
+                    raise ValueError(f"Gate {gate.__class__.__name__} does not implement to_qiskit().")
+        return qc

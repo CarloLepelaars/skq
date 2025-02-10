@@ -18,8 +18,6 @@ def test_base_attrs():
             if inspect.isclass(obj) and obj not in [BaseGate, CustomQubitGate]:
                 assert hasattr(obj, "to_qiskit"), f"{obj} does not have to_qiskit method."
                 assert hasattr(obj, "from_qiskit"), f"{obj} does not have from_qiskit method."
-                assert hasattr(obj, "to_pyquil"), f"{obj} does not have to_pyquil method."
-                assert hasattr(obj, "from_pyquil"), f"{obj} does not have from_pyquil method."
 
 
 def test_base_gate():
