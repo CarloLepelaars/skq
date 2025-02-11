@@ -78,6 +78,7 @@ class Concat:
     def __call__(self, x):
         return self.encodes(x)
 
+
 def flatten_circuit(circuit: Circuit) -> list:
     """Recursively flatten a circuit so that Concat gates are replaced by their components."""
     flat = []
@@ -88,13 +89,11 @@ def flatten_circuit(circuit: Circuit) -> list:
             flat.append(gate)
     return flat
 
+
 def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
     flat_gates = flatten_circuit(circuit)
-    qc = QuantumCircuit(
-        circuit.num_qubits, 
-        circuit.num_qubits if any(isinstance(g, Measure) for g in flat_gates) else 0
-    )
+    qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in flat_gates) else 0)
     for gate in flat_gates:
         if isinstance(gate, Measure):
             for q in range(qc.num_qubits):
@@ -109,10 +108,11 @@ def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
     flat_gates = flatten_circuit(circuit)
+
     def generate_qasm(gate):
         if isinstance(gate, I):
             return None
         qubits = list(range(circuit.num_qubits)) if isinstance(gate, Measure) else list(range(gate.num_qubits))
         return gate.to_qasm(qubits)
-    
+
     return "\n".join(line for line in (generate_qasm(g) for g in flat_gates) if line)
