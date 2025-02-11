@@ -17,6 +17,11 @@ class DensityMatrix(HermitianOperator):
         assert obj.trace_equal_to_one(), "Density matrix must have trace equal to one. Normalize to unit trace if you want to use this matrix as a DensityMatrix."
         return obj
 
+    @property
+    def num_qubits(self) -> int:
+        """Number of qubits in the density matrix."""
+        return int(np.log2(len(self)))
+
     def is_positive_semidefinite(self):
         """Matrix is positive semidefinite."""
         eigenvalues = np.linalg.eigvalsh(self)
@@ -38,13 +43,9 @@ class DensityMatrix(HermitianOperator):
         """Probabilities of all possible state measurements."""
         return np.diag(self).real
 
-    def num_qubits(self) -> int:
-        """Number of qubits in the density matrix."""
-        return int(np.log2(len(self)))
-
     def is_multi_qubit(self) -> bool:
         """Check if the density matrix represents a multi-qubit state."""
-        return self.num_qubits() > 1
+        return self.num_qubits > 1
 
     def trace_norm(self) -> float:
         """Trace norm of the density matrix."""
@@ -57,7 +58,7 @@ class DensityMatrix(HermitianOperator):
 
     def bloch_vector(self) -> np.ndarray:
         """Bloch vector of the density matrix."""
-        if self.num_qubits() > 1:
+        if self.num_qubits > 1:
             raise NotImplementedError("Bloch vector is not yet implemented for multi-qubit states.")
 
         # Bloch vector components
@@ -113,7 +114,7 @@ class DensityMatrix(HermitianOperator):
         :param wires: List of wires to apply the density matrix to
         :return: PennyLane QubitDensityMatrix object
         """
-        wires = wires if wires is not None else range(self.num_qubits())
+        wires = wires if wires is not None else range(self.num_qubits)
         return qml.QubitDensityMatrix(self, wires=wires)
 
     @staticmethod

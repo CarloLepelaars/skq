@@ -16,7 +16,7 @@ class PhaseOracle(QubitGate):
 
     def __new__(cls, target_state: np.ndarray):
         state = Statevector(target_state)
-        n_qubits = state.num_qubits()
+        n_qubits = state.num_qubits
         identity = np.eye(2**n_qubits)
         oracle_matrix = identity - 2 * np.outer(target_state, target_state.conj())
         return super().__new__(cls, oracle_matrix)

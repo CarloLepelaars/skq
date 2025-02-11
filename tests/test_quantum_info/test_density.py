@@ -11,7 +11,7 @@ def test_zero_and_one_density_matrix():
     zero_density_matrix = zero_state.density_matrix()
     assert isinstance(zero_density_matrix, DensityMatrix)
     assert zero_density_matrix.is_pure()
-    assert zero_density_matrix.num_qubits() == 1
+    assert zero_density_matrix.num_qubits == 1
     assert not zero_density_matrix.is_multi_qubit()
     assert zero_density_matrix.is_hermitian()
     assert zero_density_matrix.is_positive_semidefinite()
@@ -43,7 +43,7 @@ def test_density_mixed_state():
     assert not mixed_density_matrix.is_pure()
     assert np.allclose(mixed_density_matrix, np.array([[0.5, 0], [0, 0.5]]))
     assert np.allclose(mixed_density_matrix.probabilities(), [0.5, 0.5])
-    assert mixed_density_matrix.num_qubits() == 1
+    assert mixed_density_matrix.num_qubits == 1
     assert np.allclose(mixed_density_matrix.bloch_vector(), np.array([0, 0, 0]))
 
     assert np.isclose(mixed_density_matrix.entropy(), np.log(2))

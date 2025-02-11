@@ -6,7 +6,11 @@ from ..base import Operator
 
 
 class Circuit(list):
-    """Run multiple gates in sequence."""
+    """Run multiple qubit gates in sequence."""
+
+    @property
+    def num_qubits(self) -> int:
+        return max(g.num_qubits for g in self)
 
     def encodes(self, x):
         for gate in self:
@@ -21,21 +25,21 @@ class Circuit(list):
     def __call__(self, x):
         return self.encodes(x)
 
-    def convert(self, total_qubits: int, framework="qiskit"):
+    def convert(self, framework="qiskit"):
         """Convert the circuit to a given framework.
         :param framework: Framework to convert to.
-        :param total_qubits: Total number of qubits in the circuit.
-        :return: Converted circuit.
+        :return: Converter Circuit object.
+        For Qiskit -> QuantumCircuit object.
+        For QASM -> OpenQASM string.
         """
-        if framework == "qiskit":
-            return QiskitConverter().convert(self, total_qubits)
-        else:
-            raise NotImplementedError(f"Conversion to framework '{framework}' is not supported.")
+        converter_mapping = {"qiskit": convert_to_qiskit, "qasm": convert_to_qasm}
+        assert framework in converter_mapping, f"Invalid framework. Supported frameworks: {converter_mapping.keys()}."
+        return converter_mapping[framework](self)
 
 
 class Concat:
     """
-    Combine multiple gates into a single gate.
+    Combine multiple qubit gates into a single gate.
     :param gates: List of gates to concatenate.
     """
 
@@ -44,6 +48,7 @@ class Concat:
         assert all(isinstance(g, Operator) for g in gates), "All gates must be instances of Operator."
         self.gates = gates
         self.encoding_matrix = np.kron(*[g for g in gates])
+        self.num_qubits = sum(g.num_qubits for g in gates)
 
     def encodes(self, x: np.ndarray) -> np.ndarray:
         """
@@ -69,27 +74,27 @@ class Concat:
         return self.encodes(x)
 
 
-class QiskitConverter:
+def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
+    qc = QuantumCircuit(circuit.num_qubits)
+    for gate in circuit:
+        if isinstance(gate, Concat):
+            for i, sub_gate in enumerate(gate.gates):
+                qgate = sub_gate.to_qiskit()
+                qc.append(qgate, [i])
+        else:
+            qgate = gate.to_qiskit()
+            qc.append(qgate, list(range(gate.num_qubits)))
+    return qc
 
-    def convert(self, circuit: Circuit, total_qubits: int) -> QuantumCircuit:
-        qc = QuantumCircuit(total_qubits)
-        for gate in circuit:
-            if isinstance(gate, Concat):
-                for i, sub_gate in enumerate(gate.gates):
-                    if hasattr(sub_gate, "to_qiskit"):
-                        qgate = sub_gate.to_qiskit()
-                        qc.append(qgate, [i])
-                    else:
-                        raise ValueError(f"Gate {sub_gate.__class__.__name__} does not implement to_qiskit().")
-            else:
-                if hasattr(gate, "to_qiskit"):
-                    qgate = gate.to_qiskit()
-                    n = gate.num_qubits() if hasattr(gate, "num_qubits") else 1
-                    if n == 1:
-                        qc.append(qgate, [0])
-                    else:
-                        qc.append(qgate, list(range(n)))
-                else:
-                    raise ValueError(f"Gate {gate.__class__.__name__} does not implement to_qiskit().")
-        return qc
+
+def convert_to_qasm(circuit: Circuit) -> str:
+    """Convert a skq Circuit into an OpenQASM string."""
+    qasm_lines = []
+    for gate in circuit:
+        if isinstance(gate, Concat):
+            for i, sub_gate in enumerate(gate.gates):
+                qasm_lines.append(sub_gate.to_qasm([i]))
+        else:
+            qasm_lines.append(gate.to_qasm(list(range(gate.num_qubits))))
+    return "\n".join(qasm_lines)

@@ -41,7 +41,7 @@ def test_bell_state_omega_plus():
 def test_convert_single_gate():
     """Conversion of a circuit with a single gate (H) into a Qiskit circuit."""
     circuit = Circuit([H()])
-    qc = circuit.convert(total_qubits=1, framework="qiskit")
+    qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 1, "Expected 1 qubit in the Qiskit circuit."
     assert len(qc.data) == 1, "Expected a single instruction in the Qiskit circuit."
     instr = qc.data[0].operation
@@ -51,7 +51,7 @@ def test_convert_single_gate():
 def test_convert_concat_gate():
     """Conversion of a circuit with a Concat gate, here combining two I (identity) gates."""
     circuit = Circuit([Concat([H(), I()])])
-    qc = circuit.convert(total_qubits=2, framework="qiskit")
+    qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 2, "Expected 2 qubits in the Qiskit circuit from Concat."
     assert len(qc.data) == 2, "Expected 2 instructions from the Concat gate."
     for datum in qc.data:
@@ -63,7 +63,7 @@ def test_convert_bell_state():
     """Conversion of a Bell state circuit to Qiskit."""
     bell = BellStates()
     circuit = bell.get_bell_state(1)
-    qc = circuit.convert(total_qubits=2, framework="qiskit")
+    qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 2, "Expected Bell state circuit to operate on 2 qubits."
     qc_matrix = QiskitOperator(qc).data
     initial_state = np.array([1, 0, 0, 0], dtype=complex)
@@ -79,17 +79,83 @@ def test_convert_error_for_missing_to_qiskit():
         def __new__(cls, matrix):
             return super().__new__(cls, matrix)
 
+        @property
+        def num_qubits(self) -> int:
+            return 1
+
     dummy_gate = DummyGate(np.eye(2))
     circuit = Circuit([dummy_gate])
     with pytest.raises(NotImplementedError):
-        circuit.convert(total_qubits=1, framework="qiskit")
+        circuit.convert(framework="qiskit")
+
+
+def test_qasm_convert_single_gate():
+    """Test conversion of a circuit with a single gate (H) into a QASM string."""
+    circuit = Circuit([H()])
+    qasm = circuit.convert(framework="qasm")
+    # For a single H gate, the converter calls H.to_qasm([0]) so we expect "h q[0];"
+    expected = "h q[0];"
+    assert qasm == expected
+
+
+def test_qasm_convert_concat_gate():
+    """Test conversion of a circuit with a Concat gate combining H and I into a QASM string."""
+    concat_gate = Concat([H(), I()])
+    circuit = Circuit([concat_gate])
+    qasm = circuit.convert(framework="qasm")
+    # For a Concat, each sub-gate is converted with its own index.
+    # The first sub-gate (H) gets index 0 and the second (I) gets index 1.
+    expected = "h q[0];\nid q[1];"
+    assert qasm == expected
+
+
+def test_qasm_convert_multiple_gates():
+    """Test conversion of a circuit with multiple independent gates into a QASM string."""
+    # When the gates are in the circuit directly (not in a Concat),
+    # each gate is converted with list(range(gate.num_qubits)).
+    # For single-qubit gates, this is always [0].
+    circuit = Circuit([H(), I()])
+    qasm = circuit.convert(framework="qasm")
+    expected = "h q[0];\nid q[0];"
+    assert qasm == expected
+
+
+def test_qasm_convert_bell_state():
+    """Test that conversion of a Bell state circuit produces a valid QASM string."""
+    bell = BellStates()
+    circuit = bell.get_bell_state(1)
+    qasm = circuit.convert(framework="qasm")
+    # We don't know the exact expected string, but we can check:
+    # - The result is non-empty.
+    # - Each line ends with a semicolon.
+    expected = """h q[0];
+id q[1];
+cx q[0], q[1];"""
+    assert qasm == expected
+
+
+def test_qasm_convert_error_for_missing_to_qasm():
+    """Test that conversion raises NotImplementedError when a gate does not implement to_qasm."""
+
+    class DummyGate(BaseGate):
+        def __new__(cls, matrix):
+            return super().__new__(cls, matrix)
+
+        @property
+        def num_qubits(self) -> int:
+            return 1
+
+    dummy_gate = DummyGate(np.eye(2))
+    circuit = Circuit([dummy_gate])
+    with pytest.raises(AttributeError):
+        circuit.convert(framework="qasm")
 
 
 def test_convert_unsupported_framework():
     """
     Test that requesting conversion to an unsupported framework (e.g. 'pennylane')
-    raises a NotImplementedError.
+    raises an AssertionError.
     """
     circuit = Circuit([H()])
-    with pytest.raises(NotImplementedError):
-        circuit.convert(total_qubits=1, framework="pennylane")
+    with pytest.raises(AssertionError):
+        circuit.convert(framework="pennylane")

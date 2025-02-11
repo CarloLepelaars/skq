@@ -22,13 +22,14 @@ class Hamiltonian(HermitianOperator):
         obj.hbar = hbar
         return obj
 
+    @property
     def num_qubits(self) -> int:
         """Number of qubits in the Hamiltonian."""
         return int(np.log2(self.shape[0]))
 
     def is_multi_qubit(self) -> bool:
         """Check if Hamiltonian involves multiple qubits."""
-        return self.num_qubits() > 1
+        return self.num_qubits > 1
 
     def time_evolution_operator(self, t: float) -> np.ndarray:
         """Time evolution operator U(t) = exp(-iHt/hbar)."""
@@ -46,8 +47,7 @@ class Hamiltonian(HermitianOperator):
 
     def convert_endianness(self) -> "Hamiltonian":
         """Hamiltonian from big-endian to little-endian and vice versa."""
-        num_qubits = self.num_qubits()
-        perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
+        perm = np.argsort([int(bin(i)[2:].zfill(self.num_qubits)[::-1], 2) for i in range(2**self.num_qubits)])
         return self[np.ix_(perm, perm)]
 
     def add_noise(self, noise_strength: float, noise_operator: np.array) -> "Hamiltonian":
@@ -86,7 +86,7 @@ class Hamiltonian(HermitianOperator):
         :return: PennyLane Hamiltonian object
         """
         coefficients = [1.0]
-        wires = wires if wires is not None else list(range(self.num_qubits()))
+        wires = wires if wires is not None else list(range(self.num_qubits))
         observables = [qml.Hermitian(self, wires=wires)]
         return qml.Hamiltonian(coefficients, observables, **kwargs)
 

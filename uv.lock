@@ -857,8 +857,8 @@ wheels = [
 
 [[package]]
 name = "skq"
-version = "0.1.8"
-source = { editable = "." }
+version = "0.2.0"
+source = { virtual = "." }
 dependencies = [
     { name = "matplotlib" },
     { name = "nbformat" },

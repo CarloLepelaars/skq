@@ -21,6 +21,11 @@ class Statevector(np.ndarray):
         assert obj.is_power_of_two_len(), "State vector length must be a least length 2 and a power of 2."
         return obj
 
+    @property
+    def num_qubits(self) -> int:
+        """Number of qubits in the state vector."""
+        return int(np.log2(len(self)))
+
     def is_1d(self) -> bool:
         """State vector is 1D."""
         return self.ndim == 1
@@ -34,13 +39,9 @@ class Statevector(np.ndarray):
         n = len(self)
         return n >= 2 and (n & (n - 1)) == 0
 
-    def num_qubits(self) -> int:
-        """Number of qubits in the state vector."""
-        return int(np.log2(len(self)))
-
     def is_multi_qubit(self) -> bool:
         """State vector represents a multi-qubit state."""
-        return self.num_qubits() > 1
+        return self.num_qubits > 1
 
     def is_indistinguishable(self, other: "Statevector") -> bool:
         """Two state vectors are indistinguishable if their density matrices are the same."""
@@ -89,7 +90,7 @@ class Statevector(np.ndarray):
         |00> -> "00"
         |11> -> "11"
         """
-        return bin(self.measure_index())[2:].zfill(self.num_qubits())
+        return bin(self.measure_index())[2:].zfill(self.num_qubits)
 
     def reverse(self) -> "Statevector":
         """Reverse the order of the state vector to account for endianness.

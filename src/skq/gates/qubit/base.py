@@ -45,21 +45,22 @@ class QubitGate(BaseGate):
         assert obj.is_power_of_n_shape(n=2), "Gate shape must be a power of 2."
         return obj
 
+    @property
     def num_qubits(self) -> int:
         """Return the number of qubits involved in the gate."""
         return int(np.log2(self.shape[0]))
 
     def is_multi_qubit(self) -> bool:
         """Check if the gate involves multiple qubits."""
-        return self.num_qubits() > 1
+        return self.num_qubits > 1
 
     def is_pauli(self) -> bool:
         """Check if the gate is a Pauli gate."""
         # I, X, Y, Z Pauli matrices
-        if self.num_qubits() == 1:
+        if self.num_qubits == 1:
             return any(np.allclose(self, pauli) for pauli in SINGLE_QUBIT_PAULI_MATRICES)
         # Combinations of single-qubit Pauli matrices
-        elif self.num_qubits() == 2:
+        elif self.num_qubits == 2:
             return any(np.allclose(self, pauli) for pauli in TWO_QUBIT_PAULI_MATRICES)
         else:
             return NotImplementedError("Pauli check not supported for gates with more than 2 qubits")
@@ -67,10 +68,10 @@ class QubitGate(BaseGate):
     def is_clifford(self) -> bool:
         """Check if the gate is a Clifford gate."""
         # X, Y, Z, H and S
-        if self.num_qubits() == 1:
+        if self.num_qubits == 1:
             return any(np.allclose(self, clifford) for clifford in SINGLE_QUBIT_CLIFFORD_MATRICES)
         # Combinations of single-qubit Clifford gates + CNOT and SWAP
-        elif self.num_qubits() == 2:
+        elif self.num_qubits == 2:
             return any(np.allclose(self, clifford) for clifford in TWO_QUBIT_CLIFFORD_MATRICES)
         else:
             return NotImplementedError("Clifford check not supported for gates with more than 2 qubits")
@@ -87,10 +88,9 @@ class QubitGate(BaseGate):
 
     def convert_endianness(self) -> "QubitGate":
         """Convert a gate matrix from big-endian to little-endian and vice versa."""
-        num_qubits = self.num_qubits()
-        if num_qubits == 1:
+        if self.num_qubits == 1:
             return self
-        permutation = np.arange(2**num_qubits).reshape([2] * num_qubits).transpose().flatten()
+        permutation = np.arange(2**self.num_qubits).reshape([2] * self.num_qubits).transpose().flatten()
         return self[permutation][:, permutation]
 
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
@@ -122,7 +122,7 @@ class QubitGate(BaseGate):
         """
         gate_name = self.__class__.__name__
         print(f"No to_pennylane defined for '{gate_name}'. Initializing as QubitUnitary.")
-        wires = wires if wires is not None else list(range(self.num_qubits()))
+        wires = wires if wires is not None else list(range(self.num_qubits))
         return qml.QubitUnitary(self, wires=wires)
 
     @staticmethod

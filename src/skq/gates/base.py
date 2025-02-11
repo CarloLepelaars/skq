@@ -43,6 +43,6 @@ class BaseGate(Operator):
 
     def convert_endianness(self) -> "BaseGate":
         """Convert a gate matrix from big-endian to little-endian and vice versa."""
-        num_qubits = self.num_qubits()
+        num_qubits = self.num_qubits
         perm = np.argsort([int(bin(i)[2:].zfill(num_qubits)[::-1], 2) for i in range(2**num_qubits)])
         return self[np.ix_(perm, perm)]
