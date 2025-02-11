@@ -78,55 +78,41 @@ class Concat:
     def __call__(self, x):
         return self.encodes(x)
 
+def flatten_circuit(circuit: Circuit) -> list:
+    """Recursively flatten a circuit so that Concat gates are replaced by their components."""
+    flat = []
+    for gate in circuit:
+        if isinstance(gate, Concat):
+            flat.extend(flatten_circuit(gate.gates))
+        else:
+            flat.append(gate)
+    return flat
 
 def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
-
-    def handle_gate(gate, idx=None):
-        """Process single gate for Qiskit."""
+    flat_gates = flatten_circuit(circuit)
+    qc = QuantumCircuit(
+        circuit.num_qubits, 
+        circuit.num_qubits if any(isinstance(g, Measure) for g in flat_gates) else 0
+    )
+    for gate in flat_gates:
         if isinstance(gate, Measure):
-            return [("measure", list(range(circuit.num_qubits)))]
-        qgate = gate.to_qiskit()
-        if isinstance(qgate, I):
-            return []
-        return [(qgate, [idx] if idx is not None else list(range(gate.num_qubits)))]
-
-    qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in circuit) else 0)
-    for gate in circuit:
-        if isinstance(gate, Concat):
-            for i, sub_gate in enumerate(gate.gates):
-                for op, qubits in handle_gate(sub_gate, i):
-                    if op == "measure":
-                        for q in qubits:
-                            qc.measure(q, q)
-                    else:
-                        qc.append(op, qubits)
+            for q in range(qc.num_qubits):
+                qc.measure(q, q)
         else:
-            for op, qubits in handle_gate(gate):
-                if op == "measure":
-                    for q in qubits:
-                        qc.measure(q, q)
-                else:
-                    qc.append(op, qubits)
+            qgate = gate.to_qiskit()
+            if not isinstance(qgate, I):
+                qc.append(qgate, list(range(gate.num_qubits)))
     return qc
 
 
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
-
-    def handle_gate(gate, idx=None):
-        """Process single gate for QASM."""
+    flat_gates = flatten_circuit(circuit)
+    def generate_qasm(gate):
         if isinstance(gate, I):
-            return []
-        if isinstance(gate, Measure):
-            return [f"measure q[{q}] -> c[{q}];" for q in range(circuit.num_qubits)]
-        return [gate.to_qasm([idx] if idx is not None else list(range(gate.num_qubits)))]
-
-    qasm_lines = []
-    for gate in circuit:
-        if isinstance(gate, Concat):
-            for i, sub_gate in enumerate(gate.gates):
-                qasm_lines.extend(handle_gate(sub_gate, i))
-        else:
-            qasm_lines.extend(handle_gate(gate))
-    return "\n".join(qasm_lines)
+            return None
+        qubits = list(range(circuit.num_qubits)) if isinstance(gate, Measure) else list(range(gate.num_qubits))
+        return gate.to_qasm(qubits)
+    
+    return "\n".join(line for line in (generate_qasm(g) for g in flat_gates) if line)
