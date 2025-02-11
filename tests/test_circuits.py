@@ -1,12 +1,13 @@
 import numpy as np
 import pytest
 
+import qiskit
 from qiskit.circuit.library import HGate, IGate
 from qiskit.quantum_info import Operator as QiskitOperator
 
 from skq.circuits.circuit import Circuit, Concat
 from skq.circuits.entangled_states import BellStates
-from skq.gates.qubit import I, H, Measure
+from skq.gates.qubit import I, H, Measure, CX
 from skq.gates.base import BaseGate
 
 
@@ -171,8 +172,6 @@ measure q[1] -> c[1];"""
 
 
 def test_bell_state_qiskit_with_measurement():
-    import qiskit
-
     """Test Qiskit conversion of a Bell state circuit with measurement."""
     bell = BellStates()
     circuit = Circuit([*bell.get_bell_state(1), Measure()])
@@ -184,3 +183,70 @@ def test_bell_state_qiskit_with_measurement():
     # Check that the last operations are measurements
     last_ops = qc.data[-2:]  # Get last two operations
     assert all(isinstance(op.operation, qiskit.circuit.library.Measure) for op in last_ops), "Expected last operations to be measurements."
+
+
+def test_ghz_state_creation():
+    """Test creation of a three-qubit GHZ state using Concat gates"""
+    # Create GHZ state circuit: H⊗I⊗I -> CX⊗I -> I⊗CX
+    circuit = Circuit([
+        Concat([H(), I(), I()]),  # Apply H to first qubit
+        Concat([CX(), I()]),      # CX between first and second qubit
+        Concat([I(), CX()])       # CX between second and third qubit
+    ])
+    
+    # Start with |000⟩ state
+    initial_state = np.zeros(8)
+    initial_state[0] = 1
+    
+    # Apply circuit
+    result = circuit(initial_state)
+    
+    # Expected GHZ state: (|000⟩ + |111⟩)/√2
+    expected = np.zeros(8, dtype=complex)
+    expected[0] = 1/np.sqrt(2)  # |000⟩
+    expected[7] = 1/np.sqrt(2)  # |111⟩
+    
+    np.testing.assert_array_almost_equal(result, expected)
+
+
+def test_ghz_state_qiskit_conversion():
+    """Test conversion of GHZ state circuit to Qiskit"""
+    circuit = Circuit([
+        Concat([H(), I(), I()]),
+        Concat([CX(), I()]),
+        Concat([I(), CX()])
+    ])
+    
+    qc = circuit.convert(framework="qiskit")
+    
+    # Verify circuit structure
+    assert qc.num_qubits == 3, "Expected 3 qubits in the circuit"
+    
+    # Convert to operator and test the output state
+    qc_matrix = QiskitOperator(qc).data
+    initial_state = np.zeros(8, dtype=complex)
+    initial_state[0] = 1  # |000⟩
+    
+    result = qc_matrix @ initial_state
+    
+    expected = np.zeros(8, dtype=complex)
+    expected[0] = 1/np.sqrt(2)  # |000⟩
+    expected[7] = 1/np.sqrt(2)  # |111⟩
+    
+    np.testing.assert_array_almost_equal(result, expected)
+
+
+def test_ghz_state_qasm_conversion():
+    """Test conversion of GHZ state circuit to QASM"""
+    circuit = Circuit([
+        Concat([H(), I(), I()]),
+        Concat([CX(), I()]),
+        Concat([I(), CX()])
+    ])
+    
+    qasm = circuit.convert(framework="qasm")
+    expected_qasm = """h q[0];
+cx q[0], q[1];
+cx q[1], q[2];"""
+    
+    assert qasm == expected_qasm, "QASM output doesn't match expected GHZ circuit"

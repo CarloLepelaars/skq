@@ -83,14 +83,17 @@ class Concat:
 def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
 
-    def handle_gate(qc, gate, offset=None):
+    def handle_gate(qc, gate, start_idx=None):
         if isinstance(gate, I):
             return
         if isinstance(gate, Measure):
             for q in range(circuit.num_qubits):
                 qc.measure(q, q)
             return
-        qubits = [offset] if offset is not None else list(range(gate.num_qubits))
+        # Create list of consecutive qubit indices starting from start_idx
+        qubits = (list(range(start_idx, start_idx + gate.num_qubits)) 
+                 if start_idx is not None 
+                 else list(range(gate.num_qubits)))
         qc.append(gate.to_qiskit(), qubits)
 
     qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in circuit) else 0)
@@ -109,12 +112,15 @@ def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
 
-    def handle_gate(gate, offset=None):
+    def handle_gate(gate, start_idx=None):
         if isinstance(gate, I):
             return []
         if isinstance(gate, Measure):
             return [f"measure q[{q}] -> c[{q}];" for q in range(circuit.num_qubits)]
-        qubits = [offset] if offset is not None else list(range(gate.num_qubits))
+        # Create list of consecutive qubit indices starting from start_idx
+        qubits = (list(range(start_idx, start_idx + gate.num_qubits))
+                 if start_idx is not None 
+                 else list(range(gate.num_qubits)))
         return [gate.to_qasm(qubits)]
 
     qasm_lines = []
