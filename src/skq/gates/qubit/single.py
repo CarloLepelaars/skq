@@ -235,3 +235,30 @@ class U3(QubitGate):
 
     def to_qasm(self, qubits: list[int]) -> str:
         return f"rx({self.theta}) q[{qubits[0]}];\nry({self.phi}) q[{qubits[0]}];\nrz({self.delta}) q[{qubits[0]}];"
+
+
+class Measure(QubitGate):
+    """Measurement gate that returns probabilities of measuring |0⟩ and |1⟩."""
+
+    def __new__(cls):
+        return super().__new__(cls, np.eye(2))
+
+    def to_qiskit(self) -> qiskit.circuit.library.Measure:
+        return qiskit.circuit.library.Measure()
+
+    def to_pennylane(self, wires: list[int] | int) -> qml.measure:
+        return qml.measure(wires=wires)
+
+    def to_qasm(self, qubits: list[int]) -> str:
+        return "\n".join(f"measure q[{q}] -> c[{q}];" for q in range(len(qubits)))
+
+    def __call__(self, state: np.ndarray) -> np.ndarray:
+        """
+        Apply measurement to a quantum state and return probabilities.
+        :param state: Quantum state vector.
+        :return: Array of probabilities for all possible measurement outcomes.
+        """
+        return np.abs(state) ** 2
+
+    def encodes(self, x: np.ndarray) -> np.ndarray:
+        return self.__call__(x)

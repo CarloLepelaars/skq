@@ -365,3 +365,43 @@ def test_to_qasm_multi():
     # H, CCX, H
     expected_qasm = """h q[2];\nccx q[0], q[1], q[2];\nh q[2];"""
     assert qasm == expected_qasm
+
+
+def test_measurement_gate():
+    """Test measurement gate functionality"""
+    measure = Measure()
+
+    # Basic properties
+    assert measure.num_qubits == 1
+    assert measure.is_unitary()
+    assert not measure.is_multi_qubit()
+
+    # Single qubit states
+    state_0 = np.array([1, 0], dtype=complex)  # |0⟩
+    state_1 = np.array([0, 1], dtype=complex)  # |1⟩
+    state_plus = np.array([1, 1], dtype=complex) / np.sqrt(2)  # |+⟩
+
+    np.testing.assert_array_almost_equal(measure(state_0), [1, 0])
+    np.testing.assert_array_almost_equal(measure(state_1), [0, 1])
+    np.testing.assert_array_almost_equal(measure(state_plus), [0.5, 0.5])
+
+    # Two-qubit states
+    bell_state = np.array([1, 0, 0, 1], dtype=complex) / np.sqrt(2)  # (|00⟩ + |11⟩)/√2
+    np.testing.assert_array_almost_equal(measure(bell_state), [0.5, 0, 0, 0.5])
+
+
+def test_measurement_conversions():
+    """Test measurement gate conversions to different frameworks"""
+    measure = Measure()
+
+    # QASM conversion
+    qasm_str = measure.to_qasm([0])
+    assert qasm_str == "measure q[0] -> c[0];"
+
+    # Qiskit conversion
+    qiskit_gate = measure.to_qiskit()
+    assert isinstance(qiskit_gate, qiskit.circuit.library.Measure)
+
+    # PennyLane conversion
+    pennylane_gate = measure.to_pennylane(wires=0)
+    assert isinstance(pennylane_gate, qml.measurements.mid_measure.MeasurementValue)

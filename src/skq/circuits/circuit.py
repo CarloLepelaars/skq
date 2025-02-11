@@ -3,6 +3,7 @@ from qiskit import QuantumCircuit
 
 
 from ..base import Operator
+from ..gates.qubit import I, Measure
 
 
 class Circuit(list):
@@ -35,7 +36,7 @@ class Circuit(list):
         converter_mapping = {"qiskit": convert_to_qiskit, "qasm": convert_to_qasm}
         assert framework in converter_mapping, f"Invalid framework. Supported frameworks: {converter_mapping.keys()}."
         return converter_mapping[framework](self)
-    
+
     def draw(self, **kwargs):
         """Draw circuit using Qiskit."""
         return self.convert(framework="qiskit").draw(**kwargs)
@@ -80,25 +81,52 @@ class Concat:
 
 def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
-    qc = QuantumCircuit(circuit.num_qubits)
+
+    def handle_gate(gate, idx=None):
+        """Process single gate for Qiskit."""
+        if isinstance(gate, Measure):
+            return [("measure", list(range(circuit.num_qubits)))]
+        qgate = gate.to_qiskit()
+        if isinstance(qgate, I):
+            return []
+        return [(qgate, [idx] if idx is not None else list(range(gate.num_qubits)))]
+
+    qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in circuit) else 0)
     for gate in circuit:
         if isinstance(gate, Concat):
             for i, sub_gate in enumerate(gate.gates):
-                qgate = sub_gate.to_qiskit()
-                qc.append(qgate, [i])
+                for op, qubits in handle_gate(sub_gate, i):
+                    if op == "measure":
+                        for q in qubits:
+                            qc.measure(q, q)
+                    else:
+                        qc.append(op, qubits)
         else:
-            qgate = gate.to_qiskit()
-            qc.append(qgate, list(range(gate.num_qubits)))
+            for op, qubits in handle_gate(gate):
+                if op == "measure":
+                    for q in qubits:
+                        qc.measure(q, q)
+                else:
+                    qc.append(op, qubits)
     return qc
 
 
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
+
+    def handle_gate(gate, idx=None):
+        """Process single gate for QASM."""
+        if isinstance(gate, I):
+            return []
+        if isinstance(gate, Measure):
+            return [f"measure q[{q}] -> c[{q}];" for q in range(circuit.num_qubits)]
+        return [gate.to_qasm([idx] if idx is not None else list(range(gate.num_qubits)))]
+
     qasm_lines = []
     for gate in circuit:
         if isinstance(gate, Concat):
             for i, sub_gate in enumerate(gate.gates):
-                qasm_lines.append(sub_gate.to_qasm([i]))
+                qasm_lines.extend(handle_gate(sub_gate, i))
         else:
-            qasm_lines.append(gate.to_qasm(list(range(gate.num_qubits))))
+            qasm_lines.extend(handle_gate(gate))
     return "\n".join(qasm_lines)

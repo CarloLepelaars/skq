@@ -6,7 +6,7 @@ from qiskit.quantum_info import Operator as QiskitOperator
 
 from skq.circuits.circuit import Circuit, Concat
 from skq.circuits.entangled_states import BellStates
-from skq.gates.qubit import I, H
+from skq.gates.qubit import I, H, Measure
 from skq.gates.base import BaseGate
 
 
@@ -93,9 +93,7 @@ def test_qasm_convert_single_gate():
     """Test conversion of a circuit with a single gate (H) into a QASM string."""
     circuit = Circuit([H()])
     qasm = circuit.convert(framework="qasm")
-    # For a single H gate, the converter calls H.to_qasm([0]) so we expect "h q[0];"
-    expected = "h q[0];"
-    assert qasm == expected
+    assert qasm == "h q[0];"
 
 
 def test_qasm_convert_concat_gate():
@@ -103,21 +101,14 @@ def test_qasm_convert_concat_gate():
     concat_gate = Concat([H(), I()])
     circuit = Circuit([concat_gate])
     qasm = circuit.convert(framework="qasm")
-    # For a Concat, each sub-gate is converted with its own index.
-    # The first sub-gate (H) gets index 0 and the second (I) gets index 1.
-    expected = "h q[0];\nid q[1];"
-    assert qasm == expected
+    assert qasm == "h q[0];"
 
 
 def test_qasm_convert_multiple_gates():
     """Test conversion of a circuit with multiple independent gates into a QASM string."""
-    # When the gates are in the circuit directly (not in a Concat),
-    # each gate is converted with list(range(gate.num_qubits)).
-    # For single-qubit gates, this is always [0].
     circuit = Circuit([H(), I()])
     qasm = circuit.convert(framework="qasm")
-    expected = "h q[0];\nid q[0];"
-    assert qasm == expected
+    assert qasm == "h q[0];"
 
 
 def test_qasm_convert_bell_state():
@@ -125,13 +116,7 @@ def test_qasm_convert_bell_state():
     bell = BellStates()
     circuit = bell.get_bell_state(1)
     qasm = circuit.convert(framework="qasm")
-    # We don't know the exact expected string, but we can check:
-    # - The result is non-empty.
-    # - Each line ends with a semicolon.
-    expected = """h q[0];
-id q[1];
-cx q[0], q[1];"""
-    assert qasm == expected
+    assert qasm == "h q[0];\ncx q[0], q[1];"
 
 
 def test_qasm_convert_error_for_missing_to_qasm():
@@ -159,3 +144,43 @@ def test_convert_unsupported_framework():
     circuit = Circuit([H()])
     with pytest.raises(AssertionError):
         circuit.convert(framework="pennylane")
+
+
+def test_bell_state_measurement():
+    """Test creation and measurement of a Bell state (Φ+)"""
+    bell = BellStates()
+    circuit = Circuit([*bell.get_bell_state(1), Measure()])
+
+    initial_state = np.array([1, 0, 0, 0])  # |00⟩ state
+    result = circuit(initial_state)
+    expected = np.array([0.5, 0, 0, 0.5])  # 50% |00⟩, 50% |11⟩
+    np.testing.assert_array_almost_equal(result, expected)
+
+
+def test_bell_state_qasm_with_measurement():
+    """Test QASM conversion of a Bell state circuit with measurement."""
+    bell = BellStates()
+    circuit = Circuit([*bell.get_bell_state(1), Measure()])
+
+    qasm = circuit.convert(framework="qasm")
+    expected_qasm = """h q[0];
+cx q[0], q[1];
+measure q[0] -> c[0];
+measure q[1] -> c[1];"""
+    assert qasm == expected_qasm
+
+
+def test_bell_state_qiskit_with_measurement():
+    import qiskit
+
+    """Test Qiskit conversion of a Bell state circuit with measurement."""
+    bell = BellStates()
+    circuit = Circuit([*bell.get_bell_state(1), Measure()])
+
+    qc = circuit.convert(framework="qiskit")
+    assert qc.num_qubits == 2, "Expected Bell state circuit to operate on 2 qubits."
+    assert qc.num_clbits == 2, "Expected classical bits for measurement."
+
+    # Check that the last operations are measurements
+    last_ops = qc.data[-2:]  # Get last two operations
+    assert all(isinstance(op.operation, qiskit.circuit.library.Measure) for op in last_ops), "Expected last operations to be measurements."
