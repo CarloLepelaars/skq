@@ -43,15 +43,14 @@ qiskit_circuit = circuit.convert(framework="qiskit")
 qiskit_circuit.draw()
 #      ┌───┐     
 # q_0: ┤ H ├──■──
-#      ├───┤┌─┴─┐
-# q_1: ┤ I ├┤ X ├
-#      └───┘└───┘
+#      └───┘┌─┴─┐
+# q_1: ─────┤ X ├
+#           └───┘
 
 # Conversion to OpenQASM
 qasm_circuit = circuit.convert(framework="qasm")
 print(qasm_circuit)
 # h q[0];
-# id q[1];
 # cx q[0], q[1];
 ```
 
@@ -85,12 +84,18 @@ state = np.array([1, 0, 0, 0]) # |00> state
 circuit(state)
 # array([0.70710678+0.j, 0, 0, 0.70710678+0.j])
 
-# Conversion to Qiskit
+# Conversion to Qiskit (Identity gates are removed)
 qiskit_circuit = circuit.convert(framework="qiskit")
 qiskit_circuit.draw()
 #      ┌───┐     
 # q_0: ┤ H ├──■──
-#      ├───┤┌─┴─┐
-# q_1: ┤ I ├┤ X ├
-#      └───┘└───┘
+#      └───┘┌─┴─┐
+# q_1: ─────┤ X ├
+#           └───┘
+
+# Conversion to OpenQASM
+qasm_circuit = circuit.convert(framework="qasm")
+print(qasm_circuit)
+# h q[0];
+# cx q[0], q[1];
 ```
