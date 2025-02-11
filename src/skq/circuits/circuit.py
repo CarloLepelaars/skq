@@ -26,7 +26,7 @@ class Circuit(list):
         return self.encodes(x)
 
     def convert(self, framework="qiskit"):
-        """Convert the circuit to a given framework.
+        """Convert circuit to a given framework.
         :param framework: Framework to convert to.
         :return: Converter Circuit object.
         For Qiskit -> QuantumCircuit object.
@@ -35,6 +35,10 @@ class Circuit(list):
         converter_mapping = {"qiskit": convert_to_qiskit, "qasm": convert_to_qasm}
         assert framework in converter_mapping, f"Invalid framework. Supported frameworks: {converter_mapping.keys()}."
         return converter_mapping[framework](self)
+    
+    def draw(self, **kwargs):
+        """Draw circuit using Qiskit."""
+        return self.convert(framework="qiskit").draw(**kwargs)
 
 
 class Concat:
