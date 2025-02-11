@@ -11,11 +11,11 @@ Scientific Toolkit for Quantum Computing
 
 This library is used in the [q4p (Quantum Computing for Programmers)](https://github.com/CarloLepelaars/q4p) course.
 
-NOTE: This library is developed for educational purposes. While we strive for correctness of everything, the code is provided as is and not guaranteed to be bug-free. For sensitive applications make to check computations. 
+NOTE: This library is developed for educational purposes. While we strive for correctness of everything, the code is provided as is and not guaranteed to be bug-free. For sensitive applications make sure you check computations. 
 
 ## Why SKQ?
 
-- Exploration: Play with fundamental quantum building blocks (NumPy).
+- Exploration: Play with fundamental quantum building blocks using [NumPy](https://numpy.org).
 - Education: Learn quantum computing concepts and algorithms.
 - Integration: Combine classical components with quantum components.
 - Democratize quantum for Python programmers and data scientists: Develop quantum algorithms in your favorite environment and easily export to your favorite quantum computing platform for running on real quantum hardware.
@@ -26,14 +26,71 @@ NOTE: This library is developed for educational purposes. While we strive for co
 pip install skq
 ```
 
-The default `skq` installation contains conversion to `qiskit`. PennyLane support can be installed as an optional dependency.
+## Quickstart
 
-### All backends
-```bash
-pip install skq[all]
+### Circuit Conversion
+
+Run this code snippet to initialize a Bell State and convert to Qiskit and OpenQASM.
+
+```python
+from skq.circuits.entangled_states import BellStates
+
+# Initialize Bell State skq Circuit
+circuit = BellStates().get_bell_state(1)
+
+# Conversion to Qiskit
+qiskit_circuit = circuit.convert(framework="qiskit")
+qiskit_circuit.draw()
+#      ┌───┐     
+# q_0: ┤ H ├──■──
+#      ├───┤┌─┴─┐
+# q_1: ┤ I ├┤ X ├
+#      └───┘└───┘
+
+# Conversion to OpenQASM
+qasm_circuit = circuit.convert(framework="qasm")
+print(qasm_circuit)
+# h q[0];
+# id q[1];
+# cx q[0], q[1];
 ```
 
-### PennyLane
-```bash
-pip install skq[pennylane]
+### Circuits from scratch
+
+You can also build your own custom circuits from scratch using individual gates.
+
+```python
+from skq.gates import H, I, CX
+from skq.circuits import Concat, Circuit
+
+H() # Hadamard gate (NumPy array)
+# H([[ 0.70710678+0.j,  0.70710678+0.j],
+#    [ 0.70710678+0.j, -0.70710678+0.j]])
+
+I() # Identity gate (NumPy array)
+# I([[1.+0.j, 0.+0.j],
+#    [0.+0.j, 1.+0.j]])
+
+CX() # CNOT gate (NumPy array)
+# CX([[1.+0.j, 0.+0.j, 0.+0.j, 0.+0.j],
+#     [0.+0.j, 1.+0.j, 0.+0.j, 0.+0.j],
+#     [0.+0.j, 0.+0.j, 0.+0.j, 1.+0.j],
+#     [0.+0.j, 0.+0.j, 1.+0.j, 0.+0.j]])
+
+# Initialize Bell State skq Circuit
+circuit = Circuit([Concat([H(), I()]), CX()])
+
+# Simulate circuit classically
+state = np.array([1, 0, 0, 0]) # |00> state
+circuit(state)
+# array([0.70710678+0.j, 0, 0, 0.70710678+0.j])
+
+# Conversion to Qiskit
+qiskit_circuit = circuit.convert(framework="qiskit")
+qiskit_circuit.draw()
+#      ┌───┐     
+# q_0: ┤ H ├──■──
+#      ├───┤┌─┴─┐
+# q_1: ┤ I ├┤ X ├
+#      └───┘└───┘
 ```
