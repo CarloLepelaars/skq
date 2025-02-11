@@ -1,5 +1,6 @@
 import numpy as np
 from qiskit import QuantumCircuit
+from functools import reduce
 
 
 from ..base import Operator
@@ -52,7 +53,7 @@ class Concat:
         assert len(gates) > 1, "Concat must have at least 2 gates."
         assert all(isinstance(g, Operator) for g in gates), "All gates must be instances of Operator."
         self.gates = gates
-        self.encoding_matrix = np.kron(*[g for g in gates])
+        self.encoding_matrix = reduce(np.kron, [g for g in gates])
         self.num_qubits = sum(g.num_qubits for g in gates)
 
     def encodes(self, x: np.ndarray) -> np.ndarray:
