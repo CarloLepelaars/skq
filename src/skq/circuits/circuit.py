@@ -79,40 +79,50 @@ class Concat:
         return self.encodes(x)
 
 
-def flatten_circuit(circuit: Circuit) -> list:
-    """Recursively flatten a circuit so that Concat gates are replaced by their components."""
-    flat = []
-    for gate in circuit:
-        if isinstance(gate, Concat):
-            flat.extend(flatten_circuit(gate.gates))
-        else:
-            flat.append(gate)
-    return flat
-
-
 def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
     """Convert a skq Circuit into a Qiskit QuantumCircuit."""
-    flat_gates = flatten_circuit(circuit)
-    qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in flat_gates) else 0)
-    for gate in flat_gates:
+
+    def handle_gate(qc, gate, offset=None):
+        if isinstance(gate, I):
+            return
         if isinstance(gate, Measure):
-            for q in range(qc.num_qubits):
+            for q in range(circuit.num_qubits):
                 qc.measure(q, q)
+            return
+        qubits = [offset] if offset is not None else list(range(gate.num_qubits))
+        qc.append(gate.to_qiskit(), qubits)
+
+    qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in circuit) else 0)
+
+    for gate in circuit:
+        if isinstance(gate, Concat):
+            offset = 0
+            for sub_gate in gate.gates:
+                handle_gate(qc, sub_gate, offset)
+                offset += sub_gate.num_qubits
         else:
-            qgate = gate.to_qiskit()
-            if not isinstance(qgate, I):
-                qc.append(qgate, list(range(gate.num_qubits)))
+            handle_gate(qc, gate)
     return qc
 
 
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
-    flat_gates = flatten_circuit(circuit)
 
-    def generate_qasm(gate):
+    def handle_gate(gate, offset=None):
         if isinstance(gate, I):
-            return None
-        qubits = list(range(circuit.num_qubits)) if isinstance(gate, Measure) else list(range(gate.num_qubits))
-        return gate.to_qasm(qubits)
+            return []
+        if isinstance(gate, Measure):
+            return [f"measure q[{q}] -> c[{q}];" for q in range(circuit.num_qubits)]
+        qubits = [offset] if offset is not None else list(range(gate.num_qubits))
+        return [gate.to_qasm(qubits)]
 
-    return "\n".join(line for line in (generate_qasm(g) for g in flat_gates) if line)
+    qasm_lines = []
+    for gate in circuit:
+        if isinstance(gate, Concat):
+            offset = 0
+            for sub_gate in gate.gates:
+                qasm_lines.extend(handle_gate(sub_gate, offset))
+                offset += sub_gate.num_qubits
+        else:
+            qasm_lines.extend(handle_gate(gate))
+    return "\n".join(qasm_lines)

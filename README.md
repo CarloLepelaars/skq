@@ -23,7 +23,7 @@ NOTE: This library is developed for educational purposes. While we strive for co
 ## Install
 
 ```bash
-pip install skq
+pip install -U skq
 ```
 
 ## Quickstart

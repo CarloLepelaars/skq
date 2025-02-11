@@ -53,7 +53,7 @@ def test_convert_concat_gate():
     circuit = Circuit([Concat([H(), I()])])
     qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 2, "Expected 2 qubits in the Qiskit circuit from Concat."
-    assert len(qc.data) == 2, "Expected 2 instructions from the Concat gate."
+    assert len(qc.data) == 1, "Expect 1 instruction from converted Concat gate (H)."
     for datum in qc.data:
         instr = datum.operation
         assert isinstance(instr, (IGate, HGate)), "Each converted gate should be an instance of IGate or HGate."
