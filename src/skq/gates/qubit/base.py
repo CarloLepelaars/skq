@@ -2,6 +2,7 @@ import qiskit
 import numpy as np
 import scipy as sp
 import pennylane as qml
+from qiskit import QuantumCircuit
 
 from ..base import BaseGate
 
@@ -154,6 +155,12 @@ class QubitGate(BaseGate):
     def from_qasm(qasm_string: str) -> "QubitGate":
         """Convert a OpenQASM string to scikit-q gate."""
         raise NotImplementedError("Conversion from OpenQASM is not implemented.")
+    
+    def draw(self, **kwargs):
+        """Draw the gate using a Qiskit QuantumCircuit."""
+        qc = QuantumCircuit(self.num_qubits)
+        qc.append(self.to_qiskit(), range(self.num_qubits))
+        return qc.draw(**kwargs)
 
 
 class CustomQubitGate(QubitGate):
