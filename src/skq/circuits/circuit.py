@@ -111,6 +111,14 @@ def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
 
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
+    qasm_lines = [
+        "OPENQASM 2.0;",                # OpenQASM header
+        'include "qelib1.inc";',        # Standard library
+        f"qreg q[{circuit.num_qubits}];",  # Declare quantum register
+    ]
+    # Declare classical register if measurement is present
+    if any(isinstance(g, Measure) for g in circuit):
+        qasm_lines.append(f"creg c[{circuit.num_qubits}];")
 
     def handle_gate(gate, start_idx=None):
         if isinstance(gate, I):
@@ -122,8 +130,7 @@ def convert_to_qasm(circuit: Circuit) -> str:
                  if start_idx is not None 
                  else list(range(gate.num_qubits)))
         return [gate.to_qasm(qubits)]
-
-    qasm_lines = []
+    
     for gate in circuit:
         if isinstance(gate, Concat):
             offset = 0

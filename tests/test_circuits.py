@@ -89,27 +89,37 @@ def test_convert_error_for_missing_to_qiskit():
     with pytest.raises(NotImplementedError):
         circuit.convert(framework="qiskit")
 
-
 def test_qasm_convert_single_gate():
     """Test conversion of a circuit with a single gate (H) into a QASM string."""
     circuit = Circuit([H()])
     qasm = circuit.convert(framework="qasm")
-    assert qasm == "h q[0];"
-
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+h q[0];"""
+    assert qasm == expected_qasm
 
 def test_qasm_convert_concat_gate():
     """Test conversion of a circuit with a Concat gate combining H and I into a QASM string."""
     concat_gate = Concat([H(), I()])
     circuit = Circuit([concat_gate])
     qasm = circuit.convert(framework="qasm")
-    assert qasm == "h q[0];"
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+h q[0];"""
+    assert qasm == expected_qasm
 
 
 def test_qasm_convert_multiple_gates():
     """Test conversion of a circuit with multiple independent gates into a QASM string."""
     circuit = Circuit([H(), I()])
     qasm = circuit.convert(framework="qasm")
-    assert qasm == "h q[0];"
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+h q[0];"""
+    assert qasm == expected_qasm
 
 
 def test_qasm_convert_bell_state():
@@ -117,7 +127,12 @@ def test_qasm_convert_bell_state():
     bell = BellStates()
     circuit = bell.get_bell_state(1)
     qasm = circuit.convert(framework="qasm")
-    assert qasm == "h q[0];\ncx q[0], q[1];"
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+h q[0];
+cx q[0], q[1];"""
+    assert qasm == expected_qasm
 
 
 def test_qasm_convert_error_for_missing_to_qasm():
@@ -164,7 +179,11 @@ def test_bell_state_qasm_with_measurement():
     circuit = Circuit([*bell.get_bell_state(1), Measure()])
 
     qasm = circuit.convert(framework="qasm")
-    expected_qasm = """h q[0];
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+creg c[2];
+h q[0];
 cx q[0], q[1];
 measure q[0] -> c[0];
 measure q[1] -> c[1];"""
@@ -245,7 +264,10 @@ def test_ghz_state_qasm_conversion():
     ])
     
     qasm = circuit.convert(framework="qasm")
-    expected_qasm = """h q[0];
+    expected_qasm = """OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+h q[0];
 cx q[0], q[1];
 cx q[1], q[2];"""
     
