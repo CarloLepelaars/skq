@@ -155,7 +155,7 @@ class QubitGate(BaseGate):
     def from_qasm(qasm_string: str) -> "QubitGate":
         """Convert a OpenQASM string to scikit-q gate."""
         raise NotImplementedError("Conversion from OpenQASM is not implemented.")
-    
+
     def draw(self, **kwargs):
         """Draw the gate using a Qiskit QuantumCircuit."""
         qc = QuantumCircuit(self.num_qubits)

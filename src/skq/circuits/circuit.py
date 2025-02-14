@@ -91,9 +91,7 @@ def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
                 qc.measure(q, q)
             return
         # Create list of consecutive qubit indices starting from start_idx
-        qubits = (list(range(start_idx, start_idx + gate.num_qubits)) 
-                 if start_idx is not None 
-                 else list(range(gate.num_qubits)))
+        qubits = list(range(start_idx, start_idx + gate.num_qubits)) if start_idx is not None else list(range(gate.num_qubits))
         qc.append(gate.to_qiskit(), qubits)
 
     qc = QuantumCircuit(circuit.num_qubits, circuit.num_qubits if any(isinstance(g, Measure) for g in circuit) else 0)
@@ -112,8 +110,8 @@ def convert_to_qiskit(circuit: Circuit) -> QuantumCircuit:
 def convert_to_qasm(circuit: Circuit) -> str:
     """Convert a skq Circuit into an OpenQASM string."""
     qasm_lines = [
-        "OPENQASM 2.0;",                # OpenQASM header
-        'include "qelib1.inc";',        # Standard library
+        "OPENQASM 2.0;",  # OpenQASM header
+        'include "qelib1.inc";',  # Standard library
         f"qreg q[{circuit.num_qubits}];",  # Declare quantum register
     ]
     # Declare classical register if measurement is present
@@ -126,11 +124,9 @@ def convert_to_qasm(circuit: Circuit) -> str:
         if isinstance(gate, Measure):
             return [f"measure q[{q}] -> c[{q}];" for q in range(circuit.num_qubits)]
         # Create list of consecutive qubit indices starting from start_idx
-        qubits = (list(range(start_idx, start_idx + gate.num_qubits))
-                 if start_idx is not None 
-                 else list(range(gate.num_qubits)))
+        qubits = list(range(start_idx, start_idx + gate.num_qubits)) if start_idx is not None else list(range(gate.num_qubits))
         return [gate.to_qasm(qubits)]
-    
+
     for gate in circuit:
         if isinstance(gate, Concat):
             offset = 0

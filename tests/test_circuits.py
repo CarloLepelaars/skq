@@ -7,7 +7,7 @@ from qiskit.quantum_info import Operator as QiskitOperator
 
 from skq.circuits.circuit import Circuit, Concat
 from skq.circuits.entangled_states import BellStates, GHZStates, WState
-from skq.gates.qubit import I, H, Measure, CX, RY, X
+from skq.gates.qubit import I, H, Measure, CX
 from skq.gates.base import BaseGate
 
 
@@ -89,6 +89,7 @@ def test_convert_error_for_missing_to_qiskit():
     with pytest.raises(NotImplementedError):
         circuit.convert(framework="qiskit")
 
+
 def test_qasm_convert_single_gate():
     """Test conversion of a circuit with a single gate (H) into a QASM string."""
     circuit = Circuit([H()])
@@ -98,6 +99,7 @@ include "qelib1.inc";
 qreg q[1];
 h q[0];"""
     assert qasm == expected_qasm
+
 
 def test_qasm_convert_concat_gate():
     """Test conversion of a circuit with a Concat gate combining H and I into a QASM string."""
@@ -207,14 +209,14 @@ def test_bell_state_qiskit_with_measurement():
 def test_ghz_state_creation():
     """Test creation of a three-qubit GHZ state"""
     circuit = GHZStates().get_ghz_state(3)
-    
+
     initial_state = np.zeros(8)
     initial_state[0] = 1
     result = circuit(initial_state)
-    
+
     expected = np.zeros(8, dtype=complex)
-    expected[0] = expected[7] = 1/np.sqrt(2)
-    
+    expected[0] = expected[7] = 1 / np.sqrt(2)
+
     np.testing.assert_array_almost_equal(result, expected)
 
 
@@ -222,28 +224,24 @@ def test_ghz_state_qiskit_conversion():
     """Test conversion of GHZ state circuit to Qiskit"""
     circuit = GHZStates().get_ghz_state(3)
     qc = circuit.convert(framework="qiskit")
-    
+
     assert qc.num_qubits == 3
-    
+
     qc_matrix = QiskitOperator(qc).data
     initial_state = np.zeros(8, dtype=complex)
     initial_state[0] = 1
     result = qc_matrix @ initial_state
-    
+
     expected = np.zeros(8, dtype=complex)
-    expected[0] = expected[7] = 1/np.sqrt(2)
-    
+    expected[0] = expected[7] = 1 / np.sqrt(2)
+
     np.testing.assert_array_almost_equal(result, expected)
 
 
 def test_ghz_state_qasm_conversion():
     """Test conversion of GHZ state circuit to QASM"""
-    circuit = Circuit([
-        Concat([H(), I(), I()]),
-        Concat([CX(), I()]),
-        Concat([I(), CX()])
-    ])
-    
+    circuit = Circuit([Concat([H(), I(), I()]), Concat([CX(), I()]), Concat([I(), CX()])])
+
     qasm = circuit.convert(framework="qasm")
     expected_qasm = """OPENQASM 2.0;
 include "qelib1.inc";
@@ -251,21 +249,23 @@ qreg q[3];
 h q[0];
 cx q[0], q[1];
 cx q[1], q[2];"""
-    
+
     assert qasm == expected_qasm, "QASM output doesn't match expected GHZ circuit"
+
 
 def test_w_state_creation():
     """Test creation of a three-qubit W state"""
     initial_state = [1, 0, 0, 0, 0, 0, 0, 0]
     result = WState().get_w_state()(initial_state)
-    expected = [0, 1/np.sqrt(3), 1/np.sqrt(3), 0, 1/np.sqrt(3), 0, 0, 0]
+    expected = [0, 1 / np.sqrt(3), 1 / np.sqrt(3), 0, 1 / np.sqrt(3), 0, 0, 0]
     np.testing.assert_array_almost_equal(result, expected)
+
 
 def test_w_state_qasm_conversion():
     """Test conversion of W state circuit to QASM"""
     circuit = WState().get_w_state()
     qasm = circuit.convert(framework="qasm")
-    expected_qasm = f"""OPENQASM 2.0;
+    expected_qasm = """OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[3];
 ry(-1.9106332362490184) q[0];
