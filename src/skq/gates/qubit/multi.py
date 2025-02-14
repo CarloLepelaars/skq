@@ -7,6 +7,64 @@ from .single import X, Y, Z
 from ...quantum_info.state import Statevector
 
 
+class DeutschOracle(QubitGate):
+    """
+    Simple Oracle for Deutsch's algorithm.
+    
+    For input x and output f(x), the oracle applies phase (-1)^f(x).
+    - Constant function: f(0) = f(1)
+    - Balanced function: f(0) ≠ f(1)
+    
+    :param f: Function that takes 0 or 1 and returns 0 or 1
+    """
+    def __new__(cls, f):
+        f0, f1 = f(0), f(1)
+        if not all(v in [0, 1] for v in [f0, f1]):
+            raise ValueError("Function must return 0 or 1")
+            
+        oracle_matrix = np.eye(4)
+        oracle_matrix[0,0] = (-1)**f0  # |00⟩
+        oracle_matrix[1,1] = (-1)**f0  # |01⟩
+        oracle_matrix[2,2] = (-1)**f1  # |10⟩
+        oracle_matrix[3,3] = (-1)**f1  # |11⟩
+        return super().__new__(cls, oracle_matrix)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="DeutschOracle")
+
+class DeutschJozsaOracle(QubitGate):
+    """
+    Oracle for Deutsch-Jozsa algorithm that implements f:{0,1}^n → {0,1} as a phase oracle.
+    
+    For input x and output f(x), the oracle applies phase (-1)^f(x).
+    - Constant function: f(x) is same for all x
+    - Balanced function: f(x) = 1 for exactly half of inputs
+    
+    :param f: Function that takes an integer x (0 to 2^n-1) and returns 0 or 1
+    :param n_bits: Number of input bits
+    """
+    def __new__(cls, f, n_bits: int):
+        n_states = 2**n_bits
+        outputs = [f(x) for x in range(n_states)]
+        if not all(v in [0, 1] for v in outputs):
+            raise ValueError("Function must return 0 or 1")
+            
+        ones = sum(outputs)
+        if ones != 0 and ones != n_states and ones != n_states//2:
+            raise ValueError("Function must be constant or balanced")
+            
+        oracle_matrix = np.eye(n_states)
+        for x in range(n_states):
+            oracle_matrix[x,x] = (-1)**f(x)
+            
+        return super().__new__(cls, oracle_matrix)
+
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="DeutschJozsaOracle")
+
+
 class PhaseOracle(QubitGate):
     """
     Phase Oracle as used in Grover's search algorithm.
