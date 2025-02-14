@@ -109,7 +109,10 @@ class CH(QubitGate):
     """Controlled-Hadamard gate."""
 
     def __new__(cls):
-        return super().__new__(cls, [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1 / np.sqrt(2), 1 / np.sqrt(2)], [0, 0, 1 / np.sqrt(2), -1 / np.sqrt(2)]])
+        return super().__new__(cls, [[1, 0, 0, 0], 
+                                     [0, 1, 0, 0], 
+                                     [0, 0, 1 / np.sqrt(2), 1 / np.sqrt(2)], 
+                                     [0, 0, 1 / np.sqrt(2), -1 / np.sqrt(2)]])
 
     def to_qiskit(self) -> qiskit.circuit.library.CHGate:
         return qiskit.circuit.library.CHGate()

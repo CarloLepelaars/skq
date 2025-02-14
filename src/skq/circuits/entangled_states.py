@@ -1,4 +1,7 @@
-from ..gates.qubit import X, H, Z, CX, I
+import numpy as np
+
+
+from ..gates.qubit import X, H, Z, CX, I, RY, CH
 from .circuit import Circuit, Concat
 
 
@@ -9,7 +12,6 @@ class BellStates:
     - https://quantumcomputinguk.org/tutorials/introduction-to-bell-states
     - https://quantumcomputing.stackexchange.com/a/2260
     """
-
     def get_bell_state(self, configuration: int = 1) -> Circuit:
         """
         Return circuit for the Bell State based on the configuration.
@@ -67,17 +69,30 @@ class BellStates:
 class GHZStates:
     """
     Generalization of Bell States to 3 or more qubits.
-    Greenberger, Horne, and Zeilinger states.
+    Greenberger-Horne-Zeilinger (GHZ) states.
     """
-
-    # TODO Implement GHZ states for arbitrary number of qubits
-    ...
+    def get_ghz_state(self, n_qubits: int) -> Circuit:
+        """
+        :param n_qubits: Number of qubits in the GHZ state.
+        :return: Circuit for the GHZ state.
+        """
+        assert n_qubits > 2, "GHZ state requires at least 3 qubits"
+        return Circuit([
+            Concat([H()] + [I()] * (n_qubits - 1)),
+            *[Concat([I()] * i + [CX()] + [I()] * (n_qubits - i - 2)) for i in range(n_qubits - 1)]
+        ])
 
 
 class WState:
-    """
-    1 / sqrt(3) (|001⟩ + |010⟩ + |100⟩)
-    """
-
-    # TODO Implement W state
-    ...
+    """3-qubit W State: (|001⟩ + |010⟩ + |100⟩)/√3"""
+    
+    def get_w_state(self) -> Circuit:
+        theta = -2 * np.arccos(1/np.sqrt(3))
+        return Circuit([
+            Concat([RY(theta), I(), I()]),
+            Concat([CH(), I()]),
+            Concat([I(), CX()]),
+            Concat([CX(), I()]),
+            Concat([X(), I(), I()]),
+        ])
+    
