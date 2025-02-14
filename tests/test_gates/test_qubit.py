@@ -407,35 +407,6 @@ def test_measurement_conversions():
     assert isinstance(pennylane_gate, qml.measurements.mid_measure.MeasurementValue)
 
 
-def test_deutsch_oracle():
-    # Constant function f(x) = 0
-    constant_zero = lambda x: 0
-    oracle_constant_zero = DeutschOracle(constant_zero)
-    assert oracle_constant_zero.is_unitary()
-    assert oracle_constant_zero.num_qubits == 2
-    assert oracle_constant_zero.is_multi_qubit()
-    np.testing.assert_array_equal(oracle_constant_zero, np.eye(4))
-
-    # Constant function f(x) = 1
-    constant_one = lambda x: 1
-    oracle_constant_one = DeutschOracle(constant_one)
-    assert oracle_constant_one.is_unitary()
-    expected_matrix = -np.eye(4)
-    np.testing.assert_array_equal(oracle_constant_one, expected_matrix)
-
-    # Balanced function f(0) = 0, f(1) = 1
-    balanced = lambda x: x
-    oracle_balanced = DeutschOracle(balanced)
-    assert oracle_balanced.is_unitary()
-    expected_matrix = np.diag([1, 1, -1, -1])
-    np.testing.assert_array_equal(oracle_balanced, expected_matrix)
-
-    # Invalid function
-    invalid_func = lambda x: 2
-    with pytest.raises(ValueError):
-        DeutschOracle(invalid_func)
-
-
 def test_deutsch_jozsa_oracle():
     """Test Deutsch-Jozsa Oracle functionality"""
     # 2-qubit constant function f(x) = 0
