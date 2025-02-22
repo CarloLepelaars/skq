@@ -290,10 +290,11 @@ def test_grover_circuit_measurement():
     result = circuit(np.array([1, 0, 0, 0]))
     assert result[2] > 0.5, "Measurement should show high probability for target state"
 
+
 def test_grover_circuit_qiskit_conversion():
     """Test conversion of Grover circuit to Qiskit"""
     circuit = Grover().get_grover_circuit(np.array([0, 0, 1, 0]), n_qubits=2, n_iterations=1, measure=True)
-    
+
     qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 2, "Expected Grover circuit to operate on 2 qubits"
     assert qc.num_clbits == 2, "Expected classical bits for measurement"

@@ -4,10 +4,12 @@ from ..gates.qubit.multi import PhaseOracle, GroverDiffusion
 from ..gates.qubit.single import H, Measure
 from .circuit import Circuit, Concat
 
+
 class Grover:
     """
     Grover's search algorithm.
     """
+
     def get_grover_circuit(self, target_state: np.array, n_qubits: int, n_iterations: int, measure: bool = True) -> Circuit:
         """
         :param target_state: Target state to search for.
