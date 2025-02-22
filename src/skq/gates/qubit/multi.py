@@ -7,6 +7,23 @@ from .single import X, Y, Z
 from ...quantum_info.state import Statevector
 
 
+class DeutschOracle(QubitGate):
+    """
+    Oracle for Deutsch algorithm with ancilla qubit.
+    Implements |x,y⟩ -> |x, y⊕f(x)⟩
+
+    :param f: Function that takes an integer x (0 or 1) and returns 0 or 1
+    """
+
+    def __new__(cls, f):
+        matrix = np.zeros((4, 4))
+        for x in [0, 1]:
+            matrix[x * 2 + f(x), x * 2] = 1  # |x,0⟩ -> |x,f(x)⟩
+            matrix[x * 2 + (1 - f(x)), x * 2 + 1] = 1  # |x,1⟩ -> |x,1-f(x)⟩
+
+        return super().__new__(cls, matrix)
+
+
 class DeutschJozsaOracle(QubitGate):
     """
     Oracle for Deutsch-Jozsa algorithm.
