@@ -9,6 +9,7 @@ from skq.circuits.circuit import Circuit, Concat
 from skq.circuits.entangled_states import BellStates, GHZStates, WState
 from skq.gates.qubit import I, H, Measure, CX
 from skq.gates.base import BaseGate
+from skq.circuits.grover import Grover
 
 
 def test_circuit_basic_operation():
@@ -274,3 +275,25 @@ cx q[1], q[2];
 cx q[0], q[1];
 x q[0];"""
     assert qasm == expected_qasm, "QASM output doesn't match expected W state circuit"
+
+
+def test_grover_circuit_creation():
+    """Test creation of a basic Grover search circuit"""
+    circuit = Grover().get_grover_circuit(np.array([0, 0, 1, 0]), n_qubits=2, n_iterations=1, measure=False)
+    result = circuit(np.array([1, 0, 0, 0]))
+    assert abs(result[2]) > abs(result[0]), "Target state amplitude should be amplified"
+
+
+def test_grover_circuit_measurement():
+    """Test Grover search circuit with measurement"""
+    circuit = Grover().get_grover_circuit(np.array([0, 0, 1, 0]), n_qubits=2, n_iterations=1, measure=True)
+    result = circuit(np.array([1, 0, 0, 0]))
+    assert result[2] > 0.5, "Measurement should show high probability for target state"
+
+def test_grover_circuit_qiskit_conversion():
+    """Test conversion of Grover circuit to Qiskit"""
+    circuit = Grover().get_grover_circuit(np.array([0, 0, 1, 0]), n_qubits=2, n_iterations=1, measure=True)
+    
+    qc = circuit.convert(framework="qiskit")
+    assert qc.num_qubits == 2, "Expected Grover circuit to operate on 2 qubits"
+    assert qc.num_clbits == 2, "Expected classical bits for measurement"
