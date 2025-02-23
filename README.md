@@ -30,33 +30,35 @@ pip install -U skq
 
 ### Circuit Conversion
 
-Run this code snippet to initialize a Bell State and convert to Qiskit and OpenQASM.
+Run this code snippet to initialize Grover's algorithm and convert to Qiskit to run on quantum hardware. The algorithm can also be run within `skq` as a classical simulation.
 
 ```python
-from skq.circuits.entangled_states import BellStates
+from skq.circuits import Grover
 
-# Initialize Bell State skq Circuit
-circuit = BellStates().get_bell_state(1)
+# Initialize Grover's search skq Circuit
+circuit = Grover().get_grover_circuit(n_qubits=3, target_state=np.array([0, 0, 0, 0, 1, 0, 0, 0]), n_iterations=1)
 
 # Conversion to Qiskit
 qiskit_circuit = circuit.convert(framework="qiskit")
 qiskit_circuit.draw()
-#      ┌───┐     
-# q_0: ┤ H ├──■──
-#      └───┘┌─┴─┐
-# q_1: ─────┤ X ├
-#           └───┘
+#      ┌───┐┌──────────────┐┌──────────────────┐┌─┐      
+# q_0: ┤ H ├┤0             ├┤0                 ├┤M├──────
+#      ├───┤│              ││                  │└╥┘┌─┐   
+# q_1: ┤ H ├┤1 PhaseOracle ├┤1 GroverDiffusion ├─╫─┤M├───
+#      ├───┤│              ││                  │ ║ └╥┘┌─┐
+# q_2: ┤ H ├┤2             ├┤2                 ├─╫──╫─┤M├
+#      └───┘└──────────────┘└──────────────────┘ ║  ║ └╥┘
+# c: 3/══════════════════════════════════════════╩══╩══╩═
+#                                                0  1  2 
 
-# Conversion to OpenQASM
-qasm_circuit = circuit.convert(framework="qasm")
-print(qasm_circuit)
-# h q[0];
-# cx q[0], q[1];
+# Run circuit as classical simulation
+print(grover([1,0,0,0,0,0,0,0]))
+# array([0.03125, 0.03125, 0.03125, 0.03125, 0.78125, 0.03125, 0.03125, 0.03125])
 ```
 
 ### Circuits from scratch
 
-You can also build your own custom circuits from scratch using individual gates.
+You can also build your own custom circuits from scratch using individual gates. All gates are convertable to popular frameworks like Qiskit and OpenQASM.
 
 ```python
 from skq.gates import H, I, CX
