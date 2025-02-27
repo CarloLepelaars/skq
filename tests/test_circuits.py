@@ -12,6 +12,7 @@ from skq.circuits.entangled_states import BellStates, GHZStates, WState
 from skq.circuits.grover import Grover
 from skq.circuits.deutsch import Deutsch, DeutschJozsa
 
+
 def test_circuit_basic_operation():
     """Test that a Circuit can execute a simple sequence of gates"""
     circuit = Circuit([H()])
@@ -277,7 +278,6 @@ x q[0];"""
     assert qasm == expected_qasm, "QASM output doesn't match expected W state circuit"
 
 
-
 def test_grover_circuit_creation():
     """Test creation of a basic Grover search circuit"""
     circuit = Grover().circuit(np.array([0, 0, 1, 0]), n_qubits=2, n_iterations=1, measure=False)
@@ -303,51 +303,55 @@ def test_grover_circuit_qiskit_conversion():
 
 def test_deutsch_constant_function():
     """Test Deutsch's algorithm with a constant function"""
+
     # Constant function that always returns 0
     def f_constant(x):
         return 0
 
     deutsch = Deutsch()
     circuit = deutsch.circuit(f_constant, measure=False)
-    result = circuit([1,0,0,0])
-    expected_output = np.array([0.707,-0.707,0,0], dtype=complex)
+    result = circuit([1, 0, 0, 0])
+    expected_output = np.array([0.707, -0.707, 0, 0], dtype=complex)
     np.testing.assert_array_almost_equal(result, expected_output, decimal=3)
 
 
 def test_deutsch_balanced_function():
     """Test Deutsch's algorithm with a balanced function"""
+
     # Balanced function that returns the input
     def f_balanced(x):
         return x
-    
+
     deutsch = Deutsch()
     circuit = deutsch.circuit(f_balanced, measure=False)
-    result = circuit([1,0,0,0])
-    expected_output = np.array([0,0,0.707,-0.707], dtype=complex)
+    result = circuit([1, 0, 0, 0])
+    expected_output = np.array([0, 0, 0.707, -0.707], dtype=complex)
     np.testing.assert_array_almost_equal(result, expected_output, decimal=3)
 
 
 def test_deutsch_with_measurement():
     """Test Deutsch's algorithm with measurement"""
+
     # Balanced function
     def f_balanced(x):
         return x
-    
+
     deutsch = Deutsch()
     circuit = deutsch.circuit(f_balanced, measure=True)
-    result = circuit([1,0,0,0])
-    expected_output = np.array([0,0,0.5,0.5])
+    result = circuit([1, 0, 0, 0])
+    expected_output = np.array([0, 0, 0.5, 0.5])
     np.testing.assert_array_almost_equal(result, expected_output)
 
 
 def test_deutsch_qiskit_conversion():
     """Test conversion of Deutsch's algorithm circuit to Qiskit"""
+
     def f_constant(x):
         return 0
-    
+
     deutsch = Deutsch()
     circuit = deutsch.circuit(f_constant, measure=True)
-    
+
     qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 2, "Expected Deutsch circuit to operate on 2 qubits"
     assert qc.num_clbits == 2, "Expected classical bits for measurement"
@@ -355,51 +359,55 @@ def test_deutsch_qiskit_conversion():
 
 def test_deutsch_jozsa_constant_function():
     """Test Deutsch-Jozsa algorithm with a constant function"""
+
     # Constant function that always returns 0
     def f_constant(x):
         return 0
-    
+
     dj = DeutschJozsa()
     circuit = dj.circuit(f_constant, n_bits=3, measure=False)
-    result = circuit([1,0,0,0,0,0,0,0])
-    expected_output = np.array([0,1,0,0,0,0,0,0])
+    result = circuit([1, 0, 0, 0, 0, 0, 0, 0])
+    expected_output = np.array([0, 1, 0, 0, 0, 0, 0, 0])
     np.testing.assert_array_almost_equal(result, expected_output)
 
 
 def test_deutsch_jozsa_balanced_function():
     """Test Deutsch-Jozsa algorithm with a balanced function"""
+
     # Balanced function that returns parity (balanced for n > 1)
     def f_balanced(x):
-        return bin(x).count('1') % 2
-    
+        return bin(x).count("1") % 2
+
     dj = DeutschJozsa()
     circuit = dj.circuit(f_balanced, n_bits=3, measure=False)
-    result = circuit([1,0,0,0,0,0,0,0])
-    expected_output = np.array([0,0,0,0,0,0,1,0])
+    result = circuit([1, 0, 0, 0, 0, 0, 0, 0])
+    expected_output = np.array([0, 0, 0, 0, 0, 0, 1, 0])
     np.testing.assert_array_almost_equal(result, expected_output)
 
 
 def test_deutsch_jozsa_with_measurement():
     """Test Deutsch-Jozsa algorithm with measurement"""
+
     # Balanced function
     def f_balanced(x):
-        return bin(x).count('1') % 2
-    
+        return bin(x).count("1") % 2
+
     dj = DeutschJozsa()
     circuit = dj.circuit(f_balanced, n_bits=3, measure=True)
-    result = circuit([1,0,0,0,0,0,0,0])
-    expected_output = np.array([0,0,0,0,0,0,1,0])
+    result = circuit([1, 0, 0, 0, 0, 0, 0, 0])
+    expected_output = np.array([0, 0, 0, 0, 0, 0, 1, 0])
     np.testing.assert_array_almost_equal(result, expected_output)
 
 
 def test_deutsch_jozsa_qiskit_conversion():
     """Test conversion of Deutsch-Jozsa algorithm circuit to Qiskit"""
+
     def f_constant(x):
         return 0
-    
+
     dj = DeutschJozsa()
     circuit = dj.circuit(f_constant, n_bits=3, measure=True)
-    
+
     qc = circuit.convert(framework="qiskit")
     assert qc.num_qubits == 3, "Expected Deutsch-Jozsa circuit to operate on 3 qubits"
     assert qc.num_clbits == 3, "Expected classical bits for measurement"
