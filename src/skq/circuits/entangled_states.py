@@ -13,7 +13,7 @@ class BellStates:
     - https://quantumcomputing.stackexchange.com/a/2260
     """
 
-    def get_bell_state(self, configuration: int = 1) -> Circuit:
+    def circuit(self, configuration: int = 1) -> Circuit:
         """
         Return circuit for the Bell State based on the configuration.
         :param configuration: Configuration of the Bell State.
@@ -25,15 +25,15 @@ class BellStates:
         """
         assert configuration in [1, 2, 3, 4], f"Invalid Bell State configuration: {configuration}. Configurations are: 1: |Φ+⟩, 2: |Φ-⟩, 3: |Ψ+⟩, 4: |Ψ-⟩"
         config_mapping = {
-            1: self.get_bell_state_omega_plus,
-            2: self.get_bell_state_omega_minus,
-            3: self.get_bell_state_phi_plus,
-            4: self.get_bell_state_phi_minus,
+            1: self.omega_plus,
+            2: self.omega_minus,
+            3: self.phi_plus,
+            4: self.phi_minus,
         }
         pipe = config_mapping[configuration]()
         return pipe
 
-    def get_bell_state_omega_plus(self) -> Circuit:
+    def omega_plus(self) -> Circuit:
         """
         Return circuit for the entangled state |Φ+⟩ =|00> + |11> / sqrt(2).
         This corresponds to the 1st bell state.
@@ -41,7 +41,7 @@ class BellStates:
         """
         return Circuit([Concat([H(), I()]), CX()])
 
-    def get_bell_state_omega_minus(self) -> Circuit:
+    def omega_minus(self) -> Circuit:
         """
         Return circuit for the entangled state |Φ−⟩ =|00> - |11> / sqrt(2).
         This corresponds to the 2nd bell state.
@@ -50,7 +50,7 @@ class BellStates:
         """
         return Circuit([Concat([H(), I()]), CX(), Concat([Z(), I()])])
 
-    def get_bell_state_phi_plus(self) -> Circuit:
+    def phi_plus(self) -> Circuit:
         """
         Return circuit for the entangled state  |Ψ+⟩ =|01> + |10> / sqrt(2).
         This corresponds to the 3rd bell state.
@@ -58,7 +58,7 @@ class BellStates:
         """
         return Circuit([Concat([H(), X()]), CX()])
 
-    def get_bell_state_phi_minus(self) -> Circuit:
+    def phi_minus(self) -> Circuit:
         """
         Return circuit for the entangled state |Ψ−⟩ =|01> - |10> / sqrt(2).
         This corresponds to the 4th bell state.
@@ -73,7 +73,7 @@ class GHZStates:
     Greenberger-Horne-Zeilinger (GHZ) states.
     """
 
-    def get_ghz_state(self, n_qubits: int) -> Circuit:
+    def circuit(self, n_qubits: int) -> Circuit:
         """
         :param n_qubits: Number of qubits in the GHZ state.
         :return: Circuit for the GHZ state.
@@ -85,7 +85,7 @@ class GHZStates:
 class WState:
     """3-qubit W State: (|001⟩ + |010⟩ + |100⟩)/√3"""
 
-    def get_w_state(self) -> Circuit:
+    def circuit(self) -> Circuit:
         theta = -2 * np.arccos(1 / np.sqrt(3))
         return Circuit(
             [

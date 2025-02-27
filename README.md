@@ -36,7 +36,7 @@ Run this code snippet to initialize Grover's algorithm and convert to Qiskit to 
 from skq.circuits import Grover
 
 # Initialize Grover's search skq Circuit
-circuit = Grover().get_grover_circuit(n_qubits=3, target_state=np.array([0, 0, 0, 0, 1, 0, 0, 0]), n_iterations=1)
+circuit = Grover().circuit(n_qubits=3, target_state=np.array([0, 0, 0, 0, 1, 0, 0, 0]), n_iterations=1)
 
 # Conversion to Qiskit
 qiskit_circuit = circuit.convert(framework="qiskit")
@@ -58,7 +58,7 @@ print(grover([1,0,0,0,0,0,0,0]))
 
 ### Circuits from scratch
 
-You can also build your own custom circuits from scratch using individual gates. All gates are convertable to popular frameworks like Qiskit and OpenQASM.
+You can also build your own custom circuits from scratch using individual gates. All gates can be converted to popular frameworks like Qiskit and OpenQASM.
 
 ```python
 from skq.gates import H, I, CX
