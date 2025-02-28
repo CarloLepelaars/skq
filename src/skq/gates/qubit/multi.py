@@ -22,7 +22,7 @@ class DeutschOracle(QubitGate):
             matrix[x * 2 + (1 - f(x)), x * 2 + 1] = 1  # |x,1⟩ -> |x,1-f(x)⟩
 
         return super().__new__(cls, matrix)
-    
+
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         # Reverse the order of qubits for Qiskit's little-endian convention
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="DeutschOracle")
@@ -291,6 +291,7 @@ class CT(CPhase):
     def to_qiskit(self) -> qiskit.circuit.library.TGate:
         return qiskit.circuit.library.TGate().control(1)
 
+
 class SWAP(QubitGate):
     """Swap gate. Swaps the states of two qubits."""
 
@@ -470,23 +471,24 @@ class AsymmetricECR(QubitGate):
     def __new__(cls, theta1: float, theta2: float):
         return super().__new__(cls, CR(theta1) @ CR(theta2))
 
+
 class CU(QubitGate):
     """
     General Controlled-Unitary gate.
     Applies a unitary operation conditionally based on a control qubit.
     If the control qubit is |1>, the unitary is applied to the target qubit(s).
     Only use this for custom unitaries. Else use standard controlled gates like CX, CY, CZ, CH, CS, CT, CPhase, etc.
-    
+
     :param unitary: The unitary gate to be controlled. Must be a QubitGate.
     """
 
     def __new__(cls, unitary: QubitGate):
         assert isinstance(unitary, QubitGate), "Input must be a QubitGate"
-        
+
         n_target_qubits = unitary.num_qubits
-        dim = 2 ** (n_target_qubits + 1) 
+        dim = 2 ** (n_target_qubits + 1)
         matrix = np.eye(dim, dtype=complex)
-        block_size = 2 ** n_target_qubits
+        block_size = 2**n_target_qubits
         matrix[block_size:, block_size:] = unitary
         obj = super().__new__(cls, matrix)
         obj.unitary = unitary
@@ -497,9 +499,8 @@ class CU(QubitGate):
         try:
             base_gate = self.unitary.to_qiskit()
             return base_gate.control(1)
-        except:
-            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), 
-                                                     label=f"c-{self.unitary.__class__.__name__}")
+        except (AttributeError, TypeError, ValueError):
+            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label=f"c-{self.unitary.__class__.__name__}")
 
     def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
         """Convert to a PennyLane controlled gate."""
@@ -514,7 +515,7 @@ class MCU(QubitGate):
     The unitary is applied to target qubit(s) only if all control qubits are |1>.
     Only use this for custom unitaries. Else use standard controlled gates like CX, CY, CZ, CH, CS, CT, CPhase, etc.
 
-    
+
     :param unitary: The unitary gate to be controlled. Must be a QubitGate.
     :param num_ctrl_qubits: Number of control qubits.
     """
@@ -524,12 +525,12 @@ class MCU(QubitGate):
         assert num_ctrl_qubits >= 1, "MCU gate must have at least one control qubit."
         n_target_qubits = unitary.num_qubits
         total_qubits = n_target_qubits + num_ctrl_qubits
-        dim = 2 ** total_qubits
+        dim = 2**total_qubits
         matrix = np.eye(dim, dtype=complex)
-        unitary_size = 2 ** n_target_qubits
+        unitary_size = 2**n_target_qubits
         start_idx = dim - unitary_size
         matrix[start_idx:, start_idx:] = unitary
-        
+
         obj = super().__new__(cls, matrix)
         obj.unitary = unitary
         obj.num_ctrl_qubits = num_ctrl_qubits
@@ -541,9 +542,8 @@ class MCU(QubitGate):
         try:
             base_gate = self.unitary.to_qiskit()
             return base_gate.control(self.num_ctrl_qubits)
-        except:
-            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), 
-                                                     label=f"mc-{self.unitary.__class__.__name__}")
+        except (AttributeError, TypeError, ValueError):
+            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label=f"mc-{self.unitary.__class__.__name__}")
 
     def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
         """Convert to a PennyLane multi-controlled gate."""
