@@ -22,6 +22,10 @@ class DeutschOracle(QubitGate):
             matrix[x * 2 + (1 - f(x)), x * 2 + 1] = 1  # |x,1⟩ -> |x,1-f(x)⟩
 
         return super().__new__(cls, matrix)
+    
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        # Reverse the order of qubits for Qiskit's little-endian convention
+        return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="DeutschOracle")
 
 
 class DeutschJozsaOracle(QubitGate):
@@ -95,6 +99,77 @@ class GroverDiffusion(QubitGate):
     def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
         # Reverse the order of qubits for Qiskit's little-endian convention
         return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), label="GroverDiffusion")
+
+
+class QFT(QubitGate):
+    """
+    n-qubit Quantum Fourier Transform gate.
+    :param n_qubits: The number of qubits in the system.
+    :param inverse: Whether to use the inverse QFT.
+    - For example, in Shor's algorithm we use the inverse QFT.
+    """
+
+    def __new__(cls, n_qubits: int, inverse: bool = False):
+        dim = 2**n_qubits
+        matrix = np.zeros((dim, dim), dtype=complex)
+        # Use positive exponent for QFT, negative for QFT†
+        sign = -1 if inverse else 1
+        omega = np.exp(sign * 2j * np.pi / dim)
+
+        for i in range(dim):
+            for j in range(dim):
+                matrix[i, j] = omega ** (i * j) / np.sqrt(dim)
+
+        instance = super().__new__(cls, matrix)
+        instance.inverse = inverse
+        return instance
+
+    def to_qiskit(self):
+        """Convert to a Qiskit circuit implementing QFT or QFT†."""
+        n = self.num_qubits
+        name = "QFT†" if self.inverse else "QFT"
+
+        def create_qft(n_qubits):
+            circuit = qiskit.QuantumCircuit(n_qubits, name=name)
+            for i in range(n_qubits):
+                circuit.h(i)
+                for j in range(i + 1, n_qubits):
+                    circuit.cp(2 * np.pi / 2 ** (j - i + 1), i, j)
+            return circuit
+
+        qc = create_qft(n)
+        if self.inverse:
+            qc = qc.inverse()
+        qc.name = name
+        return qc
+
+    def to_qasm(self, qubits: list[int]) -> str:
+        """Convert to OpenQASM code."""
+        n = self.num_qubits
+        assert len(qubits) == n, f"OpenQASM QFT requires {n} qubits."
+
+        name = "QFT†" if self.inverse else "QFT"
+        qasm_str = f"// {name} circuit (big-endian convention)\n"
+
+        if self.inverse:
+            for i in range(n // 2):
+                qasm_str += f"swap q[{qubits[i]}], q[{qubits[n-i-1]}];\n"
+            for i in range(n - 1, -1, -1):
+                for j in range(n - 1, i, -1):
+                    angle = -np.pi / (2 ** (j - i))
+                    qasm_str += f"cu1({angle}) q[{qubits[i]}], q[{qubits[j]}];\n"
+                qasm_str += f"h q[{qubits[i]}];\n"
+        else:
+            for i in range(n):
+                qasm_str += f"h q[{qubits[i]}];\n"
+                for j in range(i + 1, n):
+                    angle = np.pi / (2 ** (j - i))
+                    qasm_str += f"cu1({angle}) q[{qubits[i]}], q[{qubits[j]}];\n"
+            for i in range(n // 2):
+                qasm_str += f"swap q[{qubits[i]}], q[{qubits[n-i-1]}];\n"
+
+        qasm_str += f"// End of {name} circuit\n"
+        return qasm_str
 
 
 class CX(QubitGate):
@@ -215,7 +290,6 @@ class CT(CPhase):
 
     def to_qiskit(self) -> qiskit.circuit.library.TGate:
         return qiskit.circuit.library.TGate().control(1)
-
 
 class SWAP(QubitGate):
     """Swap gate. Swaps the states of two qubits."""
@@ -395,3 +469,83 @@ class AsymmetricECR(QubitGate):
 
     def __new__(cls, theta1: float, theta2: float):
         return super().__new__(cls, CR(theta1) @ CR(theta2))
+
+class CU(QubitGate):
+    """
+    General Controlled-Unitary gate.
+    Applies a unitary operation conditionally based on a control qubit.
+    If the control qubit is |1>, the unitary is applied to the target qubit(s).
+    Only use this for custom unitaries. Else use standard controlled gates like CX, CY, CZ, CH, CS, CT, CPhase, etc.
+    
+    :param unitary: The unitary gate to be controlled. Must be a QubitGate.
+    """
+
+    def __new__(cls, unitary: QubitGate):
+        assert isinstance(unitary, QubitGate), "Input must be a QubitGate"
+        
+        n_target_qubits = unitary.num_qubits
+        dim = 2 ** (n_target_qubits + 1) 
+        matrix = np.eye(dim, dtype=complex)
+        block_size = 2 ** n_target_qubits
+        matrix[block_size:, block_size:] = unitary
+        obj = super().__new__(cls, matrix)
+        obj.unitary = unitary
+        obj.n_target_qubits = n_target_qubits
+        return obj
+
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        try:
+            base_gate = self.unitary.to_qiskit()
+            return base_gate.control(1)
+        except:
+            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), 
+                                                     label=f"c-{self.unitary.__class__.__name__}")
+
+    def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
+        """Convert to a PennyLane controlled gate."""
+        assert len(wires) == self.num_qubits, f"PennyLane CU gate requires {self.num_qubits} wires."
+        return qml.QubitUnitary(self, wires=wires)
+
+
+class MCU(QubitGate):
+    """
+    Multi-Controlled Unitary gate.
+    Applies a unitary operation conditionally based on multiple control qubits.
+    The unitary is applied to target qubit(s) only if all control qubits are |1>.
+    Only use this for custom unitaries. Else use standard controlled gates like CX, CY, CZ, CH, CS, CT, CPhase, etc.
+
+    
+    :param unitary: The unitary gate to be controlled. Must be a QubitGate.
+    :param num_ctrl_qubits: Number of control qubits.
+    """
+
+    def __new__(cls, unitary: QubitGate, num_ctrl_qubits: int):
+        assert isinstance(unitary, QubitGate), "Input must be a QubitGate"
+        assert num_ctrl_qubits >= 1, "MCU gate must have at least one control qubit."
+        n_target_qubits = unitary.num_qubits
+        total_qubits = n_target_qubits + num_ctrl_qubits
+        dim = 2 ** total_qubits
+        matrix = np.eye(dim, dtype=complex)
+        unitary_size = 2 ** n_target_qubits
+        start_idx = dim - unitary_size
+        matrix[start_idx:, start_idx:] = unitary
+        
+        obj = super().__new__(cls, matrix)
+        obj.unitary = unitary
+        obj.num_ctrl_qubits = num_ctrl_qubits
+        obj.n_target_qubits = n_target_qubits
+        return obj
+
+    def to_qiskit(self) -> qiskit.circuit.library.UnitaryGate:
+        """Convert to a Qiskit controlled gate."""
+        try:
+            base_gate = self.unitary.to_qiskit()
+            return base_gate.control(self.num_ctrl_qubits)
+        except:
+            return qiskit.circuit.library.UnitaryGate(self.convert_endianness(), 
+                                                     label=f"mc-{self.unitary.__class__.__name__}")
+
+    def to_pennylane(self, wires: list[int]) -> qml.QubitUnitary:
+        """Convert to a PennyLane multi-controlled gate."""
+        assert len(wires) == self.num_qubits, f"PennyLane MCU gate requires {self.num_qubits} wires."
+        return qml.QubitUnitary(self, wires=wires)
