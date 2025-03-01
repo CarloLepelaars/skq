@@ -11,6 +11,8 @@ Scientific Toolkit for Quantum Computing
 
 This library is used in the [q4p (Quantum Computing for Programmers)](https://github.com/CarloLepelaars/q4p) course.
 
+![q4p](https://carlo.ai/images/q4p.png)
+
 NOTE: This library is developed for educational purposes. While we strive for correctness of everything, the code is provided as is and not guaranteed to be bug-free. For sensitive applications make sure you check computations. 
 
 ## Why SKQ?
@@ -101,3 +103,5 @@ print(qasm_circuit)
 # h q[0];
 # cx q[0], q[1];
 ```
+
+![q4p](https://carlo.ai/images/q4p.png)
