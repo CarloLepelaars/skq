@@ -54,8 +54,10 @@ h_gate.draw(output="mpl")
 You can create quantum circuits by combining gates:
 
 ```python
-from skq.circuits import Circuit, Concat
 import numpy as np
+
+from skq.gates.qubit import H, I, CX
+from skq.circuits import Circuit, Concat
 
 # Create a Bell state circuit
 bell_circuit = Circuit([
@@ -91,8 +93,9 @@ print(qasm_code)
 `skq` includes implementations of common quantum algorithms:
 
 ```python
-from skq.circuits import Grover
 import numpy as np
+
+from skq.circuits import Grover
 
 # Create a Grover search circuit for 3 qubits
 # Searching for state |100⟩ (binary 4)
