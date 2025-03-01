@@ -46,7 +46,7 @@ def matrix_heatmap(matrix: np.array, title: str = "Matrix Heatmap") -> go.Figure
     :return: A plotly figure
     """
     fig = go.Figure(data=go.Heatmap(z=np.real(matrix), colorscale="RdBu", zmin=-1, zmax=1, text=np.real(matrix).round(3), texttemplate="%{text}", textfont={"size": 10}, hoverongaps=False))
-    fig.update_layout(title=title, xaxis_title="Column Index", yaxis_title="Row Index")
+    fig.update_layout(title=title, xaxis_title="Column Index", yaxis_title="Row Index", yaxis=dict(autorange="reversed"))
     return fig
 
 
