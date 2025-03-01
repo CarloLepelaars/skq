@@ -1,0 +1,26 @@
+:root {
+  --md-primary-fg-color: #007bff;        /* Deeper blue that matches the q4p navbar */
+}
+
+/* Make header text white for better contrast */
+.md-header {
+  color: white;
+}
+
+.md-tabs {
+  color: white;
+}
+
+/* Ensure navigation text is white and fully visible */
+.md-header__title, 
+.md-header__topic, 
+.md-header__button, 
+.md-tabs__link {
+  color: white !important;
+  opacity: 1;
+}
+
+/* Make sure hover states are visible but distinct */
+.md-tabs__link:hover {
+  opacity: 0.8;
+} 
