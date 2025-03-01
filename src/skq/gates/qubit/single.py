@@ -206,6 +206,29 @@ class RZ(QubitGate):
         return f"rz({self.phi}) q[{qubits[0]}];"
 
 
+class R(QubitGate):
+    """Generalized 3-axis rotation gate.
+
+    Implements a rotation by composing: RZ(gamma) · RY(beta) · RZ(alpha)
+    """
+
+    def __new__(cls, theta, phi, lam):
+        obj = super().__new__(cls, RZ(lam) @ RY(phi) @ RZ(theta))
+        obj.theta = theta
+        obj.phi = phi
+        obj.lam = lam
+        return obj
+
+    def to_qiskit(self) -> qiskit.circuit.library.UGate:
+        return qiskit.circuit.library.UGate(self.theta, self.phi, self.lam)
+
+    def to_pennylane(self, wires: list[int] | int) -> qml.Rot:
+        return qml.Rot(phi=self.theta, theta=self.phi, omega=self.lam, wires=wires)
+
+    def to_qasm(self, qubits: list[int]) -> str:
+        return f"U({self.theta}, {self.phi}, {self.lam}) q[{qubits[0]}];"
+
+
 class U3(QubitGate):
     """
     Rotation around 3-axes. Single qubit gate.
