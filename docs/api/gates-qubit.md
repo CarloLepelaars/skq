@@ -18,10 +18,13 @@ The `QubitGate` class serves as the foundation for all qubit-based quantum gates
 The Identity gate leaves the qubit state unchanged.
 
 **Matrix Representation:**
-```
-I = [1 0]
-    [0 1]
-```
+
+$$
+\text{I} = \begin{pmatrix}
+1 & 0 \\
+0 & 1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.I
     options:
@@ -33,10 +36,13 @@ I = [1 0]
 The Pauli-X gate is the quantum equivalent of the classical NOT gate. It flips the state of the qubit.
 
 **Matrix Representation:**
-```
-X = [0 1]
-    [1 0]
-```
+
+$$
+\text{X} = \begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.X
     options:
@@ -48,10 +54,13 @@ X = [0 1]
 The Pauli-Y gate rotates the qubit state around the Y-axis of the Bloch sphere.
 
 **Matrix Representation:**
-```
-Y = [0  -i]
-    [i   0]
-```
+
+$$
+\text{Y} = \begin{pmatrix}
+0 & -i \\
+i & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.Y
     options:
@@ -63,10 +72,13 @@ Y = [0  -i]
 The Pauli-Z gate rotates the qubit state around the Z-axis of the Bloch sphere.
 
 **Matrix Representation:**
-```
-Z = [1  0]
-    [0 -1]
-```
+
+$$
+\text{Z} = \begin{pmatrix}
+1 & 0 \\
+0 & -1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.Z
     options:
@@ -78,10 +90,13 @@ Z = [1  0]
 The Hadamard gate creates a superposition of the |0⟩ and |1⟩ states.
 
 **Matrix Representation:**
-```
-H = 1/√2 * [1  1]
-           [1 -1]
-```
+
+$$
+\text{H} = \frac{1}{\sqrt{2}} \begin{pmatrix}
+1 & 1 \\
+1 & -1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.H
     options:
@@ -93,10 +108,13 @@ H = 1/√2 * [1  1]
 The general Phase gate applies a phase shift to the |1⟩ state.
 
 **Matrix Representation:**
-```
-Phase(φ) = [1      0    ]
-           [0  e^(iφ)]
-```
+
+$$
+\text{Phase}(\phi) = \begin{pmatrix}
+1 & 0 \\
+0 & e^{i\phi}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.Phase
     options:
@@ -108,10 +126,13 @@ Phase(φ) = [1      0    ]
 The S gate is a special case of the Phase gate with φ = π/2.
 
 **Matrix Representation:**
-```
-S = [1  0]
-    [0  i]
-```
+
+$$
+\text{S} = \begin{pmatrix}
+1 & 0 \\
+0 & i
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.S
     options:
@@ -123,10 +144,13 @@ S = [1  0]
 The T gate is a special case of the Phase gate with φ = π/4.
 
 **Matrix Representation:**
-```
-T = [1       0    ]
-    [0  e^(iπ/4)]
-```
+
+$$
+\text{T} = \begin{pmatrix}
+1 & 0 \\
+0 & e^{i\pi/4}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.T
     options:
@@ -138,10 +162,13 @@ T = [1       0    ]
 The RX gate rotates the qubit state around the X-axis of the Bloch sphere.
 
 **Matrix Representation:**
-```
-RX(φ) = [    cos(φ/2)  -i·sin(φ/2)]
-        [-i·sin(φ/2)      cos(φ/2)]
-```
+
+$$
+\text{RX}(\phi) = \begin{pmatrix}
+\cos(\phi/2) & -i\sin(\phi/2) \\
+-i\sin(\phi/2) & \cos(\phi/2)
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.RX
     options:
@@ -153,10 +180,13 @@ RX(φ) = [    cos(φ/2)  -i·sin(φ/2)]
 The RY gate rotates the qubit state around the Y-axis of the Bloch sphere.
 
 **Matrix Representation:**
-```
-RY(φ) = [cos(φ/2)  -sin(φ/2)]
-        [sin(φ/2)   cos(φ/2)]
-```
+
+$$
+\text{RY}(\phi) = \begin{pmatrix}
+\cos(\phi/2) & -\sin(\phi/2) \\
+\sin(\phi/2) & \cos(\phi/2)
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.RY
     options:
@@ -168,10 +198,13 @@ RY(φ) = [cos(φ/2)  -sin(φ/2)]
 The RZ gate rotates the qubit state around the Z-axis of the Bloch sphere.
 
 **Matrix Representation:**
-```
-RZ(φ) = [e^(-iφ/2)       0    ]
-        [    0      e^(iφ/2)]
-```
+
+$$
+\text{RZ}(\phi) = \begin{pmatrix}
+e^{-i\phi/2} & 0 \\
+0 & e^{i\phi/2}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.single.RZ
     options:
@@ -183,9 +216,10 @@ RZ(φ) = [e^(-iφ/2)       0    ]
 The R gate implements a general rotation by composing RZ, RY, and RZ rotations.
 
 **Matrix Representation:**
-```
-R(θ,φ,λ) = RZ(λ) · RY(φ) · RZ(θ)
-```
+
+$$
+\text{R}(\theta,\phi,\lambda) = \text{RZ}(\lambda) \cdot \text{RY}(\phi) \cdot \text{RZ}(\theta)
+$$
 
 ::: skq.gates.qubit.single.R
     options:
@@ -197,9 +231,10 @@ R(θ,φ,λ) = RZ(λ) · RY(φ) · RZ(θ)
 The U3 gate is a universal single-qubit gate that can represent any single-qubit operation.
 
 **Matrix Representation:**
-```
-U3(θ,φ,δ) = RZ(δ) · RY(φ) · RX(θ)
-```
+
+$$
+\text{U3}(\theta,\phi,\delta) = \text{RZ}(\delta) \cdot \text{RY}(\phi) \cdot \text{RX}(\theta)
+$$
 
 ::: skq.gates.qubit.single.U3
     options:
@@ -222,12 +257,15 @@ The Measure gate performs a measurement on the qubit.
 The CNOT (Controlled-NOT) gate flips the target qubit if the control qubit is |1⟩.
 
 **Matrix Representation:**
-```
-CX = [1 0 0 0]
-     [0 1 0 0]
-     [0 0 0 1]
-     [0 0 1 0]
-```
+
+$$
+\text{CX} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 \\
+0 & 0 & 1 & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CX
     options:
@@ -239,12 +277,15 @@ CX = [1 0 0 0]
 The CY gate applies a Y gate to the target qubit if the control qubit is |1⟩.
 
 **Matrix Representation:**
-```
-CY = [1 0  0   0]
-     [0 1  0   0]
-     [0 0  0  -i]
-     [0 0  i   0]
-```
+
+$$
+\text{CY} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & -i \\
+0 & 0 & i & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CY
     options:
@@ -256,12 +297,15 @@ CY = [1 0  0   0]
 The CZ gate applies a Z gate to the target qubit if the control qubit is |1⟩.
 
 **Matrix Representation:**
-```
-CZ = [1 0 0  0]
-     [0 1 0  0]
-     [0 0 1  0]
-     [0 0 0 -1]
-```
+
+$$
+\text{CZ} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & -1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CZ
     options:
@@ -273,12 +317,15 @@ CZ = [1 0 0  0]
 The CH gate applies a Hadamard gate to the target qubit if the control qubit is |1⟩.
 
 **Matrix Representation:**
-```
-CH = [1 0                0                 0              ]
-     [0 1                0                 0              ]
-     [0 0  1/√2          1/√2             ]
-     [0 0  1/√2         -1/√2             ]
-```
+
+$$
+\text{CH} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \\
+0 & 0 & \frac{1}{\sqrt{2}} & -\frac{1}{\sqrt{2}}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CH
     options:
@@ -290,12 +337,15 @@ CH = [1 0                0                 0              ]
 The CPhase gate applies a phase shift to the |11⟩ state.
 
 **Matrix Representation:**
-```
-CPhase(φ) = [1 0 0      0     ]
-            [0 1 0      0     ]
-            [0 0 1      0     ]
-            [0 0 0  e^(iφ)]
-```
+
+$$
+\text{CPhase}(\phi) = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & e^{i\phi}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CPhase
     options:
@@ -307,12 +357,15 @@ CPhase(φ) = [1 0 0      0     ]
 The CS gate is a special case of the CPhase gate with φ = π/2.
 
 **Matrix Representation:**
-```
-CS = [1 0 0 0]
-     [0 1 0 0]
-     [0 0 1 0]
-     [0 0 0 i]
-```
+
+$$
+\text{CS} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & i
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CS
     options:
@@ -324,12 +377,15 @@ CS = [1 0 0 0]
 The CT gate is a special case of the CPhase gate with φ = π/4.
 
 **Matrix Representation:**
-```
-CT = [1 0 0      0     ]
-     [0 1 0      0     ]
-     [0 0 1      0     ]
-     [0 0 0  e^(iπ/4)]
-```
+
+$$
+\text{CT} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & e^{i\pi/4}
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CT
     options:
@@ -341,12 +397,15 @@ CT = [1 0 0      0     ]
 The SWAP gate exchanges the states of two qubits.
 
 **Matrix Representation:**
-```
-SWAP = [1 0 0 0]
-       [0 0 1 0]
-       [0 1 0 0]
-       [0 0 0 1]
-```
+
+$$
+\text{SWAP} = \begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.SWAP
     options:
@@ -358,16 +417,19 @@ SWAP = [1 0 0 0]
 The CSWAP gate, also known as the Fredkin gate, swaps two qubits if the control qubit is |1⟩.
 
 **Matrix Representation:**
-```
-CSWAP = [1 0 0 0 0 0 0 0]
-        [0 1 0 0 0 0 0 0]
-        [0 0 1 0 0 0 0 0]
-        [0 0 0 1 0 0 0 0]
-        [0 0 0 0 1 0 0 0]
-        [0 0 0 0 0 0 1 0]
-        [0 0 0 0 0 1 0 0]
-        [0 0 0 0 0 0 0 1]
-```
+
+$$
+\text{CSWAP} = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CSwap
     options:
@@ -379,16 +441,19 @@ CSWAP = [1 0 0 0 0 0 0 0]
 The Toffoli gate, or CCX gate, applies an X gate to the target qubit if both control qubits are |1⟩.
 
 **Matrix Representation:**
-```
-CCX = [1 0 0 0 0 0 0 0]
-      [0 1 0 0 0 0 0 0]
-      [0 0 1 0 0 0 0 0]
-      [0 0 0 1 0 0 0 0]
-      [0 0 0 0 1 0 0 0]
-      [0 0 0 0 0 1 0 0]
-      [0 0 0 0 0 0 0 1]
-      [0 0 0 0 0 0 1 0]
-```
+
+$$
+\text{CCX} = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CCX
     options:
@@ -400,16 +465,19 @@ CCX = [1 0 0 0 0 0 0 0]
 The CCY gate applies a Y gate to the target qubit if both control qubits are |1⟩.
 
 **Matrix Representation:**
-```
-CCY = [1 0 0 0 0 0 0    0   ]
-      [0 1 0 0 0 0 0    0   ]
-      [0 0 1 0 0 0 0    0   ]
-      [0 0 0 1 0 0 0    0   ]
-      [0 0 0 0 1 0 0    0   ]
-      [0 0 0 0 0 1 0    0   ]
-      [0 0 0 0 0 0 0   -i   ]
-      [0 0 0 0 0 0 i    0   ]
-```
+
+$$
+\text{CCY} = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & -i \\
+0 & 0 & 0 & 0 & 0 & 0 & i & 0
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CCY
     options:
@@ -421,16 +489,19 @@ CCY = [1 0 0 0 0 0 0    0   ]
 The CCZ gate applies a Z gate to the target qubit if both control qubits are |1⟩.
 
 **Matrix Representation:**
-```
-CCZ = [1 0 0 0 0 0 0  0]
-      [0 1 0 0 0 0 0  0]
-      [0 0 1 0 0 0 0  0]
-      [0 0 0 1 0 0 0  0]
-      [0 0 0 0 1 0 0  0]
-      [0 0 0 0 0 1 0  0]
-      [0 0 0 0 0 0 1  0]
-      [0 0 0 0 0 0 0 -1]
-```
+
+$$
+\text{CCZ} = \begin{pmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & -1
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.CCZ
     options:
@@ -469,12 +540,15 @@ The MCZ gate applies a Z gate to the target qubit if all control qubits are |1�
 The QFT gate implements the Quantum Fourier Transform, a key component in many quantum algorithms.
 
 **Matrix Representation (for n=2):**
-```
-QFT = 1/2 * [1  1  1  1]
-             [1  i -1 -i]
-             [1 -1  1 -1]
-             [1 -i -1  i]
-```
+
+$$
+\text{QFT} = \frac{1}{2} \begin{pmatrix}
+1 & 1 & 1 & 1 \\
+1 & i & -1 & -i \\
+1 & -1 & 1 & -1 \\
+1 & -i & -1 & i
+\end{pmatrix}
+$$
 
 ::: skq.gates.qubit.multi.QFT
     options:

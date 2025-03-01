@@ -7,7 +7,7 @@ repo_name: CarloLepelaars/skq
 theme:
   name: material
   palette:
-    primary: indigo
+    primary: blue
     accent: cyan
   font:
     text: Ubuntu
