@@ -67,7 +67,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="cyan">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -4053,10 +4053,12 @@ Qiskit using little endian convention, so we permute the order of the qubits.
 <h3 id="identity-gate-i">Identity Gate (I)</h3>
 <p>The Identity gate leaves the qubit state unchanged.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>I = [1 0]
-    [0 1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{I} = \begin{pmatrix}
+1 &amp; 0 \\
+0 &amp; 1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4144,10 +4146,12 @@ Qiskit using little endian convention, so we permute the order of the qubits.
 </div><h3 id="pauli-x-gate-not">Pauli-X Gate (NOT)</h3>
 <p>The Pauli-X gate is the quantum equivalent of the classical NOT gate. It flips the state of the qubit.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>X = [0 1]
-    [1 0]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{X} = \begin{pmatrix}
+0 &amp; 1 \\
+1 &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4226,10 +4230,12 @@ Qiskit using little endian convention, so we permute the order of the qubits.
 </div><h3 id="pauli-y-gate">Pauli-Y Gate</h3>
 <p>The Pauli-Y gate rotates the qubit state around the Y-axis of the Bloch sphere.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>Y = [0  -i]
-    [i   0]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{Y} = \begin{pmatrix}
+0 &amp; -i \\
+i &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4308,10 +4314,12 @@ Qiskit using little endian convention, so we permute the order of the qubits.
 </div><h3 id="pauli-z-gate">Pauli-Z Gate</h3>
 <p>The Pauli-Z gate rotates the qubit state around the Z-axis of the Bloch sphere.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>Z = [1  0]
-    [0 -1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{Z} = \begin{pmatrix}
+1 &amp; 0 \\
+0 &amp; -1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4395,10 +4403,12 @@ Special case of a phase shift gate with phi = pi.</p>
 </div><h3 id="hadamard-gate-h">Hadamard Gate (H)</h3>
 <p>The Hadamard gate creates a superposition of the |0⟩ and |1⟩ states.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>H = 1/√2 * [1  1]
-           [1 -1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{H} = \frac{1}{\sqrt{2}} \begin{pmatrix}
+1 &amp; 1 \\
+1 &amp; -1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4487,10 +4497,12 @@ Special case of a phase shift gate with phi = pi.</p>
 </div><h3 id="phase-gate">Phase Gate</h3>
 <p>The general Phase gate applies a phase shift to the |1⟩ state.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>Phase(φ) = [1      0    ]
-           [0  e^(iφ)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{Phase}(\phi) = \begin{pmatrix}
+1 &amp; 0 \\
+0 &amp; e^{i\phi}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4587,10 +4599,12 @@ Special cases of phase gates:
 </div><h3 id="s-gate-2-phase">S Gate (π/2 Phase)</h3>
 <p>The S gate is a special case of the Phase gate with φ = π/2.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>S = [1  0]
-    [0  i]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{S} = \begin{pmatrix}
+1 &amp; 0 \\
+0 &amp; i
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4671,10 +4685,12 @@ Special cases of phase gates:
 </div><h3 id="t-gate-4-phase">T Gate (π/4 Phase)</h3>
 <p>The T gate is a special case of the Phase gate with φ = π/4.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>T = [1       0    ]
-    [0  e^(iπ/4)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{T} = \begin{pmatrix}
+1 &amp; 0 \\
+0 &amp; e^{i\pi/4}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4755,10 +4771,12 @@ Special cases of phase gates:
 </div><h3 id="rx-gate-x-rotation">RX Gate (X-Rotation)</h3>
 <p>The RX gate rotates the qubit state around the X-axis of the Bloch sphere.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>RX(φ) = [    cos(φ/2)  -i·sin(φ/2)]
-        [-i·sin(φ/2)      cos(φ/2)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{RX}(\phi) = \begin{pmatrix}
+\cos(\phi/2) &amp; -i\sin(\phi/2) \\
+-i\sin(\phi/2) &amp; \cos(\phi/2)
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4841,10 +4859,12 @@ Special cases of phase gates:
 </div><h3 id="ry-gate-y-rotation">RY Gate (Y-Rotation)</h3>
 <p>The RY gate rotates the qubit state around the Y-axis of the Bloch sphere.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>RY(φ) = [cos(φ/2)  -sin(φ/2)]
-        [sin(φ/2)   cos(φ/2)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{RY}(\phi) = \begin{pmatrix}
+\cos(\phi/2) &amp; -\sin(\phi/2) \\
+\sin(\phi/2) &amp; \cos(\phi/2)
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -4927,10 +4947,12 @@ Special cases of phase gates:
 </div><h3 id="rz-gate-z-rotation">RZ Gate (Z-Rotation)</h3>
 <p>The RZ gate rotates the qubit state around the Z-axis of the Bloch sphere.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>RZ(φ) = [e^(-iφ/2)       0    ]
-        [    0      e^(iφ/2)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{RZ}(\phi) = \begin{pmatrix}
+e^{-i\phi/2} &amp; 0 \\
+0 &amp; e^{i\phi/2}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5013,9 +5035,9 @@ Special cases of phase gates:
 </div><h3 id="r-gate-general-rotation">R Gate (General Rotation)</h3>
 <p>The R gate implements a general rotation by composing RZ, RY, and RZ rotations.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>R(θ,φ,λ) = RZ(λ) · RY(φ) · RZ(θ)
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{R}(\theta,\phi,\lambda) = \text{RZ}(\lambda) \cdot \text{RY}(\phi) \cdot \text{RZ}(\theta)
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5109,9 +5131,9 @@ Special cases of phase gates:
 </div><h3 id="u3-gate-universal-rotation">U3 Gate (Universal Rotation)</h3>
 <p>The U3 gate is a universal single-qubit gate that can represent any single-qubit operation.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>U3(θ,φ,δ) = RZ(δ) · RY(φ) · RX(θ)
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{U3}(\theta,\phi,\delta) = \text{RZ}(\delta) \cdot \text{RY}(\phi) \cdot \text{RX}(\theta)
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5359,12 +5381,14 @@ Special cases of phase gates:
 <h3 id="cnot-cx-gate">CNOT (CX) Gate</h3>
 <p>The CNOT (Controlled-NOT) gate flips the target qubit if the control qubit is |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CX = [1 0 0 0]
-     [0 1 0 0]
-     [0 0 0 1]
-     [0 0 1 0]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CX} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 \\
+0 &amp; 0 &amp; 1 &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5457,12 +5481,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-y-cy-gate">Controlled-Y (CY) Gate</h3>
 <p>The CY gate applies a Y gate to the target qubit if the control qubit is |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CY = [1 0  0   0]
-     [0 1  0   0]
-     [0 0  0  -i]
-     [0 0  i   0]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CY} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; -i \\
+0 &amp; 0 &amp; i &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5545,12 +5571,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-z-cz-gate">Controlled-Z (CZ) Gate</h3>
 <p>The CZ gate applies a Z gate to the target qubit if the control qubit is |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CZ = [1 0 0  0]
-     [0 1 0  0]
-     [0 0 1  0]
-     [0 0 0 -1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CZ} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; -1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5633,12 +5661,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-h-ch-gate">Controlled-H (CH) Gate</h3>
 <p>The CH gate applies a Hadamard gate to the target qubit if the control qubit is |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CH = [1 0                0                 0              ]
-     [0 1                0                 0              ]
-     [0 0  1/√2          1/√2             ]
-     [0 0  1/√2         -1/√2             ]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CH} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; \frac{1}{\sqrt{2}} &amp; \frac{1}{\sqrt{2}} \\
+0 &amp; 0 &amp; \frac{1}{\sqrt{2}} &amp; -\frac{1}{\sqrt{2}}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5721,12 +5751,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-phase-cphase-gate">Controlled-Phase (CPhase) Gate</h3>
 <p>The CPhase gate applies a phase shift to the |11⟩ state.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CPhase(φ) = [1 0 0      0     ]
-            [0 1 0      0     ]
-            [0 0 1      0     ]
-            [0 0 0  e^(iφ)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CPhase}(\phi) = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; e^{i\phi}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5818,12 +5850,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-s-cs-gate">Controlled-S (CS) Gate</h3>
 <p>The CS gate is a special case of the CPhase gate with φ = π/2.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CS = [1 0 0 0]
-     [0 1 0 0]
-     [0 0 1 0]
-     [0 0 0 i]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CS} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; i
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5892,12 +5926,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-t-ct-gate">Controlled-T (CT) Gate</h3>
 <p>The CT gate is a special case of the CPhase gate with φ = π/4.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CT = [1 0 0      0     ]
-     [0 1 0      0     ]
-     [0 0 1      0     ]
-     [0 0 0  e^(iπ/4)]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CT} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; e^{i\pi/4}
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -5966,12 +6002,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="swap-gate">SWAP Gate</h3>
 <p>The SWAP gate exchanges the states of two qubits.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>SWAP = [1 0 0 0]
-       [0 0 1 0]
-       [0 1 0 0]
-       [0 0 0 1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{SWAP} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -6054,16 +6092,18 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="controlled-swap-cswap-gate">Controlled-SWAP (CSWAP) Gate</h3>
 <p>The CSWAP gate, also known as the Fredkin gate, swaps two qubits if the control qubit is |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CSWAP = [1 0 0 0 0 0 0 0]
-        [0 1 0 0 0 0 0 0]
-        [0 0 1 0 0 0 0 0]
-        [0 0 0 1 0 0 0 0]
-        [0 0 0 0 1 0 0 0]
-        [0 0 0 0 0 0 1 0]
-        [0 0 0 0 0 1 0 0]
-        [0 0 0 0 0 0 0 1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CSWAP} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -6144,16 +6184,18 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="toffoli-ccx-gate">Toffoli (CCX) Gate</h3>
 <p>The Toffoli gate, or CCX gate, applies an X gate to the target qubit if both control qubits are |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CCX = [1 0 0 0 0 0 0 0]
-      [0 1 0 0 0 0 0 0]
-      [0 0 1 0 0 0 0 0]
-      [0 0 0 1 0 0 0 0]
-      [0 0 0 0 1 0 0 0]
-      [0 0 0 0 0 1 0 0]
-      [0 0 0 0 0 0 0 1]
-      [0 0 0 0 0 0 1 0]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CCX} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -6234,16 +6276,18 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="ccy-gate">CCY Gate</h3>
 <p>The CCY gate applies a Y gate to the target qubit if both control qubits are |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CCY = [1 0 0 0 0 0 0    0   ]
-      [0 1 0 0 0 0 0    0   ]
-      [0 0 1 0 0 0 0    0   ]
-      [0 0 0 1 0 0 0    0   ]
-      [0 0 0 0 1 0 0    0   ]
-      [0 0 0 0 0 1 0    0   ]
-      [0 0 0 0 0 0 0   -i   ]
-      [0 0 0 0 0 0 i    0   ]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CCY} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -i \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; i &amp; 0
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -6324,16 +6368,18 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="ccz-gate">CCZ Gate</h3>
 <p>The CCZ gate applies a Z gate to the target qubit if both control qubits are |1⟩.</p>
 <p><strong>Matrix Representation:</strong></p>
-<div class="codehilite"><pre><span></span><code>CCZ = [1 0 0 0 0 0 0  0]
-      [0 1 0 0 0 0 0  0]
-      [0 0 1 0 0 0 0  0]
-      [0 0 0 1 0 0 0  0]
-      [0 0 0 0 1 0 0  0]
-      [0 0 0 0 0 1 0  0]
-      [0 0 0 0 0 0 1  0]
-      [0 0 0 0 0 0 0 -1]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{CCZ} = \begin{pmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -1
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
@@ -6696,12 +6742,14 @@ If the control qubit is |1&gt;, the target qubit is flipped.</p>
 </div><h3 id="quantum-fourier-transform-qft-gate">Quantum Fourier Transform (QFT) Gate</h3>
 <p>The QFT gate implements the Quantum Fourier Transform, a key component in many quantum algorithms.</p>
 <p><strong>Matrix Representation (for n=2):</strong></p>
-<div class="codehilite"><pre><span></span><code>QFT = 1/2 * [1  1  1  1]
-             [1  i -1 -i]
-             [1 -1  1 -1]
-             [1 -i -1  i]
-</code></pre></div>
-
+<div class="arithmatex">\[
+\text{QFT} = \frac{1}{2} \begin{pmatrix}
+1 &amp; 1 &amp; 1 &amp; 1 \\
+1 &amp; i &amp; -1 &amp; -i \\
+1 &amp; -1 &amp; 1 &amp; -1 \\
+1 &amp; -i &amp; -1 &amp; i
+\end{pmatrix}
+\]</div>
 
 
 <div class="doc doc-object doc-class">
