@@ -31,7 +31,6 @@ jobs:
         run: |
           uv pip install 'setuptools[pkg_resources]'
           uv pip install -e ".[dev]"
-          uv pip install mkdocs mkdocs-material mkdocstrings mkdocstrings-python
 
       - name: Create symbolic links
         run: |

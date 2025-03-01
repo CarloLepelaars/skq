@@ -114,5 +114,4 @@ print(result)
 
 ## Next Steps
 
-- Check out the [Tutorials](tutorials/introduction.md) for more detailed examples
 - Learn how to [contribute](contributing.md) to the project 
