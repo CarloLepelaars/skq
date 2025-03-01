@@ -1,0 +1,63 @@
+site_name: skq
+site_description: Scientific Toolkit for Quantum Computing
+site_url: https://carlolepelaars.github.io/skq/
+repo_url: https://github.com/CarloLepelaars/skq
+repo_name: CarloLepelaars/skq
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: cyan
+  font:
+    text: Ubuntu
+  icon:
+    logo: material/atom
+  features:
+    - navigation.top
+    - navigation.tabs
+    - navigation.tracking
+    - navigation.tabs.sticky
+    - navigation.expand
+
+markdown_extensions:
+  - footnotes
+  - fenced_code
+  - codehilite:
+      linennums: true
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+  - tables
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Tutorials:
+    - Circuit Conversion: tutorials/circuit-conversion.md
+    - Building Circuits: tutorials/building-circuits.md
+  - API Reference:
+    - Base: api/base.md
+    - Circuits: api/circuits.md
+    - Constants: api/constants.md
+    - Gates:
+      - Base Gates: api/gates-base.md
+      - Global Phase Gates: api/gates-global-phase.md
+      - Qubit Gates: api/gates-qubit.md
+      - Qutrit Gates: api/gates-qutrit.md
+      - Ququart Gates: api/gates-ququart.md
+      - Qupent Gates: api/gates-qupent.md
+    - Quantum Info: api/quantum-info.md
+    - Utils: api/utils.md
+  - Contributing: contributing.md
