@@ -1083,8 +1083,10 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 
 <h3 id="creating-quantum-circuits">Creating Quantum Circuits</h3>
 <p>You can create quantum circuits by combining gates:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">skq.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Concat</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">skq.gates.qubit</span><span class="w"> </span><span class="kn">import</span> <span class="n">H</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">CX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">skq.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Circuit</span><span class="p">,</span> <span class="n">Concat</span>
 
 <span class="c1"># Create a Bell state circuit</span>
 <span class="n">bell_circuit</span> <span class="o">=</span> <span class="n">Circuit</span><span class="p">([</span>
@@ -1114,8 +1116,9 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 
 <h3 id="implementing-quantum-algorithms">Implementing Quantum Algorithms</h3>
 <p><code>skq</code> includes implementations of common quantum algorithms:</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">skq.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grover</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">skq.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grover</span>
 
 <span class="c1"># Create a Grover search circuit for 3 qubits</span>
 <span class="c1"># Searching for state |100⟩ (binary 4)</span>
